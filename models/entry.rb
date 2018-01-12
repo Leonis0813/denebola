@@ -5,7 +5,7 @@ class Entry
   attr_accessor :number, :age, :burden_weight, :weight, :race_id
   attr_accessor :result
 
-  def initialize(html, race_id)
+  def initialize(html)
     attributes = html.gsub(/<[\/]?tr>/, '').scan(/<td.*?>(.*?)<\/td>/).flatten
     attributes.map! {|attriute| attribute.gsub(/<.*?>/, '') }
 
@@ -13,15 +13,15 @@ class Entry
     @age = attributes[4].match(/(\d+)\z/)[1].to_i
     @burden_weight = attributes[5].to_f
     @weight = attributes[14] == '計不' ? 'NULL' : features[14].match(/\A(\d+)/)[1].to_f rescue 'NULL'
-    @race_id = race_id
-    @result = Result.new(attributes, race_id, entry_id)
+    @result = Result.new(attributes)
   end
 
   def save!
     client = MysqlClient.new
-    query = File.read('../sqls/collect/entry.sql')
-    client.execute_query(query, params)
+    id = client.insert(:results, [@number, @age, @burden_weight, @weight, @race_id])
 
+    @result.race_id = @race_id
+    @result.entry_id = id
     @result.save!
   end
 end

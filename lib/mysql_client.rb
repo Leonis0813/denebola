@@ -2,10 +2,11 @@ require 'mysql2'
 require_relative '../config/settings'
 
 class MysqlClient
-  def execute_query(query, params = {})
+  def insert(table, values)
     client = Mysql2::Client.new(Settings.mysql)
-    params.each {|key, value| query.gsub!("{{#{key}}}", value) }
-    client.query(query)
+    values.map! {|value| "'#{value}'" }
+    client.query("INSERT IGNORE INTO #{table} VALUES (NULL,#{values.join(',')})")
     client.close
+    client.last_id
   end
 end

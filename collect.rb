@@ -8,11 +8,21 @@ to = ARGV[1] ? Date.parse(ARGV[1]) : Date.today
 client = HTTPClient.new
 
 (from..to).each do |date|
-  response = client.get("#{Settings.url}#{Settings.path['race_list']}/#{date.strftime('%Y%m%d')}")
-  race_ids = response.body.scan(%r[.*/race/(\d+)]).flatten
+  date = date.strftime('%Y%m%d')
+  file_path = File.join(Settings.backup_dir['race_list'], "#{date}.txt")
+  race_ids = if File.exists?(file_path)
+               File.read(file_path).split("\n")
+             else
+               response = client.get("#{Settings.url}#{Settings.path['race_list']}/#{date}.txt")
+               ids = response.body.scan(%r[.*/race/(\d+)]).flatten
+               FileUtils.mkdir_p(Settings.backup_dir['race_list'])
+               File.open(file_path, 'w') {|out| out.write(ids.join("\n")) }
+               ids
+             end
 
   race_ids.each do |race_id|
     response = client.get("#{Settings.url}#{Settings.path['race']}/#{race_id}")
-    Race.new(response.body).save!
+    body = response.body.encode("utf-8", "euc-jp", :undef => :replace, :replace => '?')
+    Race.new(body).save!
   end
 end

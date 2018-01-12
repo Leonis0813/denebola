@@ -28,9 +28,11 @@ class Race
 
   def save!
     client = MysqlClient.new
-    query = File.read('../sqls/collect/race.sql')
-    client.execute_query(query, params)
+    id = client.insert(:races, [@track, @direction, @distance, @weather, @place, @round])
 
-    @entries.each {|entry| entry.save! }
+    @entries.each do |entry|
+      entry.race_id = id
+      entry.save!
+    end
   end
 end
