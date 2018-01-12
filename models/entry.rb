@@ -7,7 +7,7 @@ class Entry
 
   def initialize(html)
     attributes = html.gsub(/<[\/]?tr>/, '').scan(/<td.*?>(.*?)<\/td>/).flatten
-    attributes.map! {|attriute| attribute.gsub(/<.*?>/, '') }
+    attributes.map! {|attribute| attribute.gsub(/<.*?>/, '') }
 
     @number = attributes[2].to_i
     @age = attributes[4].match(/(\d+)\z/)[1].to_i
@@ -18,7 +18,7 @@ class Entry
 
   def save!
     client = MysqlClient.new
-    id = client.insert(:results, [@number, @age, @burden_weight, @weight, @race_id])
+    id = client.insert(:entries, [@number, @age, @burden_weight, @weight, @race_id])
 
     @result.race_id = @race_id
     @result.entry_id = id
