@@ -5,5 +5,7 @@ CREATE TABLE IF NOT EXISTS races (
   distance INTEGER NOT NULL,
   weather VARCHAR(6) NOT NULL,
   place VARCHAR(16) NOT NULL,
-  round INTEGER NOT NULL
+  round INTEGER NOT NULL,
+  start_time DATETIME NOT NULL,
+  UNIQUE(start_time, place)
 )
