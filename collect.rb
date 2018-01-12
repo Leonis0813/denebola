@@ -9,20 +9,30 @@ client = HTTPClient.new
 
 (from..to).each do |date|
   date = date.strftime('%Y%m%d')
-  file_path = File.join(Settings.backup_dir['race_list'], "#{date}.txt")
+
+  file_path = File.join('backup/race_list', "#{date}.txt")
   race_ids = if File.exists?(file_path)
                File.read(file_path).split("\n")
              else
-               response = client.get("#{Settings.url}#{Settings.path['race_list']}/#{date}.txt")
+               response = client.get("#{Settings.url}#{Settings.path['race_list']}/#{date}")
                ids = response.body.scan(%r[.*/race/(\d+)]).flatten
-               FileUtils.mkdir_p(Settings.backup_dir['race_list'])
+               FileUtils.mkdir_p('backup/race_list')
                File.open(file_path, 'w') {|out| out.write(ids.join("\n")) }
                ids
              end
 
   race_ids.each do |race_id|
-    response = client.get("#{Settings.url}#{Settings.path['race']}/#{race_id}")
-    body = response.body.encode("utf-8", "euc-jp", :undef => :replace, :replace => '?')
-    Race.new(body).save!
+    file_path = File.join('backup/race', "#{race_id}.html")
+    html = if File.exists?(file_path)
+             File.read(file_path)
+           else
+             response = client.get("#{Settings.url}#{Settings.path['race']}/#{race_id}")
+             body = response.body.encode("utf-8", "euc-jp", :undef => :replace, :replace => '?')
+             FileUtils.mkdir_p('backup/race')
+             File.open(file_path, 'w') {|out| out.write(body) }
+             body
+           end
+
+    Race.new(html).save!
   end
 end
