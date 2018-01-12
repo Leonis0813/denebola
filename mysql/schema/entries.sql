@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS entries (
   burden_weight FLOAT NOT NULL,
   weight FLOAT,
   race_id INTEGER,
-  PRIMARY KEY(race_id, number)
+  UNIQUE(race_id, number)
 )
