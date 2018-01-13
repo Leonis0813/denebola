@@ -24,4 +24,9 @@ class Entry
     @result.entry_id = id
     @result.save!
   end
+
+  def self.find(id)
+    client = MysqlClient.new
+    client.select(['*'], :entries, "id = #{id}")
+  end
 end

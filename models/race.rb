@@ -41,4 +41,21 @@ class Race
       entry.save!
     end
   end
+
+  def self.find(id)
+    client = MysqlClient.new
+    client.select(['*'], :races, "id = #{id}")
+  end
+
+  def attributes
+    {
+      :track => @track,
+      :direction => @direction,
+      :distance => @distance,
+      :weather => @weather,
+      :place => @place,
+      :round => @round,
+      :start_time => @start_time,
+    }
+  end
 end
