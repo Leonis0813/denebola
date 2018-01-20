@@ -6,7 +6,7 @@ path:
   horse: '/horse'
 
 mysql:
-  database: 'alterf'
+  database: 'denebola'
   host: 'localhost'
   username: 'root'
   password: '7QiSlC?4'
