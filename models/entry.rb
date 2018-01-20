@@ -18,7 +18,9 @@ class Entry
 
   def save!
     client = MysqlClient.new
-    id = client.insert(:entries, [@number, @age, @burden_weight, @weight, @race_id])
+    id = Logger.write_with_runtime(:action => 'insert', :resource => 'entry', :params => attributes) do
+      client.insert(:entries, [@number, @age, @burden_weight, @weight, @race_id])
+    end
 
     @result.race_id = @race_id
     @result.entry_id = id
@@ -28,5 +30,14 @@ class Entry
   def self.find(id)
     client = MysqlClient.new
     client.select(['*'], :entries, "id = #{id}")
+  end
+
+  def attributes
+    {
+      :number => @number,
+      :age => @age,
+      :burden_weight => @burden_weight,
+      :weight => @weight,
+    }
   end
 end

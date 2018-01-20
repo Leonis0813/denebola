@@ -34,7 +34,9 @@ class Race
 
   def save!
     client = MysqlClient.new
-    id = client.insert(:races, [@track, @direction, @distance, @weather, @place, @round, @start_time])
+    id = Logger.write_with_runtime(:action => 'insert', :resource => 'race', :params => attributes) do
+      client.insert(:races, [@track, @direction, @distance, @weather, @place, @round, @start_time])
+    end
 
     @entries.each do |entry|
       entry.race_id = id
