@@ -6,6 +6,7 @@ module Logger
 
   class << self
     def info(body)
+      FileUtils.mkdir_p(LOG_DIR)
       body = ['[I]', "[#{Time.now.strftime('%F %T.%6N')}]", body.to_json].join('')
       File.open("#{LOG_DIR}/#{caller[-1][/^(.*)\./, 1]}.log", 'a') {|file| file.puts(body) }
       puts body if ENV['STDOUT'].to_s == 'on'
