@@ -1,51 +1,33 @@
 require 'mysql2'
+require_relative '../config/settings'
+require_relative '../lib/logger'
 
-def get_race_id(race_name, start_time, place)
-  client = Mysql2::Client.new(Settings.mysql)
-  query =<<"EOF"
-SELECT
-  id
-FROM
-  races
-WHERE
-  name = '#{race_name}'
-  AND start_time = '#{start_time}'
-  AND place = '#{place}'
-LIMIT 1
-EOF
-  begin
-    result = client.query(query)
+class MysqlClient
+  def select(attributes, table, condition = 'TRUE')
+    client = Mysql2::Client.new(Settings.mysql)
+    results =client.query("SELECT #{attributes.join(',')} FROM #{table} WHERE #{condition}")
     client.close
-    result.first['id']
-  rescue Mysql2::Error => e
-    Logger.error(:action => 'get_race_id', :race_name => race_name, :start_time => start_time, :place => place, :message => e.message)
-    raise
-  ensure
-    client.close
+    results
   end
-end
 
-def get_horse_id(external_id)
-  client = Mysql2::Client.new(Settings.mysql)
-  query =<<"EOF"
-SELECT
-  id
-FROM
-  horses
-WHERE
-  external_id = #{external_id}
-ORDER BY
-  birthday desc
-LIMIT 1
-EOF
-  begin
-    result = client.query(query)
+  def insert(table, values)
+    client = Mysql2::Client.new(Settings.mysql)
+    values.map! {|value| value == 'NULL' ? 'NULL' : "'#{value}'" }
+    client.query("INSERT IGNORE INTO #{table} VALUES (NULL,#{values.join(',')})")
+    id = client.last_id
+    if id == 0
+      Logger.info(:action => 'insert', :table => table, :message => 'already_exist')
+    else
+      Logger.info(:action => 'insert', :table => table, :id => id, :values => values)
+    end
     client.close
-    result.first['id']
-  rescue Mysql2::Error => e
-    Logger.error(:action => 'get_horse_id', :external_id => external_id, :message => e.message)
-    raise
-  ensure
+    id
+  end
+
+  def update(table, attributes, condition = 'TRUE')
+    client = Mysql2::Client.new(Settings.mysql)
+    set = attributes.map {|k, v| "`#{k}`='#{v}'" }
+    client.query("UPDATE #{table} SET #{set.join(',')} WHERE #{condition}")
     client.close
   end
 end
