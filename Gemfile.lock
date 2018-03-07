@@ -53,6 +53,7 @@ GEM
     inflecto (0.0.2)
     minitest (5.11.3)
     mysql2 (0.4.10)
+    rake (12.3.0)
     thread_safe (0.3.6)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
@@ -64,6 +65,7 @@ DEPENDENCIES
   activerecord
   config
   mysql2
+  rake
 
 BUNDLED WITH
    1.16.1
