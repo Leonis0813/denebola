@@ -8,6 +8,6 @@ namespace :db do
   desc 'Migrate database'
   task :migrate do
     ActiveRecord::Base.establish_connection(Settings.mysql.to_h)
-    ActiveRecord::Migrator.migrate('db/migrate')
+    ActiveRecord::Migrator.migrate('db/migrate', ENV['VERSION'] ? ENV['VERSION'].to_i : nil)
   end
 end
