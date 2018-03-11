@@ -1,5 +1,5 @@
 class CreateRaces < ActiveRecord::Migration
-  def self.change
+  def change
     create_table :races do |t|
       t.string :track, :null => false
       t.string :direction, :null => false

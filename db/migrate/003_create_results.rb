@@ -1,5 +1,5 @@
 class CreateResults < ActiveRecord::Migration
-  def self.change
+  def change
     create_table :results do |t|
       t.string :order, :null => false
       t.references :race

@@ -1,5 +1,5 @@
 class CreateEntries < ActiveRecord::Migration
-  def self.change
+  def change
     create_table :entries do |t|
       t.integer :number, :null => false
       t.integer :age, :null => false

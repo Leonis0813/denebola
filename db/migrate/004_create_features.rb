@@ -1,5 +1,5 @@
 class CreateFeatures < ActiveRecord::Migration
-  def self.change
+  def change
     create_table :features do |t|
       t.string :track, :null => false
       t.string :direction, :null => false
