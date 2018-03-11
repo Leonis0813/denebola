@@ -1,3 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'mysql2', '~> 0.3.20'
+gem 'rake'
+gem 'activerecord'
+gem 'mysql2'
+gem 'config'

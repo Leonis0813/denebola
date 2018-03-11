@@ -1,34 +1,21 @@
-# coding: utf-8
-require 'fileutils'
-require 'mysql2'
-require_relative 'config/settings'
-require_relative 'lib/mysql_client'
+require 'logger'
+require_relative 'config/initialize'
+require_relative 'db/connect'
 Dir['models/*'].each {|f| require_relative f }
 
-client = MysqlClient.new
-results = client.select([:race_id, :entry_id], :results)
-latest_id_pairs = results.map {|r| [r['race_id'], r['entry_id']] }
-
-results = client.select([:race_id, :entry_id], :features)
-old_id_pairs = results.map {|r| [r['race_id'], r['entry_id']] }
-
-updated_features = (latest_id_pairs - old_id_pairs).map do |id_pair|
-  feature = Feature.new(:race_id => id_pair.first, :entry_id => id_pair.last)
-  feature.save!
-  feature
+diffs = Result.pluck(:race_id, :entry_id).uniq - Feature.pluck(:race_id, :entry_id).uniq
+updated_features = diffs.map do |race_id, entry_id|
+  Feature.new(:race_id => race_id, :entry_id => entry_id)
 end
 
 updated_features.each do |feature|
-  race_attributes = Race.find(feature.race_id).first
-  race_attributes.delete('id')
-  race_attributes.delete('start_time')
-  feature.update!(race_attributes)
+  race = Race.find(feature.race_id)
+  feature_attributes = race.attributes.slice(*Feature.attribute_names)
 
-  entry_attributes = Entry.find(feature.entry_id).first
-  entry_attributes.delete('id')
-  feature.update!(entry_attributes)
+  entry = Entry.find(feature.entry_id)
+  feature_attributes.merge!(entry.attributes.slice(*Feature.attribute_names))
 
-  result_attributes = Result.find_by(:race_id => feature.race_id, :entry_id => feature.entry_id)
-  result_attributes.delete('id')
-  feature.update!(result_attributes)
+  result = Result.find_by(:race_id => feature.race_id, :entry_id => feature.entry_id)
+  feature_attributes.merge!(result.attributes.slice(*Feature.attribute_names))
+  feature.update!(feature_attributes.except('id', 'created_at', 'updated_at'))
 end
