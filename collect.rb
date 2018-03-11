@@ -48,7 +48,7 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
     race = Race.find_or_create_by!(race_info.except(:entries))
     race_info[:entries].each do |entry|
       e = race.entries.find_or_create_by!(entry.except(:result))
-      e.result = Result.find_or_create_by!(entry[:result])
+      e.result = Result.find_or_create_by!(entry[:result].merge(:race_id => race.id))
     end
   end
 end
