@@ -1,5 +1,5 @@
 class CreateFeatures < ActiveRecord::Migration
-  def self.up
+  def change
     create_table :features do |t|
       t.string :track, :null => false
       t.string :direction, :null => false
@@ -19,9 +19,5 @@ class CreateFeatures < ActiveRecord::Migration
     end
 
     add_index :features, [:race_id, :entry_id], :unique => true
-  end
-
-  def self.down
-    drop_table :features
   end
 end

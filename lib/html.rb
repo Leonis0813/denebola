@@ -8,7 +8,7 @@ class HTML
     race_data = html.scan(/<dl class="racedata.*?\/dl>/).first
     condition = race_data.match(/<span>(.*)<\/span>/)[1].split(' / ')
     place = html.scan(/<ul class="race_place.*?<\/ul>/).first
-
+    race[:grade] = race_data.match(/<h1>(.*?)</)[1].strip.match(/\((.*)\)$/)[1] rescue nil
     race[:track] = condition.first[0].sub('ダ', 'ダート')
     race[:direction] = condition.first[1]
     race[:distance] = condition.first.match(/(\d*)m$/)[1].to_i
@@ -32,6 +32,8 @@ class HTML
       entry[:age] = attributes[4].match(/(\d+)\z/)[1].to_i
       entry[:burden_weight] = attributes[5].to_f
       entry[:weight] = attributes[14] == '計不' ? nil : attributes[14].match(/\A(\d+)/)[1].to_f rescue nil
+      entry[:weight_diff] = attributes[14] == '計不' ? nil : attributes[14].match(/\((.+)\)$/)[1].to_f rescue nil
+      entry[:jockey] = attributes[6]
       entry[:result] = {:order => attributes[0]}
       entries << entry
     end

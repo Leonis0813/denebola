@@ -1,5 +1,5 @@
 class CreateResults < ActiveRecord::Migration
-  def self.up
+  def change
     create_table :results do |t|
       t.string :order, :null => false
       t.references :race
@@ -9,9 +9,5 @@ class CreateResults < ActiveRecord::Migration
     end
 
     add_index :results, [:race_id, :entry_id], :unique => true
-  end
-
-  def self.down
-    drop_table :results
   end
 end

@@ -1,5 +1,5 @@
 class CreateEntries < ActiveRecord::Migration
-  def self.up
+  def change
     create_table :entries do |t|
       t.integer :number, :null => false
       t.integer :age, :null => false
@@ -11,9 +11,5 @@ class CreateEntries < ActiveRecord::Migration
     end
 
     add_index :entries, [:race_id, :number], :unique => true
-  end
-
-  def self.down
-    drop_table :entries
   end
 end

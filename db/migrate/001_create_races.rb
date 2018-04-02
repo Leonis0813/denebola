@@ -1,5 +1,5 @@
 class CreateRaces < ActiveRecord::Migration
-  def self.up
+  def change
     create_table :races do |t|
       t.string :track, :null => false
       t.string :direction, :null => false
@@ -13,9 +13,5 @@ class CreateRaces < ActiveRecord::Migration
     end
 
     add_index :races, [:place, :start_time], :unique => true
-  end
-
-  def self.down
-    drop_table :races
   end
 end
