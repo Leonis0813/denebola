@@ -7,10 +7,19 @@ Dir['models/*'].each {|f| require_relative f }
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 
-from = ARGV[0] ? Date.parse(ARGV[0]) : (Date.today - 7)
-to = ARGV[1] ? Date.parse(ARGV[1]) : Date.today
-client = HTTPClient.new
 logger = Logger.new('log/collect.log')
+
+begin
+  from = ARGV.find {|arg| arg.start_with?('--from=') }
+  from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 7)
+  to = ARGV.find {|arg| arg.start_with?('--to=') }
+  to = to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
+rescue Exception => e
+  p e
+  logger.error(e)
+end
+
+client = HTTPClient.new
 
 Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_DIR, path)) }
 
