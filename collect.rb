@@ -8,6 +8,12 @@ Dir['models/*'].each {|f| require_relative f }
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 
 logger = Logger.new('log/collect.log')
+logger.formatter = proc do |severity, datetime, progname, message|
+  time = datetime.utc.strftime(Settings.logger.time_format)
+  log = "[#{severity}] [#{time}]: #{message}"
+  puts log if ENV['STDOUT'] == 'on'
+  "#{log}\n"
+end
 
 begin
   from = ARGV.find {|arg| arg.start_with?('--from=') }
@@ -15,8 +21,8 @@ begin
   to = ARGV.find {|arg| arg.start_with?('--to=') }
   to = to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
 rescue Exception => e
-  p e
-  logger.error(e)
+  logger.error(e.backtrace.join("\n"))
+  raise e
 end
 
 client = HTTPClient.new
@@ -55,9 +61,12 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
 
     race_info = HTML.parse(html)
     race = Race.find_or_create_by!(race_info.except(:entries))
+    logger.info(:action => 'create', :resource => 'race', :id => race.id)
     race_info[:entries].each do |entry|
       e = race.entries.find_or_create_by!(entry.except(:result))
+      logger.info(:action => 'create', :resource => 'entry', :id => e.id)
       e.result = Result.find_or_create_by!(entry[:result].merge(:race_id => race.id))
+      logger.info(:action => 'create', :resource => 'result', :id => e.result.id)
     end
   end
 end
