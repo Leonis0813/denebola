@@ -14,7 +14,7 @@ class HTML
     race[:distance] = condition.first.match(/(\d*)m$/)[1].to_i
     race[:weather] = condition[1].match(/天候 : (.*)/)[1]
     race[:place] = place.match(/<a href=.* class="active">(.*?)<\/a>/)[1]
-    race[:round] = race_data.match(/<dt>(\d*) R<\/dt>/)[1].to_i
+    race[:round] = race_data.match(/<dt>\s*(\d*) R\s*<\/dt>/)[1].to_i
 
     start_time = condition[3].match(/発走 : (.*)/)[1]
     race_date = html.match(/<li class="result_link"><.*?>(\d*年\d*月\d*日)のレース結果<.*?>/)[1]
