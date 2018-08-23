@@ -7,6 +7,8 @@ class HTML
     html.gsub!('&nbsp;', ' ')
     race_data = html.scan(/<dl class="racedata.*?\/dl>/).first
     condition = race_data.match(/<span>(.*)<\/span>/)[1].split(' / ')
+    return unless condition.size == 4
+
     place = html.scan(/<ul class="race_place.*?<\/ul>/).first
     race[:grade] = race_data.match(/<h1>(.*?)</)[1].strip.match(/\((.*)\)$/)[1] rescue nil
     race[:track] = condition.first[0].sub('ダ', 'ダート')

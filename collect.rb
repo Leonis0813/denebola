@@ -60,6 +60,8 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
            end
 
     race_info = HTML.parse(html)
+    next unless race_info
+
     race = Race.find_or_create_by!(race_info.except(:entries))
     logger.info(:action => 'create', :resource => 'race', :id => race.id)
     race_info[:entries].each do |entry|
