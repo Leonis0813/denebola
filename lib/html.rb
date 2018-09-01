@@ -7,6 +7,8 @@ class HTML
     html.gsub!('&nbsp;', ' ')
     race_data = html.scan(/<dl class="racedata.*?\/dl>/).first
     condition = race_data.match(/<span>(.*)<\/span>/)[1].split(' / ')
+    return unless condition.size == 4
+
     place = html.scan(/<ul class="race_place.*?<\/ul>/).first
     race[:grade] = race_data.match(/<h1>(.*?)</)[1].strip.match(/\((.*)\)$/)[1] rescue nil
     race[:track] = condition.first[0].sub('ダ', 'ダート')
@@ -14,7 +16,7 @@ class HTML
     race[:distance] = condition.first.match(/(\d*)m$/)[1].to_i
     race[:weather] = condition[1].match(/天候 : (.*)/)[1]
     race[:place] = place.match(/<a href=.* class="active">(.*?)<\/a>/)[1]
-    race[:round] = race_data.match(/<dt>(\d*) R<\/dt>/)[1].to_i
+    race[:round] = race_data.match(/<dt>\s*(\d*) R\s*<\/dt>/)[1].to_i
 
     start_time = condition[3].match(/発走 : (.*)/)[1]
     race_date = html.match(/<li class="result_link"><.*?>(\d*年\d*月\d*日)のレース結果<.*?>/)[1]
