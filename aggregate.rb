@@ -6,9 +6,9 @@ Dir['models/*'].each {|f| require_relative f }
 logger = Logger.new('log/aggregate.log')
 logger.formatter = proc do |severity, datetime, progname, message|
   time = datetime.utc.strftime(Settings.logger.time_format)
-  log = "[#{severity}] [#{time}]: #{message}\n"
-  p log if ENV['STDOUT'] == 'on'
-  log
+  log = "[#{severity}] [#{time}]: #{message}"
+  puts log if ENV['STDOUT'] == 'on'
+  "#{log}\n"
 end
 
 logger.info('Start Aggregation')
