@@ -1,3 +1,6 @@
+# 1.0.3 (2018/09/14)
+- [UPDATE] for effective aggregation
+
 # 1.0.2 (2018/09/01)
 - [FIX] bug for collecting
 
