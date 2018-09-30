@@ -16,3 +16,6 @@ backup_dir:
   race_list: 'race_list'
   race: 'races'
   horse: 'horses'
+
+logger:
+  time_format: '%Y/%m/%d %H:%M:%S.%6N'
