@@ -1,3 +1,6 @@
+# 1.0.4 (2018/11/15)
+- [FIX] html parse error
+
 # 1.0.3 (2018/09/14)
 - [UPDATE] for effective aggregation
 
