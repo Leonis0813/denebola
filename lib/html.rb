@@ -10,7 +10,7 @@ class HTML
     return unless condition.size == 4
 
     place = html.scan(/<ul class="race_place.*?<\/ul>/).first
-    race[:grade] = race_data.match(/<h1>(.*?)</)[1].strip.match(/\((.*)\)$/)[1] rescue nil
+    race[:grade] = race_data.match(/<h1>(.*?)</)[1].strip.match(/\((J?\.?G\d)\)$/)[1] rescue nil
     race[:track] = condition.first[0].sub('ダ', 'ダート')
     race[:direction] = condition.first[1]
     race[:distance] = condition.first.match(/(\d*)m$/)[1].to_i

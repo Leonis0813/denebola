@@ -1,3 +1,12 @@
+# 1.0.6 (2018/12/23)
+- [UPDATE] gems
+
+# 1.0.5 (2018/12/22)
+- [UPDATE] gems
+
+# 1.0.4 (2018/11/15)
+- [FIX] html parse error
+
 # 1.0.3 (2018/09/14)
 - [UPDATE] for effective aggregation
 
