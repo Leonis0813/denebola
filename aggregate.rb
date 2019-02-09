@@ -29,6 +29,11 @@ new_features.each do |race_id, entry_id|
   result = Result.find_by(:race_id => race_id, :entry_id => entry_id)
   attribute.merge!(result.attributes.slice(*Feature.attribute_names))
 
+  weight_per = if entry.burden_weight.to_i > 0 and entry.weight.to_i > 0
+                 entry.burden_weight / entry.weight
+               end
+  attribute.merge!(:month => race.start_time.month, :weight_per => weight_per)
+
   Feature.create!(attribute)
 
   logger.info(attribute)
