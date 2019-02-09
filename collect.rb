@@ -4,7 +4,6 @@ require 'nokogiri'
 require_relative 'config/initialize'
 require_relative 'db/connect'
 require_relative 'lib/http_client'
-require_relative 'lib/html'
 Dir['models/*'].each {|f| require_relative f }
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
