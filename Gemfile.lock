@@ -50,8 +50,11 @@ GEM
       dry-types (~> 0.13.1)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
+    mini_portile2 (2.4.0)
     minitest (5.11.3)
     mysql2 (0.5.2)
+    nokogiri (1.9.1)
+      mini_portile2 (~> 2.4.0)
     rake (12.3.2)
     thread_safe (0.3.6)
     tzinfo (1.2.5)
@@ -64,6 +67,7 @@ DEPENDENCIES
   activerecord
   config
   mysql2
+  nokogiri
   rake
 
 BUNDLED WITH
