@@ -1,3 +1,6 @@
+# 1.0.10 (2019/02/10)
+- [ADD] month, sex and weight_per features
+
 # 1.0.9 (2019/02/09)
 - [UPDATE] parser to use Nokogiri
 - [FIX] url to get race data
