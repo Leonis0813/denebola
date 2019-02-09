@@ -41,6 +41,7 @@ def extract_race_info(html)
 
       {
         :age => attributes[4].match(/(\d+)\z/)[1].to_i,
+        :sex => attributes[4].match(/\A(.*)\d+/)[1],
         :burden_weight => attributes[5].to_f,
         :number => attributes[2].to_i,
         :weight => attributes[14].match(/\A(\d+)/).try(:[], 1).to_f,
