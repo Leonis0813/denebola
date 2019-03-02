@@ -1,4 +1,4 @@
-class AddMonthAndSexAndWeightPerToFeatures < ActiveRecord::Migration
+class AddMonthAndSexAndWeightPerToFeatures < ActiveRecord::Migration[4.2]
   def change
     add_column :features, :month, :integer, :null => false, :after => :grade
     add_column :features, :sex, :string, :null => false, :after => :age
