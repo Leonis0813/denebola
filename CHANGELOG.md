@@ -1,6 +1,7 @@
 # 1.0.10 (2019/03/02)
 - [UPDATE] ruby version to 2.3.7
 - [UPDATE] gems
+- [FIX] migration task
 
 # 1.0.9 (2019/02/09)
 - [UPDATE] parser to use Nokogiri
