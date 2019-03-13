@@ -38,7 +38,7 @@ def extract_race_info(html)
     _, *data = race_data.xpath('//table[contains(@class, "race_table")]').search('tr')
     feature[:entries] = data.map do |entry|
       attributes = entry.search('td').map(&:text).map(&:strip)
-
+      horse_link = entry.search('td')[3].first_element_child.attribute('href').value
       {
         :age => attributes[4].match(/(\d+)\z/)[1].to_i,
         :sex => attributes[4].match(/\A(.*)\d+/)[1],
@@ -48,9 +48,14 @@ def extract_race_info(html)
         :weight_diff => attributes[14].match(/\((.+)\)$/).try(:[], 1).to_f,
         :jockey => attributes[6],
         :result => {:order => attributes[0]},
+        :horse_id => horse_link.match(/\/horse\/(?<horse_id>\d+)\/?/)[:horse_id]
       }
     end
   end
+end
+
+def extract_horse_info(html)
+  {}
 end
 
 begin
@@ -71,13 +76,14 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
   date = date.strftime('%Y%m%d')
 
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.race_list, "#{date}.txt")
+  base_log_body = {:action => 'fetch', :resource => 'race_list'}
   race_ids = if File.exists?(file_path)
                ids = File.read(file_path).split("\n")
-               logger.info(:action => 'fetch', :resource => 'race_list', :file_path => File.basename(file_path))
+               logger.info(base_log_body.merge(:file_path => File.basename(file_path)))
                ids
              else
                res = client.get("#{Settings.url}#{Settings.path.race_list}/#{date}")
-               logger.info(:action => 'fetch', :resource => 'race_list', :uri => res.uri.to_s, :status => res.code)
+               logger.info(base_log_body.merge(:uri => res.uri.to_s, :status => res.code))
                ids = res.body.scan(%r[.*/race/(\d+)]).flatten
                File.open(file_path, 'w') {|out| out.write(ids.join("\n")) }
                ids
@@ -85,14 +91,15 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
 
   race_ids.each do |race_id|
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
+    base_log_body = {:action => 'fetch', :resource => 'race'}
     html = if File.exists?(file_path)
              html = File.read(file_path)
-             logger.info(:action => 'fetch', :resource => 'race', :file_path => File.basename(file_path))
+             logger.info(base_log_body.merge(:file_path => File.basename(file_path)))
              html
            else
              res = client.get("#{Settings.url}#{Settings.path.race}/#{race_id}")
-             logger.info(:action => 'fetch', :resource => 'race', :uri => res.uri.to_s, :status => res.code)
-             body = res.body.encode("utf-8", "euc-jp", :undef => :replace, :replace => '?')
+             logger.info(base_log_body.merge(:uri => res.uri.to_s, :status => res.code))
+             body = res.body.encode('utf-8', 'euc-jp', :undef => :replace, :replace => '?')
              File.open(file_path, 'w') {|out| out.write(body) }
              body
            end
@@ -104,10 +111,31 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
     race = Race.find_or_create_by!(race_info.except(:entries))
     logger.info(:action => 'create', :resource => 'race', :id => race.id)
     race_info[:entries].each do |entry|
-      e = race.entries.find_or_create_by!(entry.except(:result))
+      e = race.entries.find_or_create_by!(entry.except(:result, :horse_id))
       logger.info(:action => 'create', :resource => 'entry', :id => e.id)
+
       e.result = Result.find_or_create_by!(entry[:result].merge(:race_id => race.id))
       logger.info(:action => 'create', :resource => 'result', :id => e.result.id)
+
+      unless Horse.exists?(:horse_id => entry[:horse_id])
+        file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{entry[:horse_id]}.html")
+        base_log_body = {:action => 'fetch', :resource => 'horse'}
+        html = if File.exists?(file_path)
+                 html = File.read(file_path)
+                 logger.info(base_log_body.merge(:file_path => File.basename(file_path)))
+                 html
+               else
+                 res = client.get("#{Settings.url}#{Settings.path.horse}/#{entry[:horse_id]}")
+                 logger.info(base_log_body.merge(:uri => res.uri.to_s, :status => res.code))
+                 body = res.body.encode('utf-8', 'euc-jp', :undef => :replace, :replace => '?')
+                 File.open(file_path, 'w') {|out| out.write(body) }
+                 body
+               end
+
+        parsed_html = Nokogiri::HTML.parse(html.gsub('&nbsp;', ' '))
+        horse_info = extract_horse_info(parsed_html)
+        horse = Horse.create!(horse_info.merge(:horse_id => entry[:horse_id])) if horse_info
+      end
     end
   end
 end
