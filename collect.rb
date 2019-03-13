@@ -54,7 +54,7 @@ def extract_race_info(html)
   end
 end
 
-def extract_horse_info
+def extract_horse_info(html)
   {}
 end
 
@@ -129,10 +129,12 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
                  logger.info(base_log_body.merge(:uri => res.uri.to_s, :status => res.code))
                  body = res.body.encode('utf-8', 'euc-jp', :undef => :replace, :replace => '?')
                  File.open(file_path, 'w') {|out| out.write(body) }
+                 body
                end
+
         parsed_html = Nokogiri::HTML.parse(html.gsub('&nbsp;', ' '))
         horse_info = extract_horse_info(parsed_html)
-        horse = Horse.create!(horse_info.merge(:horse_id => entry[:horse_id]) if horse_info
+        horse = Horse.create!(horse_info.merge(:horse_id => entry[:horse_id])) if horse_info
       end
     end
   end
