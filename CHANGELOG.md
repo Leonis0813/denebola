@@ -1,3 +1,6 @@
+# 2.0.0 (2019/03/13)
+- [ADD] feature to collect horses
+
 # 1.0.10 (2019/03/02)
 - [UPDATE] ruby version to 2.3.7
 - [UPDATE] gems
