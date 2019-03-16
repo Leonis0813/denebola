@@ -3,6 +3,7 @@ require 'logger'
 require 'nokogiri'
 require_relative 'config/initialize'
 require_relative 'db/connect'
+Dir['extract/*'].each {|f| require_relative f }
 Dir['models/*'].each {|f| require_relative f }
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
@@ -48,7 +49,7 @@ end
 
     _, *rows = parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
     rows.each do |row|
-      extry_attribute = extract_entry(row)
+      entry_attribute = extract_entry(row)
       entry = race.entries.find_or_create_by!(entry_attribute.except(:horse_id))
       logger.info(:action => 'create', :resource => 'entry', :entry_id => entry.id)
 
@@ -61,8 +62,9 @@ end
         parsed_html = Nokogiri::HTML.parse(html)
         horse_attribute = extract_horse(parsed_html)
         if horse_attribute
-          Horse.create!(horse_attribute.merge(:horse_id => entry[:horse_id]))
+          Horse.create!(horse_attribute.merge(:horse_id => horse_id))
           logger.info(:action => 'create', :resource => 'horse', :horse_id => horse_id)
+        end
       end
     end
   end
