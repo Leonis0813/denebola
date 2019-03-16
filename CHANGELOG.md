@@ -1,3 +1,6 @@
+# 2.1.0 (2019/03/16)
+- [ADD] script to extract race info
+
 # 2.0.0 (2019/03/13)
 - [ADD] feature to collect horses
 
