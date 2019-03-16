@@ -15,48 +15,6 @@ logger.formatter = proc do |severity, datetime, progname, message|
   "#{log}\n"
 end
 
-def extract_race_info(html)
-  {}.tap do |feature|
-    race_data = html.xpath('//dl[contains(@class, "racedata")]')
-
-    track, weather, _, start_time, _ = race_data.search('span').text.split('/')
-    feature[:track] = track[0].sub('ダ', 'ダート')
-    feature[:direction] = track[1]
-    feature[:distance] = track.match(/(\d*)m/)[1].to_i
-    feature[:weather] = weather.match(/天候 : (.*)/)[1]
-    feature[:grade] = race_data.search('h1').text.match(/\((.*)\)$/).try(:[], 1)
-    feature[:place] = html.xpath('//ul[contains(@class, "race_place")]').first
-                      .children[1].text.match(/<a.*class="active">(.*?)<\/a>/)[1]
-    feature[:round] = race_data.search('dt').text.strip.match(/^(\d*) R$/)[1].to_i
-
-    race_date = html.xpath('//li[@class="result_link"]').text.match(/(\d*年\d*月\d*日)のレース結果/)[1]
-    race_date = race_date.gsub(/年|月/, '-').sub('日', '')
-    start_time = start_time.match(/発走 : (.*)/)[1]
-    feature[:start_time] = "#{race_date} #{start_time}:00"
-
-    _, *data = race_data.xpath('//table[contains(@class, "race_table")]').search('tr')
-    feature[:entries] = data.map do |entry|
-      attributes = entry.search('td').map(&:text).map(&:strip)
-      horse_link = entry.search('td')[3].first_element_child.attribute('href').value
-      {
-        :age => attributes[4].match(/(\d+)\z/)[1].to_i,
-        :sex => attributes[4].match(/\A(.*)\d+/)[1],
-        :burden_weight => attributes[5].to_f,
-        :number => attributes[2].to_i,
-        :weight => attributes[14].match(/\A(\d+)/).try(:[], 1).to_f,
-        :weight_diff => attributes[14].match(/\((.+)\)$/).try(:[], 1).to_f,
-        :jockey => attributes[6],
-        :order => attributes[0],
-        :horse_id => horse_link.match(/\/horse\/(?<horse_id>\d+)\/?/)[:horse_id]
-      }
-    end
-  end
-end
-
-def extract_horse_info(html)
-  {}
-end
-
 begin
   from = ARGV.find {|arg| arg.start_with?('--from=') }
   from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 7)
@@ -82,26 +40,29 @@ end
     logger.info(:action => 'read', :resource => 'race', :file_path => File.basename(file_path))
 
     parsed_html = Nokogiri::HTML.parse(html)
-    race_info = extract_race_info(parsed_html)
-    next unless race_info
+    race_attribute = extract_race(parsed_html)
+    next unless race_attribute
 
-    race = Race.find_or_create_by!(race_info.except(:entries))
+    race = Race.find_or_create_by!(race_attribute)
     logger.info(:action => 'create', :resource => 'race', :race_id => race.id)
 
-    race_info[:entries].each do |entry|
-      e = race.entries.find_or_create_by!(entry.except(:horse_id))
-      logger.info(:action => 'create', :resource => 'entry', :entry_id => e.id)
+    _, *rows = parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
+    rows.each do |row|
+      extry_attribute = extract_entry(row)
+      entry = race.entries.find_or_create_by!(entry_attribute.except(:horse_id))
+      logger.info(:action => 'create', :resource => 'entry', :entry_id => entry.id)
 
-      unless Horse.exists?(:horse_id => entry[:horse_id])
-        file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{entry[:horse_id]}.html")
+      horse_id = entry_attribute[:horse_id]
+      unless Horse.exists?(:horse_id => horse_id)
+        file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
         html = File.read(file_path) unless File.exists?(file_path)
         logger.info(:action => 'read', :resource => 'horse', :file_path => File.basename(file_path))
 
         parsed_html = Nokogiri::HTML.parse(html)
-        horse_info = extract_horse_info(parsed_html)
-        if horse_info
-          Horse.create!(horse_info.merge(:horse_id => entry[:horse_id]))
-          logger.info(:action => 'create', :resource => 'horse', :horse_id => entry[:horse_id])
+        horse_attribute = extract_horse(parsed_html)
+        if horse_attribute
+          Horse.create!(horse_attribute.merge(:horse_id => entry[:horse_id]))
+          logger.info(:action => 'create', :resource => 'horse', :horse_id => horse_id)
       end
     end
   end
