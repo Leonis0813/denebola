@@ -1,3 +1,6 @@
+# 2.1.1 (2019/03/24)
+- [UPDATE] gems
+
 # 2.1.0 (2019/03/16)
 - [ADD] script to extract race info
 
