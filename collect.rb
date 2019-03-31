@@ -1,9 +1,8 @@
+# coding: utf-8
 require 'logger'
+require 'nokogiri'
 require_relative 'config/initialize'
-require_relative 'db/connect'
 require_relative 'lib/http_client'
-require_relative 'lib/html'
-Dir['models/*'].each {|f| require_relative f }
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 
@@ -35,12 +34,12 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.race_list, "#{date}.txt")
   race_ids = if File.exists?(file_path)
                ids = File.read(file_path).split("\n")
-               logger.info(:action => 'fetch', :resource => 'race_list', :file_path => File.basename(file_path))
+               logger.info(:file_path => File.basename(file_path), :race_ids => ids)
                ids
              else
                res = client.get("#{Settings.url}#{Settings.path.race_list}/#{date}")
-               logger.info(:action => 'fetch', :resource => 'race_list', :uri => res.uri.to_s, :status => res.code)
                ids = res.body.scan(%r[.*/race/(\d+)]).flatten
+               logger.info(:uri => res.uri.to_s, :status => res.code, :race_ids => ids)
                File.open(file_path, 'w') {|out| out.write(ids.join("\n")) }
                ids
              end
@@ -49,26 +48,31 @@ Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
     html = if File.exists?(file_path)
              html = File.read(file_path)
-             logger.info(:action => 'fetch', :resource => 'race', :file_path => File.basename(file_path))
+             logger.info(:resource => 'race', :file_path => File.basename(file_path))
              html
            else
              res = client.get("#{Settings.url}#{Settings.path.race}/#{race_id}")
-             logger.info(:action => 'fetch', :resource => 'race', :uri => res.uri.to_s, :status => res.code)
-             body = res.body.encode("utf-8", "euc-jp", :undef => :replace, :replace => '?')
-             File.open(file_path, 'w') {|out| out.write(body) }
-             body
+             logger.info(:resource => 'race', :uri => res.uri.to_s, :status => res.code)
+             html = res.body.encode('utf-8', 'euc-jp', :undef => :replace, :replace => '?')
+             html.gsub!('&nbsp;', ' ')
+             File.open(file_path, 'w') {|out| out.write(html) }
+             html
            end
 
-    race_info = HTML.parse(html)
-    next unless race_info
+    parsed_html = Nokogiri::HTML.parse(html)
+    _, *entries = parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
 
-    race = Race.find_or_create_by!(race_info.except(:entries))
-    logger.info(:action => 'create', :resource => 'race', :id => race.id)
-    race_info[:entries].each do |entry|
-      e = race.entries.find_or_create_by!(entry.except(:result))
-      logger.info(:action => 'create', :resource => 'entry', :id => e.id)
-      e.result = Result.find_or_create_by!(entry[:result].merge(:race_id => race.id))
-      logger.info(:action => 'create', :resource => 'result', :id => e.result.id)
+    entries.each do |entry|
+      horse_link = entry.search('td')[3].first_element_child.attribute('href').value
+      horse_id = horse_link.match(/\/horse\/(?<horse_id>\d+)\/?/)[:horse_id]
+
+      file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
+      unless File.exists?(file_path)
+        res = client.get("#{Settings.url}#{Settings.path.horse}/#{horse_id}")
+        logger.info(:resource => 'horse', :uri => res.uri.to_s, :status => res.code)
+        html = res.body.encode('utf-8', 'euc-jp', :undef => :replace, :replace => '?')
+        File.open(file_path, 'w') {|out| out.write(html.gsub('&nbsp;', ' ')) }
+      end
     end
   end
 end
