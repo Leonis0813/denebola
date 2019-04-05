@@ -17,6 +17,7 @@ pipeline {
             def version = params.DENEBOLA_VERSION.replaceFirst(/^.+\//, '')
             def recipe = ('app' == params.SCOPE ? 'app' : 'default')
             sh "sudo DENEBOLA_VERSION=${version} chef-client -z -r denebola::${recipe} -E ${env.ENVIRONMENT}"
+          }
         }
       }
     }
