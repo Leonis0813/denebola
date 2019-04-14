@@ -44,8 +44,8 @@ end
     race_attribute = extract_race(parsed_html)
     next unless race_attribute
 
-    race = Race.find_or_create_by!(race_attribute)
-    logger.info(:action => 'create', :resource => 'race', :race_id => race.id)
+    race = Race.find_or_create_by!(race_attribute.merge(:race_id => race_id))
+    logger.info(:action => 'create', :resource => 'race', :race_id => race_id)
 
     _, *rows = parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
     rows.each do |row|
@@ -56,14 +56,16 @@ end
       horse_id = entry_attribute[:horse_id]
       unless Horse.exists?(:horse_id => horse_id)
         file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
-        html = File.read(file_path) unless File.exists?(file_path)
-        logger.info(:action => 'read', :resource => 'horse', :file_path => File.basename(file_path))
+        if File.exists?(file_path)
+          html = File.read(file_path)
+          logger.info(:action => 'read', :resource => 'horse', :file_path => File.basename(file_path))
 
-        parsed_html = Nokogiri::HTML.parse(html)
-        horse_attribute = extract_horse(parsed_html)
-        if horse_attribute
-          Horse.create!(horse_attribute.merge(:horse_id => horse_id))
-          logger.info(:action => 'create', :resource => 'horse', :horse_id => horse_id)
+          parsed_html = Nokogiri::HTML.parse(html)
+          horse_attribute = extract_horse(parsed_html)
+          if horse_attribute
+            Horse.create!(horse_attribute.merge(:horse_id => horse_id))
+            logger.info(:action => 'create', :resource => 'horse', :horse_id => horse_id)
+          end
         end
       end
     end
