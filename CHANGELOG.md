@@ -1,3 +1,6 @@
+# 2.2.0 (2019/04/15)
+- [ADD] race_id attribute to races table
+
 # 2.1.2 (2019/04/11)
 - [UPDATE] gems
 
