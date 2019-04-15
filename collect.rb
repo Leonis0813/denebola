@@ -1,18 +1,10 @@
-# coding: utf-8
-require 'logger'
 require 'nokogiri'
 require_relative 'config/initialize'
 require_relative 'lib/http_client'
+require_relative 'lib/denebola_logger'
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
-
-logger = Logger.new('log/collect.log')
-logger.formatter = proc do |severity, datetime, progname, message|
-  time = datetime.utc.strftime(Settings.logger.time_format)
-  log = "[#{severity}] [#{time}]: #{message}"
-  puts log if ENV['STDOUT'] == 'on'
-  "#{log}\n"
-end
+logger = DenebolaLogger.new(Settings.logger.path.collect)
 
 begin
   from = ARGV.find {|arg| arg.start_with?('--from=') }
