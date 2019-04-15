@@ -1,9 +1,10 @@
+require 'httpclient'
 require 'nokogiri'
 require_relative 'config/initialize'
 require_relative 'lib/denebola_logger'
-require_relative 'lib/http_client'
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
+client = HTTPClient.new
 logger = DenebolaLogger.new(Settings.logger.path.collect)
 
 begin
@@ -15,8 +16,6 @@ rescue Exception => e
   logger.error(e.backtrace.join("\n"))
   raise e
 end
-
-client = HTTPClient.new
 
 Settings.backup_dir.to_h.values.each do |path|
   FileUtils.mkdir_p(File.join(BACKUP_DIR, path))
