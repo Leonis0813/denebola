@@ -43,7 +43,6 @@ end
 
   race_ids.each do |race_id|
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
-
     html = if File.exists?(file_path)
              html = File.read(file_path)
              logger.info(:resource => 'race', :source => 'file', :file_path => File.basename(file_path))
