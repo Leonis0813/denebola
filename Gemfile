@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'rake'
 gem 'activerecord'
-gem 'mysql2'
 gem 'config'
+gem 'httpclient'
+gem 'mysql2'
 gem 'nokogiri'
+gem 'rake'

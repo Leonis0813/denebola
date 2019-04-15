@@ -1,24 +1,16 @@
-# coding: utf-8
-require 'logger'
 require 'nokogiri'
 require_relative 'config/initialize'
 require_relative 'db/connect'
+require_relative 'lib/denebola_logger'
 Dir['extract/*'].each {|f| require_relative f }
 Dir['models/*'].each {|f| require_relative f }
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
-
-logger = Logger.new('log/extract.log')
-logger.formatter = proc do |severity, datetime, progname, message|
-  time = datetime.utc.strftime(Settings.logger.time_format)
-  log = "[#{severity}] [#{time}]: #{message}"
-  puts log if ENV['STDOUT'] == 'on'
-  "#{log}\n"
-end
+logger = DenebolaLogger.new(Settings.logger.path.extract)
 
 begin
   from = ARGV.find {|arg| arg.start_with?('--from=') }
-  from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 7)
+  from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 30)
   to = ARGV.find {|arg| arg.start_with?('--to=') }
   to = to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
 rescue Exception => e
@@ -32,7 +24,7 @@ end
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.race_list, "#{date}.txt")
   next unless File.exists?(file_path)
   race_ids = File.read(file_path).split("\n")
-  logger.info(:action => 'read', :file_path => File.basename(file_path), :ids => race_ids)
+  logger.info(:action => 'read', :file_path => File.basename(file_path), :race_ids => race_ids)
 
   race_ids.each do |race_id|
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
@@ -51,7 +43,7 @@ end
     rows.each do |row|
       entry_attribute = extract_entry(row)
       entry = race.entries.find_or_create_by!(entry_attribute.except(:horse_id))
-      logger.info(:action => 'create', :resource => 'entry', :entry_id => entry.id)
+      logger.info(:action => 'create', :resource => 'entry', :race_id => race.race_id, :entry_id => entry.id)
 
       horse_id = entry_attribute[:horse_id]
       unless Horse.exists?(:horse_id => horse_id)
