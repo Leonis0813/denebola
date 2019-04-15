@@ -1,20 +1,12 @@
-# coding: utf-8
-require 'logger'
 require 'nokogiri'
 require_relative 'config/initialize'
 require_relative 'db/connect'
+require_relative 'lib/denebola_logger'
 Dir['extract/*'].each {|f| require_relative f }
 Dir['models/*'].each {|f| require_relative f }
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
-
-logger = Logger.new('log/extract.log')
-logger.formatter = proc do |severity, datetime, progname, message|
-  time = datetime.utc.strftime(Settings.logger.time_format)
-  log = "[#{severity}] [#{time}]: #{message}"
-  puts log if ENV['STDOUT'] == 'on'
-  "#{log}\n"
-end
+logger = DenebolaLogger.new(Settings.logger.path.extract)
 
 begin
   from = ARGV.find {|arg| arg.start_with?('--from=') }

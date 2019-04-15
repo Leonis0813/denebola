@@ -21,3 +21,4 @@ logger:
   time_format: '%Y/%m/%d %H:%M:%S.%6N'
   path:
     collect: 'log/collect.log'
+    extract: 'log/extract.log'

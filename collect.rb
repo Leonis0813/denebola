@@ -1,7 +1,7 @@
 require 'nokogiri'
 require_relative 'config/initialize'
-require_relative 'lib/http_client'
 require_relative 'lib/denebola_logger'
+require_relative 'lib/http_client'
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 logger = DenebolaLogger.new(Settings.logger.path.collect)
