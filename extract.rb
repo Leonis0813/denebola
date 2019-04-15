@@ -24,7 +24,7 @@ end
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.race_list, "#{date}.txt")
   next unless File.exists?(file_path)
   race_ids = File.read(file_path).split("\n")
-  logger.info(:action => 'read', :file_path => File.basename(file_path), :ids => race_ids)
+  logger.info(:action => 'read', :file_path => File.basename(file_path), :race_ids => race_ids)
 
   race_ids.each do |race_id|
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
@@ -43,7 +43,7 @@ end
     rows.each do |row|
       entry_attribute = extract_entry(row)
       entry = race.entries.find_or_create_by!(entry_attribute.except(:horse_id))
-      logger.info(:action => 'create', :resource => 'entry', :entry_id => entry.id)
+      logger.info(:action => 'create', :resource => 'entry', :race_id => race.race_id, :entry_id => entry.id)
 
       horse_id = entry_attribute[:horse_id]
       unless Horse.exists?(:horse_id => horse_id)

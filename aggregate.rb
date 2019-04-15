@@ -26,7 +26,7 @@ new_features.each do |race_id, entry_id|
 
   Feature.create!(attribute)
 
-  logger.info(attribute)
+  logger.info(attribute.slice(:race_id, :entry_id))
 end
 
 logger.info('Finish Aggregation')
