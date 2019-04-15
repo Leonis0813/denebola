@@ -22,3 +22,4 @@ logger:
   path:
     collect: 'log/collect.log'
     extract: 'log/extract.log'
+    aggregate: 'log/aggregate.log'

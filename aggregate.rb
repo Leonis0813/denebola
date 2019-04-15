@@ -1,16 +1,9 @@
-require 'logger'
 require_relative 'config/initialize'
 require_relative 'db/connect'
+require_relative 'lib/denebola_logger'
 Dir['models/*'].each {|f| require_relative f }
 
-logger = Logger.new('log/aggregate.log')
-logger.formatter = proc do |severity, datetime, progname, message|
-  time = datetime.utc.strftime(Settings.logger.time_format)
-  log = "[#{severity}] [#{time}]: #{message}"
-  puts log if ENV['STDOUT'] == 'on'
-  "#{log}\n"
-end
-
+logger = Logger.new(Settings.logger.path.aggregate)
 logger.info('Start Aggregation')
 
 new_features = Entry.pluck(:race_id, :id).uniq - Feature.pluck(:race_id, :entry_id).uniq
