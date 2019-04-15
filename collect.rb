@@ -18,7 +18,13 @@ end
 
 client = HTTPClient.new
 
-Settings.backup_dir.to_h.values.each {|path| FileUtils.mkdir_p(File.join(BACKUP_DIR, path)) }
+Settings.backup_dir.to_h.values.each do |path|
+  FileUtils.mkdir_p(File.join(BACKUP_DIR, path))
+  removed_files = Dir[File.join(BACKUP_DIR, path, '*')].select do |file_path|
+    File.zero?(file_path)
+  end
+  FileUtils.rm(removed_files) if removed_files
+end
 
 (from..to).each do |date|
   date = date.strftime('%Y%m%d')
