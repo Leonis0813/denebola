@@ -10,7 +10,7 @@ logger = DenebolaLogger.new(Settings.logger.path.extract)
 
 begin
   from = ARGV.find {|arg| arg.start_with?('--from=') }
-  from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 7)
+  from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 30)
   to = ARGV.find {|arg| arg.start_with?('--to=') }
   to = to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
 rescue Exception => e
