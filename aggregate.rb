@@ -19,6 +19,8 @@ new_features.each do |race_id, entry_id|
   entry = Entry.find(entry_id)
   attribute.merge!(entry.attributes.slice(*Feature.attribute_names))
 
+  attribute.merge!(entry.horse.attributes.slice(*Feature.attribute_names))
+
   weight_per = if entry.burden_weight.to_i > 0 and entry.weight.to_i > 0
                  entry.burden_weight / entry.weight
                end
