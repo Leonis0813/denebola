@@ -1,3 +1,7 @@
+# 2.3.0 (2019/04/21)
+- [ADD] new horse attributes
+- [ADD] horse features to features table
+
 # 2.2.0 (2019/04/15)
 - [ADD] race_id attribute to races table
 - [REFACTOR] logger
