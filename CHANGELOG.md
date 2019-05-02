@@ -1,3 +1,6 @@
+# 2.3.1 (2019/05/02)
+- [UPDATE] ruby version to 2.4.4
+
 # 2.3.0 (2019/04/21)
 - [ADD] new horse attributes
 - [ADD] horse features to features table
