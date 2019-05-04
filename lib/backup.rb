@@ -1,7 +1,7 @@
 require 'fileutils'
 
-SRC_DIR = '/mnt/sakura'
-DST_DIR = '/mnt/backup/alterf'
+SRC_DIR = '/mnt/sakura'.freeze
+DST_DIR = '/mnt/backup/alterf'.freeze
 
 %w[ race_list races horses ].each do |directory|
   src_dir = File.join(SRC_DIR, directory)
