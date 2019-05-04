@@ -11,7 +11,7 @@ def extract_race(html)
     attribute[:weather] = weather.match(/天候 : (.*)/)[1]
     attribute[:grade] = race_data.search('h1').text.match(/\((.*)\)$/).try(:[], 1)
     attribute[:place] = html.xpath('//ul[contains(@class, "race_place")]').first
-                      .children[1].text.match(%r{<a.*class="active">(.*?)</a>})[1]
+                            .children[1].text.match(%r{<a.*class="active">(.*?)</a>})[1]
     attribute[:round] = race_data.search('dt').text.strip.match(/^(\d*) R$/)[1].to_i
 
     race_date = html.xpath('//li[@class="result_link"]').text.match(/(\d*年\d*月\d*日)のレース結果/)[1]
