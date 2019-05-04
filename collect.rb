@@ -63,7 +63,7 @@ end
 
     entries.each do |entry|
       horse_link = entry.search('td')[3].first_element_child.attribute('href').value
-      horse_id = horse_link.match(/\/horse\/(?<horse_id>\d+)\/?/)[:horse_id]
+      horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
 
       file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
       unless File.exists?(file_path)
