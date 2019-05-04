@@ -23,12 +23,14 @@ end
 
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.race_list, "#{date}.txt")
   next unless File.exists?(file_path)
+
   race_ids = File.read(file_path).split("\n")
   logger.info(action: 'read', file_path: File.basename(file_path), race_ids: race_ids)
 
   race_ids.each do |race_id|
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
     next unless File.exists?(file_path)
+
     html = File.read(file_path)
     logger.info(action: 'read', resource: 'race', file_path: File.basename(file_path))
 
@@ -47,6 +49,7 @@ end
       horse_id = entry_attribute[:horse_id]
       file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
       next unless File.exists?(file_path)
+
       html = File.read(file_path)
       logger.info(action: 'read', resource: 'horse', file_path: File.basename(file_path))
 
