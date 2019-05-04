@@ -11,7 +11,7 @@ new_features = Entry.pluck(:race_id, :id).uniq - Feature.pluck(:race_id, :entry_
 logger.info("# of Updated Features = #{new_features.size}")
 
 new_features.each do |race_id, entry_id|
-  attribute = {:race_id => race_id, :entry_id => entry_id}
+  attribute = {race_id: race_id, entry_id: entry_id}
 
   race = Race.find(race_id)
   attribute.merge!(race.attributes.slice(*Feature.attribute_names)).symbolize_keys!
@@ -25,11 +25,11 @@ new_features.each do |race_id, entry_id|
   weight_per = if entry.burden_weight.to_i > 0 and entry.weight.to_i > 0
                  entry.burden_weight / entry.weight
                end
-  attribute.merge!(:month => race.start_time.month, :weight_per => weight_per)
+  attribute.merge!(month: race.start_time.month, weight_per: weight_per)
 
   feature = Feature.create!(attribute.except(:id))
 
-  logger.info(:action => 'create', :resource => 'feature', :feature_id => feature.id)
+  logger.info(action: 'create', resource: 'feature', feature_id: feature.id)
 end
 
 logger.info('Finish Aggregation')
