@@ -37,7 +37,7 @@ end
 
     parsed_html = Nokogiri::HTML.parse(html)
     _, *entries =
-       parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
+      parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
 
     entries.each do |entry|
       horse_link = entry.search('td')[3].first_element_child.attribute('href').value
