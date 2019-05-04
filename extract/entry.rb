@@ -12,6 +12,6 @@ def extract_entry(html)
     attribute[:weight_diff] = attributes[14].match(/\((.+)\)$/).try(:[], 1).to_f
     attribute[:jockey] = attributes[6]
     attribute[:order] = attributes[0]
-    attribute[:horse_id] = horse_link.match(/\/horse\/(?<horse_id>\d+)\/?/)[:horse_id]
+    attribute[:horse_id] = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
   end
 end
