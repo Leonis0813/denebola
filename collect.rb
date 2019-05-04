@@ -29,7 +29,7 @@ end
   date = date.strftime('%Y%m%d')
 
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.race_list, "#{date}.txt")
-  race_ids = if File.exists?(file_path)
+  race_ids = if File.exist?(file_path)
                ids_from_file = File.read(file_path).split("\n")
                logger.info(source: 'file', file_path: File.basename(file_path), race_ids: ids_from_file)
                ids_from_file
@@ -44,7 +44,7 @@ end
 
   race_ids.each do |race_id|
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
-    html = if File.exists?(file_path)
+    html = if File.exist?(file_path)
              html_from_file = File.read(file_path)
              logger.info(resource: 'race', source: 'file', file_path: File.basename(file_path))
              html_from_file
@@ -66,7 +66,7 @@ end
       horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
 
       file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
-      next if File.exists?(file_path)
+      next if File.exist?(file_path)
 
       uri = "#{Settings.url}#{Settings.path.horse}/#{horse_id}"
       res = client.get(uri)
