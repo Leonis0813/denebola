@@ -44,7 +44,12 @@ end
     rows.each do |row|
       entry_attribute = extract_entry(row) rescue next
       entry = race.entries.find_or_create_by!(entry_attribute.except(:horse_id))
-      logger.info(action: 'create', resource: 'entry', race_id: race.race_id, entry_id: entry.id)
+      logger.info(
+        action: 'create',
+        resource: 'entry',
+        race_id: race.race_id,
+        entry_id: entry.id,
+      )
 
       horse_id = entry_attribute[:horse_id]
       file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")

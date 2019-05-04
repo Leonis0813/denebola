@@ -13,5 +13,7 @@ DST_DIR = '/mnt/backup/alterf'.freeze
   src_files = Dir[File.join(src_dir, '*')].map {|file_path| File.basename(file_path) }
   dst_files = Dir[File.join(dst_dir, '*')].map {|file_path| File.basename(file_path) }
 
-  (src_files - dst_files).each {|file_name| FileUtils.cp(File.join(src_dir, file_name), dst_dir) }
+  (src_files - dst_files).each do |file_name|
+    FileUtils.cp(File.join(src_dir, file_name), dst_dir)
+  end
 end

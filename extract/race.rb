@@ -14,8 +14,9 @@ def extract_race(html)
                             .children[1].text.match(%r{<a.*class="active">(.*?)</a>})[1]
     attribute[:round] = race_data.search('dt').text.strip.match(/^(\d*) R$/)[1].to_i
 
-    race_date = html.xpath('//li[@class="result_link"]').text.match(/(\d*年\d*月\d*日)のレース結果/)[1]
-    race_date = race_date.gsub(/年|月/, '-').sub('日', '')
+    race_date = html.xpath('//li[@class="result_link"]').text
+                    .match(/(\d*年\d*月\d*日)のレース結果/)[1]
+                    .gsub(/年|月/, '-').sub('日', '')
     start_time = start_time.match(/発走 : (.*)/)[1]
     attribute[:start_time] = "#{race_date} #{start_time}:00"
   end
