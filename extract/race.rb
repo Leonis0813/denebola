@@ -4,7 +4,7 @@ def extract_race(html)
   {}.tap do |attribute|
     race_data = html.xpath('//dl[contains(@class, "racedata")]')
 
-    track, weather, _, start_time, _ = race_data.search('span').text.split('/')
+    track, weather, _, start_time, = race_data.search('span').text.split('/')
     attribute[:track] = track[0].sub('ダ', 'ダート')
     attribute[:direction] = track[1]
     attribute[:distance] = track.match(/(\d*)m/)[1].to_i
