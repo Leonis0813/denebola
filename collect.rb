@@ -36,7 +36,7 @@ end
              else
                uri = "#{Settings.url}#{Settings.path.race_list}/#{date}"
                res = client.get(uri)
-               ids_from_remote = res.body.scan(%r[.*/race/(\d+)]).flatten
+               ids_from_remote = res.body.scan(%r{.*/race/(\d+)}).flatten
                logger.info(source: 'web', uri: uri, status: res.code, race_ids: ids_from_remote)
                File.open(file_path, 'w') {|out| out.write(ids_from_remote.join("\n")) }
                ids_from_remote
