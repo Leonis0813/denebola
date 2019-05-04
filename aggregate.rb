@@ -22,7 +22,7 @@ new_features.each do |race_id, entry_id|
   horse = Horse.find(entry.horse_id)
   attribute.merge!(horse.attributes.slice(*Feature.attribute_names)).symbolize_keys!
 
-  weight_per = if entry.burden_weight.to_i > 0 and entry.weight.to_i > 0
+  weight_per = if entry.burden_weight.to_i.positive? and entry.weight.to_i.positive?
                  entry.burden_weight / entry.weight
                end
   attribute.merge!(month: race.start_time.month, weight_per: weight_per)
