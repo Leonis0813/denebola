@@ -66,13 +66,13 @@ end
       horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
 
       file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
-      unless File.exists?(file_path)
-        uri = "#{Settings.url}#{Settings.path.horse}/#{horse_id}"
-        res = client.get(uri)
-        logger.info(resource: 'horse', source: 'web', uri: uri, status: res.code)
-        html = res.body.encode('utf-8', 'euc-jp', undef: :replace, replace: '?')
-        File.open(file_path, 'w') {|out| out.write(html.gsub('&nbsp;', ' ')) }
-      end
+      next if File.exists?(file_path)
+
+      uri = "#{Settings.url}#{Settings.path.horse}/#{horse_id}"
+      res = client.get(uri)
+      logger.info(resource: 'horse', source: 'web', uri: uri, status: res.code)
+      html = res.body.encode('utf-8', 'euc-jp', undef: :replace, replace: '?')
+      File.open(file_path, 'w') {|out| out.write(html.gsub('&nbsp;', ' ')) }
     end
   end
 end
