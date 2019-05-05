@@ -11,17 +11,24 @@ namespace :db do
     ActiveRecord::Tasks::DatabaseTasks.create_current(ENV['RAILS_ENV'])
   end
 
+  desc 'Migrate database'
+  task migrate: :environment do
+    ActiveRecord::Base.establish_connection(ENV['RAILS_ENV'].to_sym)
+    ActiveRecord::MigrationContext.new('db/migrate')
+                                  .migrate(ENV['VERSION'] ? ENV['VERSION'].to_i : nil)
+  end
+
   desc 'Drop and create database'
   task reset: :environment do
     ActiveRecord::Tasks::DatabaseTasks.drop_current(ENV['RAILS_ENV'])
     ActiveRecord::Tasks::DatabaseTasks.create_current(ENV['RAILS_ENV'])
   end
 
-  desc 'Migrate database'
-  task migrate: :environment do
+  desc 'Rolls the schema back to the previous version (specify steps w/ STEP=n)'
+  task rollback: :environment do
     ActiveRecord::Base.establish_connection(ENV['RAILS_ENV'].to_sym)
     ActiveRecord::MigrationContext.new('db/migrate')
-                                  .migrate(ENV['VERSION'] ? ENV['VERSION'].to_i : nil)
+                                  .rollback(ENV['STEP'] ? ENV['STEP'].to_i : 1)
   end
 
   task :environment do
