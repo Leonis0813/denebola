@@ -1,7 +1,7 @@
 require 'active_record'
-require 'logger'
 require 'mysql2'
 require_relative 'config/initialize'
+require_relative 'lib/denebola_logger'
 
 task default: :migrate
 
@@ -36,6 +36,6 @@ namespace :db do
     settings = Settings.mysql.map {|key, value| [key.to_s, value] }.to_h
     ActiveRecord::Tasks::DatabaseTasks.database_configuration = settings
     ActiveRecord::Base.configurations = {ENV['RAILS_ENV'] => settings}
-    ActiveRecord::Base.logger = Logger.new('log/database.log')
+    ActiveRecord::Base.logger = DenebolaLogger.new('log/database.log')
   end
 end
