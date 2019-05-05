@@ -6,6 +6,11 @@ require_relative 'config/initialize'
 task default: :migrate
 
 namespace :db do
+  desc 'Create the database'
+  task create: :environment do
+    ActiveRecord::Tasks::DatabaseTasks.create_current(ENV['RAILS_ENV'])
+  end
+
   desc 'Drop and create database'
   task reset: :environment do
     ActiveRecord::Tasks::DatabaseTasks.drop_current(ENV['RAILS_ENV'])
