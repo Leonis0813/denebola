@@ -10,7 +10,6 @@ def extract_horse(html)
     unless second_last_race_order == 0
       attribute[:second_last_race_order] = second_last_race_order
     end
-    p last_race_final_600m_time
     unless last_race_final_600m_time == 0.0
       attribute[:last_race_final_600m_time] = last_race_final_600m_time
     end
