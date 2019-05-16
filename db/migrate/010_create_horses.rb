@@ -2,6 +2,7 @@ class CreateHorses < ActiveRecord::Migration[4.2]
   def change
     create_table :horses do |t|
       t.string :horse_id, null: false
+
       t.timestamps null: false
     end
 
