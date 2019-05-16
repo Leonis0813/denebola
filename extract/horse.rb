@@ -1,17 +1,27 @@
+# coding: utf-8
+
 def extract_horse(html)
   {}.tap do |attribute|
-    table = html.xpath('//table[contains(@class, "db_h_race_results")]')
-    last_race, second_last_race, * = table.search('tbody').children.search('tr')
-    last_race_order = last_race&.children&.search('td')[11].text.to_i
-    last_race_final_600m_time = last_race&.children&.search('td')[22].text.to_f
-    second_last_race_order = second_last_race&.children&.search('td')[11].text.to_i
+    table = html.xpath('//table[contains(@class, "tekisei_table")]/tr')[2]
+    bars = table.children.search('img').map do |img|
+      [
+        img.attribute('src').value.match(%r{([^/_]*).png})[1],
+        img.attribute('width').value.to_i,
+      ]
+    end
+    bars.delete_if {|bar| bar.first == 'centerline' }
+    values = bars.map {|bar| bar.last }
+    color = bars.first.first
+    rate = values[0, 2].inject(:+).to_f / values.inject(:+).to_f
 
-    attribute[:last_race_order] = last_race_order unless last_race_order == 0
-    unless second_last_race_order == 0
-      attribute[:second_last_race_order] = second_last_race_order
-    end
-    unless last_race_final_600m_time == 0.0
-      attribute[:last_race_final_600m_time] = last_race_final_600m_time
-    end
+    attribute[:running_style] = if rate <= 0.25
+                                  '追込'
+                                elsif rate <= 0.5
+                                  '先行'
+                                elsif rate <= 0.75
+                                  '差し'
+                                else
+                                  '逃げ'
+                                end
   end
 end
