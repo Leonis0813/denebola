@@ -32,13 +32,13 @@ ActiveRecord::Schema.define(version: 20) do
 
   create_table "features", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
-    t.float "average_prize_money"
+    t.float "average_prize_money", null: false
     t.integer "blank"
     t.float "burden_weight", null: false
     t.string "direction", null: false
     t.integer "distance", null: false
-    t.float "distance_diff"
-    t.integer "entry_times"
+    t.float "distance_diff", null: false
+    t.integer "entry_times", null: false
     t.string "grade"
     t.string "jockey"
     t.float "last_race_final_600m_time"
@@ -49,7 +49,7 @@ ActiveRecord::Schema.define(version: 20) do
     t.string "place", null: false
     t.float "rate_within_third"
     t.integer "round", null: false
-    t.string "running_style"
+    t.string "running_style", null: false
     t.integer "second_last_race_order"
     t.string "sex", null: false
     t.string "track", null: false
@@ -57,12 +57,9 @@ ActiveRecord::Schema.define(version: 20) do
     t.float "weight"
     t.float "weight_diff"
     t.float "weight_per"
-    t.integer "win_times"
-    t.integer "entry_id"
-    t.integer "race_id"
+    t.integer "win_times", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["race_id", "entry_id"], name: "index_features_on_race_id_and_entry_id", unique: true
   end
 
   create_table "horses", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
