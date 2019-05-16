@@ -63,7 +63,7 @@ end
       horse = Horse.find_or_create_by!(horse_attribute.merge(horse_id: horse_id))
       logger.info(action: 'create', resource: 'horse', horse_id: horse_id)
 
-      horse.entries << entry
+      horse.results << entry
     end
   end
 end

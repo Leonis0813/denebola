@@ -1,3 +1,3 @@
 class Horse < ActiveRecord::Base
-  has_many :entries
+  has_many :results, class_name: 'Entry'
 end
