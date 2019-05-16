@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 20) do
     t.float "distance_diff", null: false
     t.integer "entry_times", null: false
     t.string "grade"
+    t.string "horse_id", null: false
     t.string "jockey"
     t.float "last_race_final_600m_time"
     t.integer "last_race_order"
@@ -47,6 +48,7 @@ ActiveRecord::Schema.define(version: 20) do
     t.integer "number", null: false
     t.string "order", null: false
     t.string "place", null: false
+    t.string "race_id", null: false
     t.float "rate_within_third"
     t.integer "round", null: false
     t.string "running_style", null: false

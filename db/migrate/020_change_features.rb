@@ -8,8 +8,11 @@ class ChangeFeatures < ActiveRecord::Migration[4.2]
       t.float :rate_within_third, after: :place
       t.string :running_style, null: false, after: :round
       t.integer :win_times, null: false, after: :weight_per
+      t.remove_index %i[race_id entry_id]
       t.remove :entry_id
       t.remove :race_id
+      t.string :horse_id, null: false, after: :grade
+      t.string :race_id, null: false, after: :place
     end
   end
 end
