@@ -31,6 +31,15 @@ namespace :db do
                                   .rollback(ENV['STEP'] ? ENV['STEP'].to_i : 1)
   end
 
+  desc 'Create a db/schema.rb'
+  task schema: :environment do
+    ActiveRecord::Base.establish_connection(ENV['RAILS_ENV'].to_sym)
+    require 'active_record/schema_dumper'
+    File.open('db/schema.rb', 'w:utf-8') do |file|
+      ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+    end
+  end
+
   task :environment do
     ENV['RAILS_ENV'] ||= 'development'
     settings = Settings.mysql.map {|key, value| [key.to_s, value] }.to_h
@@ -38,4 +47,8 @@ namespace :db do
     ActiveRecord::Base.configurations = {ENV['RAILS_ENV'] => settings}
     ActiveRecord::Base.logger = DenebolaLogger.new('log/database.log')
   end
+end
+
+Rake::Task['db:migrate'].enhance do
+  Rake::Task['db:schema'].invoke
 end

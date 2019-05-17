@@ -1,4 +1,4 @@
 class Entry < ActiveRecord::Base
   belongs_to :race
-  has_one :horse
+  belongs_to :horse
 end

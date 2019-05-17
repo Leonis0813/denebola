@@ -1,11 +1,26 @@
+# coding: utf-8
+
 def extract_horse(html)
   {}.tap do |attribute|
-    table = html.xpath('//table[contains(@class, "db_h_race_results")]')
-    results = table.search('tbody').children.search('tr').children.search('td')
-    last_race, second_last_race, * = results.map(&:text).map {|text| text.delete("\n") }
+    table = html.xpath('//table[contains(@class, "tekisei_table")]/tr')[2]
+    bars = table.children.search('img').map do |img|
+      [
+        img.attribute('src').value.match(%r{([^/_]*).png})[1],
+        img.attribute('width').value.to_i,
+      ]
+    end
+    bars.delete_if {|bar| bar.first == 'centerline' }
+    values = bars.map(&:last)
+    rate = values[0, 2].inject(:+).to_f / values.inject(:+).to_f
 
-    attribute[:last_race_order] = last_race[11] if last_race
-    attribute[:second_last_race_order] = second_last_race[11] if second_last_race
-    attribute[:last_race_final_600m_time] = last_race[22] if last_race
+    attribute[:running_style] = if rate <= 0.25
+                                  '追込'
+                                elsif rate <= 0.5
+                                  '先行'
+                                elsif rate <= 0.75
+                                  '差し'
+                                else
+                                  '逃げ'
+                                end
   end
 end

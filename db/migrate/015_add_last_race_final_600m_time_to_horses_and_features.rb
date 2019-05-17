@@ -3,10 +3,10 @@ class AddLastRaceFinal600mTimeToHorsesAndFeatures < ActiveRecord::Migration[4.2]
     add_column :horses,
                :last_race_final_600m_time,
                :float,
-               after: :second_last_race_order
+               after: :id
     add_column :features,
                :last_race_final_600m_time,
                :float,
-               after: :second_last_race_order
+               after: :jockey
   end
 end
