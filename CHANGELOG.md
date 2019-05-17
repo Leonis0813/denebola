@@ -1,3 +1,17 @@
+# 2.4.0 (2019/05/17)
+- [ADD] new entry and horse attributes
+- [ADD] the following new features
+  - average_prize_money
+  - blank
+  - distance_diff
+  - entry_times
+  - last_race_final_600m_time
+  - last_race_order
+  - rate_within_third
+  - running_style
+  - second_last_race_order
+  - win_times
+
 # 2.3.2 (2019/05/04)
 - [FIX] coding style
 - [UPDATE] gems
