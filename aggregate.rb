@@ -29,25 +29,17 @@ new_features.each do |race_id, horse_id|
   next unless entry
 
   results = horse.results
-  average_prize_money = results.map(&:prize_money).inject(:+) / results.size.to_f
+  entry_times = results.size
+  average_prize_money = results.map(&:prize_money).inject(:+) / entry_times.to_f
 
   blank = race.start_time - horse.results.second.race.start_time if horse.results.second
 
   sum_distance = horse.results.map {|result| result.race.distance }.inject(:+)
-  average_distance = sum_distance / horse.results.size.to_f
+  average_distance = sum_distance / entry_times.to_f
   distance_diff = (race.distance - average_distance).abs / average_distance
 
-  entry_times = results.size
-
-  last_race_final_600m_time = results.second&.final_600m_time
-
-  last_race_order = results.second&.order&.to_i
-
-  month = race.start_time.month
-
-  rate_within_third = results.first(3).select {|result| result.order.to_i <= 3 }.size / 3.0
-
-  second_last_race_order = results.third&.order&.to_i
+  within_third_times = results.first(3).select {|result| result.order.to_i <= 3 }.size
+  rate_within_third = within_third_times / 3.0
 
   weight_per = if entry.burden_weight.to_i.positive? and entry.weight.to_i.positive?
                  entry.burden_weight / entry.weight
@@ -60,11 +52,11 @@ new_features.each do |race_id, horse_id|
     blank: blank,
     distance_diff: distance_diff,
     entry_times: entry_times,
-    last_race_final_600m_time: last_race_final_600m_time,
-    last_race_order: last_race_order,
+    last_race_final_600m_time: results.second&.final_600m_time,
+    last_race_order: results.second&.order&.to_i,
     month: race.start_time.month,
     rate_within_third: rate_within_third,
-    second_last_race_order: second_last_race_order,
+    second_last_race_order: results.third&.order&.to_i,
     weight_per: weight_per,
     win_times: win_times,
   )

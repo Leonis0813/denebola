@@ -10,8 +10,7 @@ def extract_horse(html)
       ]
     end
     bars.delete_if {|bar| bar.first == 'centerline' }
-    values = bars.map {|bar| bar.last }
-    color = bars.first.first
+    values = bars.map(&:last)
     rate = values[0, 2].inject(:+).to_f / values.inject(:+).to_f
 
     attribute[:running_style] = if rate <= 0.25
