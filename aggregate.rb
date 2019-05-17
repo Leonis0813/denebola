@@ -6,27 +6,68 @@ Dir['models/*'].each {|f| require_relative f }
 logger = DenebolaLogger.new(Settings.logger.path.aggregate)
 logger.info('Start Aggregation')
 
-new_features = Entry.pluck(:race_id, :id).uniq - Feature.pluck(:race_id, :entry_id).uniq
+entries = Entry.joins(:race).joins(:horse).pluck('races.race_id', 'horses.horse_id').uniq
+features = Feature.pluck(:race_id, :horse_id).uniq
+new_features = entries - features
 
 logger.info("# of Updated Features = #{new_features.size}")
 
-new_features.each do |race_id, entry_id|
-  attribute = {race_id: race_id, entry_id: entry_id}
+new_features.each do |race_id, horse_id|
+  attribute = {race_id: race_id, horse_id: horse_id}
+  feature_attributes = Feature.attribute_names - %w[horse_id race_id]
 
-  race = Race.find(race_id)
-  attribute.merge!(race.attributes.slice(*Feature.attribute_names)).symbolize_keys!
+  race = Race.find_by(race_id: race_id)
+  attribute.merge!(race.attributes.slice(*feature_attributes)).symbolize_keys!
+  next unless race
 
-  entry = Entry.find(entry_id)
-  attribute.merge!(entry.attributes.slice(*Feature.attribute_names)).symbolize_keys!
-  next unless entry.horse_id
+  horse = Horse.find_by(horse_id: horse_id)
+  attribute.merge!(horse.attributes.slice(*feature_attributes)).symbolize_keys!
+  next unless horse
 
-  horse = Horse.find(entry.horse_id)
-  attribute.merge!(horse.attributes.slice(*Feature.attribute_names)).symbolize_keys!
+  entry = Entry.find_by(race_id: race.id, horse_id: horse.id)
+  attribute.merge!(entry.attributes.slice(*feature_attributes)).symbolize_keys!
+  next unless entry
+
+  results = horse.results
+  average_prize_money = results.map(&:prize_money).inject(:+) / results.size.to_f
+
+  blank = race.start_time - horse.results.second.race.start_time if horse.results.second
+
+  sum_distance = horse.results.map {|result| result.race.distance }.inject(:+)
+  average_distance = sum_distance / horse.results.size.to_f
+  distance_diff = (race.distance - average_distance).abs / average_distance
+
+  entry_times = results.size
+
+  last_race_final_600m_time = results.second&.final_600m_time
+
+  last_race_order = results.second&.order&.to_i
+
+  month = race.start_time.month
+
+  rate_within_third = results.first(3).select {|result| result.order.to_i <= 3 }.size / 3.0
+
+  second_last_race_order = results.third&.order&.to_i
 
   weight_per = if entry.burden_weight.to_i.positive? and entry.weight.to_i.positive?
                  entry.burden_weight / entry.weight
                end
-  attribute.merge!(month: race.start_time.month, weight_per: weight_per)
+
+  win_times = results.select {|result| result.order.to_i == 1 }.size
+
+  attribute.merge!(
+    average_prize_money: average_prize_money,
+    blank: blank,
+    distance_diff: distance_diff,
+    entry_times: entry_times,
+    last_race_final_600m_time: last_race_final_600m_time,
+    last_race_order: last_race_order,
+    month: race.start_time.month,
+    rate_within_third: rate_within_third,
+    second_last_race_order: second_last_race_order,
+    weight_per: weight_per,
+    win_times: win_times,
+  )
 
   feature = Feature.create!(attribute.except(:id))
 
