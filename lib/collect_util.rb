@@ -32,7 +32,8 @@ def get_race_html(race_html_file, race_id)
     uri = "#{Settings.url}#{Settings.path.race}/#{race_id}"
     res = HTTPClient.new.get(uri)
     LOGGER.info(resource: 'race', souroce: 'web', uri: uri, status: res.code)
-    html_from_remote = res.body.encode('utf-8', 'euc-jp', undef: :replace, replace: '?')
+    options = {invalid: :replace, undef: :replace, replace: '?'}
+    html_from_remote = res.body.encode('utf-8', 'euc-jp', options)
     html_from_remote.gsub!('&nbsp;', ' ')
     File.open(race_html_file, 'w') {|out| out.write(html_from_remote) }
     html_from_remote
@@ -45,6 +46,7 @@ def get_horse_html(horse_html_file, horse_id)
   uri = "#{Settings.url}#{Settings.path.horse}/#{horse_id}"
   res = HTTPClient.new.get(uri)
   LOGGER.info(resource: 'horse', source: 'web', uri: uri, status: res.code)
-  html = res.body.encode('utf-8', 'euc-jp', undef: :replace, replace: '?')
+  options = {invalid: :replace, undef: :replace, replace: '?'}
+  html = res.body.encode('utf-8', 'euc-jp', options)
   File.open(horse_html_file, 'w') {|out| out.write(html.gsub('&nbsp;', ' ')) }
 end

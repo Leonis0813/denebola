@@ -1,3 +1,6 @@
+# 2.4.1 (2019/05/18)
+- [FIX] encoding error for race and horse
+
 # 2.4.0 (2019/05/17)
 - [ADD] new entry and horse attributes
 - [ADD] the following new features
