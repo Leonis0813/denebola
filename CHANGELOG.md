@@ -11,6 +11,7 @@
   - running_style
   - second_last_race_order
   - win_times
+- [UPDATE] gems
 
 # 2.3.2 (2019/05/04)
 - [FIX] coding style
