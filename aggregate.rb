@@ -18,6 +18,7 @@ new_features.each do |race_id, horse_id|
 
   race = Race.find_by(race_id: race_id)
   attribute.merge!(race.attributes.slice(*feature_attributes)).symbolize_keys!
+  attribute.except!(:grade) if race.grade.nil?
   next unless race
 
   horse = Horse.find_by(horse_id: horse_id)
