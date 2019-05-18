@@ -59,9 +59,10 @@ new_features.each do |race_id, horse_id|
     second_last_race_order: results.third&.order&.to_i,
     weight_per: weight_per,
     win_times: win_times,
+    won: entry.order == '1',
   )
 
-  feature = Feature.create!(attribute.except(:id))
+  feature = Feature.create!(attribute.except(:id, :order))
 
   logger.info(action: 'create', resource: 'feature', feature_id: feature.id)
 end
