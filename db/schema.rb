@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20) do
+ActiveRecord::Schema.define(version: 21) do
 
   create_table "entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
@@ -39,14 +39,13 @@ ActiveRecord::Schema.define(version: 20) do
     t.integer "distance", null: false
     t.float "distance_diff", null: false
     t.integer "entry_times", null: false
-    t.string "grade"
+    t.string "grade", default: "N", null: false
     t.string "horse_id", null: false
     t.string "jockey"
     t.float "last_race_final_600m_time"
     t.integer "last_race_order"
     t.integer "month", null: false
     t.integer "number", null: false
-    t.string "order", null: false
     t.string "place", null: false
     t.string "race_id", null: false
     t.float "rate_within_third"
@@ -60,6 +59,7 @@ ActiveRecord::Schema.define(version: 20) do
     t.float "weight_diff"
     t.float "weight_per"
     t.integer "win_times", null: false
+    t.boolean "won", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
