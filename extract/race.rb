@@ -10,9 +10,9 @@ def extract_race(html)
 
     attribute.merge!(
       track: track[0].sub('ダ', 'ダート'),
-      direction: track[1],
+      direction: track[1] == '芝' ? nil : track[1],
       distance: track.match(/(\d*)m/)[1].to_i,
-      weather: weather.match(/天候 : (.*)/)[1],
+      weather: weather.match(/天候 : (.*)/)[1].strip,
       grade: race_data.search('h1').text.match(/\(([^\(\)]*)\)$/).try(:[], 1),
       place: html.xpath('//ul[contains(@class, "race_place")]').first
                  .children[1].text.match(%r{<a.*class="active">(.*?)</a>})[1],

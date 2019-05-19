@@ -1,3 +1,5 @@
+%w[race entry horse].each {|f| require_relative f }
+
 class Feature < ActiveRecord::Base
   validates :age, :average_prize_money, :burden_weight, :direction, :distance,
             :distance_diff, :entry_times, :horse_id, :month, :number, :place, :race_id,
