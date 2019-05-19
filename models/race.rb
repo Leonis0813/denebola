@@ -10,7 +10,12 @@ class Race < ActiveRecord::Base
               greater_than: 0,
               message: 'invalid',
             }
-  validates :grade, inclusion: {in: %w[G1 G2 G3], message: 'invalid'}, allow_nil: true
+  validates :grade,
+            inclusion: {
+              in: %w[G1 G2 G3 J.G1 J.G2 J.G3 L OP],
+              message: 'invalid',
+            },
+            allow_nil: true
   validates :place,
             inclusion: {
               in: %w[中京 中山 京都 函館 小倉 新潟 札幌 東京 福島 阪神],
