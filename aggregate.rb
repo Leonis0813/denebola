@@ -9,7 +9,7 @@ def extra_attribute(race, entry, horse)
   blank = race.start_time - horse.results.second.race.start_time if horse.results.second
 
   sum_distance = horse.results.map {|result| result.race.distance }.inject(:+)
-  average_distance = sum_distance / entry_times.to_f
+  average_distance = sum_distance / horse.entry_times.to_f
   distance_diff = (race.distance - average_distance).abs / average_distance
 
   {
