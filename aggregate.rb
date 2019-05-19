@@ -10,7 +10,7 @@ def extra_attribute(race, entry, horse)
   results_before = horse.results_before(entry_time)
 
   blank = if results_before.second
-            entry_time.to_date - results_before.second.race.start_time.to_date
+            (entry_time.to_date - results_before.second.race.start_time.to_date).to_i
           end
 
   sum_distance = results_before.map {|result| result.race.distance }.inject(:+)
@@ -49,7 +49,6 @@ new_features.each do |race_id, horse_id|
   next unless race
 
   attribute.merge!(race.attributes.slice(*feature_attributes)).symbolize_keys!
-  attribute.except!(:grade) if race.grade.nil?
 
   horse = Horse.find_by(horse_id: horse_id)
   next unless horse

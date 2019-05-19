@@ -35,7 +35,7 @@ ActiveRecord::Schema.define(version: 24) do
     t.float "average_prize_money", null: false
     t.integer "blank"
     t.float "burden_weight", null: false
-    t.string "direction", null: false
+    t.string "direction"
     t.integer "distance", null: false
     t.float "distance_diff", null: false
     t.integer "entry_times", null: false
