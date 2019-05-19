@@ -1,5 +1,15 @@
+# coding: utf-8
 class Horse < ActiveRecord::Base
   has_many :results, class_name: 'Entry'
+
+  validates :horse_id, presence: {message: 'absent'}
+  validates :horse_id, format: {with: /\A\d+\z/, message: 'invalid'}
+  validates :running_style,
+            inclusion: {
+              in: %w[逃げ 先行 差し 追込],
+              message: 'invalid',
+            },
+            allow_nil: true
 
   def average_prize_money(time)
     results_before(time).map(&:prize_money).inject(:+) / entry_times(time).to_f

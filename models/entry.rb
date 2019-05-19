@@ -51,8 +51,6 @@ class Entry < ActiveRecord::Base
               message: 'invalid',
             },
             allow_nil: true
-  validates :horse_id, format: {with: /\A\d+\z/, message: 'invalid'}, allow_nil: true
-  validates :race_id, format: {with: /\A\d+\z/, message: 'invalid'}, allow_nil: true
 
   def weight_per
     return unless burden_weight.to_i.positive? and weight.to_i.positive?

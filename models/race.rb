@@ -36,7 +36,8 @@ class Race < ActiveRecord::Base
   validates :track, presence: {messege: 'absent'}
   validates :track, inclusion: {in: %w[芝 ダ], message: 'invalid'}
   validates :weather, presence: {messege: 'absent'}
-  validates :weather, inclusion: {
+  validates :weather,
+            inclusion: {
               in: %w[晴 曇 小雨 雨 小雪 雪],
               message: 'invalid',
             }
