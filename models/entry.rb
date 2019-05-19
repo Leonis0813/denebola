@@ -1,6 +1,7 @@
 # coding: utf-8
+
 class Entry < ActiveRecord::Base
-  SEX_LIST = %w[牝 牡]
+  SEX_LIST = %w[牝 牡].freeze
 
   belongs_to :race
   belongs_to :horse

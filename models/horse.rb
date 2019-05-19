@@ -1,6 +1,7 @@
 # coding: utf-8
+
 class Horse < ActiveRecord::Base
-  RUNNING_STYLE_LIST = %w[逃げ 先行 差し 追込]
+  RUNNING_STYLE_LIST = %w[逃げ 先行 差し 追込].freeze
 
   has_many :results, class_name: 'Entry'
 
