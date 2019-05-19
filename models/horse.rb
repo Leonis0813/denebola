@@ -29,7 +29,7 @@ class Horse < ActiveRecord::Base
   end
 
   def win_times(time)
-    results_before(time).select {|result| result.won }.size
+    results_before(time).select(&:won).size
   end
 
   def results_before(time)
