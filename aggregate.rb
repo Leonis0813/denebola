@@ -6,24 +6,27 @@ Dir['models/*'].each {|f| require_relative f }
 logger = DenebolaLogger.new(Settings.logger.path.aggregate)
 
 def extra_attribute(race, entry, horse)
-  blank = race.start_time - horse.results.second.race.start_time if horse.results.second
+  entry_time = race.start_time
+  results_before = horse.results_before(entry_time)
 
-  sum_distance = horse.results.map {|result| result.race.distance }.inject(:+)
-  average_distance = sum_distance / horse.entry_times.to_f
+  blank = entry_time - results_before.second.race.start_time if results_before.second
+
+  sum_distance = results_before.map {|result| result.race.distance }.inject(:+)
+  average_distance = sum_distance / horse.entry_times(entry_time).to_f
   distance_diff = (race.distance - average_distance).abs / average_distance
 
   {
-    average_prize_money: horse.average_prize_money,
+    average_prize_money: horse.average_prize_money(entry_time),
     blank: blank,
     distance_diff: distance_diff,
-    entry_times: horse.entry_times,
-    last_race_final_600m_time: horse.last_race_final_600m_time,
-    last_race_order: horse.last_race_order,
+    entry_times: horse.entry_times(entry_time),
+    last_race_final_600m_time: horse.last_race_final_600m_time(entry_time),
+    last_race_order: horse.last_race_order(entry_time),
     month: race.month,
-    rate_within_third: horse.rate_within_third,
-    second_last_race_order: horse.second_last_race_order,
+    rate_within_third: horse.rate_within_third(entry_time),
+    second_last_race_order: horse.second_last_race_order(entry_time),
     weight_per: entry.weight_per,
-    win_times: horse.win_times,
+    win_times: horse.win_times(entry_time),
     won: entry.won,
   }
 end
