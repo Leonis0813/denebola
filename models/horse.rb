@@ -19,7 +19,7 @@ class Horse < ActiveRecord::Base
 
   def rate_within_third(time)
     within_third = results_before(time).first(3).select do |result|
-      result.order.to_i <= 3
+      %w[1 2 3].include?(result.order)
     end.size
     within_third / 3.0
   end
@@ -33,6 +33,7 @@ class Horse < ActiveRecord::Base
   end
 
   def results_before(time)
-    results.select {|result| result.race.start_time <= time }
+    target_results = results.select {|result| result.race.start_time <= time }
+    target_results.sort_by {|result| result.race.start_time }.reverse
   end
 end
