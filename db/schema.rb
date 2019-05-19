@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 21) do
+ActiveRecord::Schema.define(version: 22) do
 
   create_table "entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
     t.float "burden_weight", null: false
-    t.float "final_600m_time", limit: 53
+    t.float "final_600m_time"
     t.string "jockey"
     t.integer "number", null: false
     t.string "order", null: false
