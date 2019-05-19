@@ -13,7 +13,7 @@ def extract_race(html)
       direction: track[1],
       distance: track.match(/(\d*)m/)[1].to_i,
       weather: weather.match(/天候 : (.*)/)[1],
-      grade: race_data.search('h1').text.match(/\((.*)\)$/).try(:[], 1),
+      grade: race_data.search('h1').text.match(/\(([^\(\)]*)\)$/).try(:[], 1),
       place: html.xpath('//ul[contains(@class, "race_place")]').first
                  .children[1].text.match(%r{<a.*class="active">(.*?)</a>})[1],
       round: race_data.search('dt').text.strip.match(/^(\d*) R$/)[1].to_i,

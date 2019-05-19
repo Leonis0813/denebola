@@ -1,3 +1,9 @@
+# 2.4.2 (2019/05/19)
+- [FIX] grade extraction error
+- [UPDATE] default of grade in features table
+- [UPDATE] features table schema to change order to won
+- [REFACTOR] aggregation script
+
 # 2.4.1 (2019/05/18)
 - [FIX] encoding error for race and horse
 
