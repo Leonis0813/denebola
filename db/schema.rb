@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 21) do
+ActiveRecord::Schema.define(version: 24) do
 
   create_table "entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
     t.float "burden_weight", null: false
-    t.float "final_600m_time", limit: 53
+    t.float "final_600m_time"
     t.string "jockey"
     t.integer "number", null: false
     t.string "order", null: false
@@ -35,7 +35,7 @@ ActiveRecord::Schema.define(version: 21) do
     t.float "average_prize_money", null: false
     t.integer "blank"
     t.float "burden_weight", null: false
-    t.string "direction", null: false
+    t.string "direction"
     t.integer "distance", null: false
     t.float "distance_diff", null: false
     t.integer "entry_times", null: false
@@ -66,14 +66,14 @@ ActiveRecord::Schema.define(version: 21) do
 
   create_table "horses", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "horse_id", null: false
-    t.string "running_style"
+    t.string "running_style", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["horse_id"], name: "index_horses_on_horse_id", unique: true
   end
 
   create_table "races", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "direction", null: false
+    t.string "direction"
     t.integer "distance", null: false
     t.string "grade"
     t.string "place", null: false
