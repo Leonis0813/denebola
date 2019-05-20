@@ -1,3 +1,7 @@
+# 2.4.3 (2019/05/20)
+- [ADD] validation to race, entry, horse and feature
+- [FIX] table schema
+
 # 2.4.2 (2019/05/19)
 - [FIX] grade extraction error
 - [UPDATE] default of grade in features table
