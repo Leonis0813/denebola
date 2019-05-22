@@ -1,3 +1,7 @@
+# 2.4.4 (2019/05/22)
+- [ADD] element to order and grade list
+- [FIX] mysql duplicate error
+
 # 2.4.3 (2019/05/20)
 - [ADD] validation to race, entry, horse and feature
 - [FIX] table schema
