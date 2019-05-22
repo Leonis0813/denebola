@@ -37,13 +37,15 @@ end
     parsed_html = Nokogiri::HTML.parse(html)
     race_attribute = extract_race(parsed_html) rescue next
 
-    race = Race.find_or_create_by!(race_attribute.merge(race_id: race_id))
+    race = Race.find_by(race_id: race_id)
+    race ||= Race.create!(race_attribute.merge(race_id: race_id))
     logger.info(action: 'create', resource: 'race', race_id: race_id)
 
     _, *rows = parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
     rows.each do |row|
       entry_attribute = extract_entry(row) rescue next
-      entry = race.entries.find_or_create_by!(entry_attribute.except(:horse_id))
+      entry = race.entries.find_by(entry_attribute.slice(:race_id, :number))
+      entry ||= race.entries.create!(entry_attribute.except(:horse_id))
       logger.info(
         action: 'create',
         resource: 'entry',
@@ -60,7 +62,8 @@ end
 
       parsed_html = Nokogiri::HTML.parse(html)
       horse_attribute = extract_horse(parsed_html) rescue next
-      horse = Horse.find_or_create_by!(horse_attribute.merge(horse_id: horse_id))
+      horse = Horse.find_by(horse_id: horse_id)
+      horse ||= Horse.create!(horse_attribute.merge(horse_id: horse_id))
       logger.info(action: 'create', resource: 'horse', horse_id: horse_id)
 
       horse.results << entry

@@ -2,7 +2,7 @@
 
 class Race < ActiveRecord::Base
   DIRECTION_LIST = %w[左 右 直].freeze
-  GRADE_LIST = %w[G1 G2 G3 J.G1 J.G2 J.G3 L OP].freeze
+  GRADE_LIST = %w[G1 G2 G3 G J.G1 J.G2 J.G3 L OP].freeze
   PLACE_LIST = %w[中京 中山 京都 函館 小倉 新潟 札幌 東京 福島 阪神].freeze
   TRACK_LIST = %w[芝 ダート 障].freeze
   WEATHER_LIST = %w[晴 曇 小雨 雨 小雪 雪].freeze
