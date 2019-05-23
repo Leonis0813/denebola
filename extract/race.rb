@@ -9,7 +9,7 @@ def extract_race(html)
 
   {
     track: track[0].sub('ダ', 'ダート'),
-    direction: track[1] == '芝' ? nil : track[1],
+    direction: track[1] == '芝' ? '障' : track[1],
     distance: track.match(/(\d*)m/)[1].to_i,
     weather: weather.match(/天候 : (.*)/)[1].strip,
     grade: race_data.search('h1').text.match(/\(([^\(\)]*)\)$/).try(:[], 1),

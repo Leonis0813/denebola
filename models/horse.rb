@@ -20,12 +20,8 @@ class Horse < ActiveRecord::Base
     results_before(time).size
   end
 
-  def last_race_final_600m_time(time)
-    results_before(time).second&.final_600m_time
-  end
-
   def last_race_order(time)
-    results_before(time).second&.order&.to_i
+    results_before(time).second&.order&.to_i || 0
   end
 
   def rate_within_third(time)
@@ -36,7 +32,7 @@ class Horse < ActiveRecord::Base
   end
 
   def second_last_race_order(time)
-    results_before(time).third&.order&.to_i
+    results_before(time).third&.order&.to_i || 0
   end
 
   def win_times(time)

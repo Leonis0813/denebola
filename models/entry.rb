@@ -29,7 +29,7 @@ class Entry < ActiveRecord::Base
             inclusion: {in: SEX_LIST, message: 'invalid'}
 
   def weight_per
-    return unless burden_weight.to_i.positive? and weight.to_i.positive?
+    return 0.0 unless burden_weight.to_i.positive? and weight.to_i.positive?
 
     burden_weight / weight
   end

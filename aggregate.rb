@@ -11,6 +11,8 @@ def extra_attribute(race, entry, horse)
 
   blank = if results_before.second
             (entry_time.to_date - results_before.second.race.start_time.to_date).to_i
+          else
+            0
           end
 
   sum_distance = results_before.map {|result| result.race.distance }.inject(:+)
@@ -22,7 +24,6 @@ def extra_attribute(race, entry, horse)
     blank: blank,
     distance_diff: distance_diff,
     entry_times: horse.entry_times(entry_time),
-    last_race_final_600m_time: horse.last_race_final_600m_time(entry_time),
     last_race_order: horse.last_race_order(entry_time),
     month: race.month,
     rate_within_third: horse.rate_within_third(entry_time),
@@ -35,7 +36,8 @@ end
 
 logger.info('Start Aggregation')
 
-entries = Entry.joins(:race).joins(:horse).pluck('races.race_id', 'horses.horse_id').uniq
+entries = Entry.joins(:race).joins(:horse).where(order: (1..18).to_a.map(&:to_s))
+               .pluck('races.race_id', 'horses.horse_id').uniq
 features = Feature.pluck(:race_id, :horse_id).uniq
 new_features = entries - features
 
