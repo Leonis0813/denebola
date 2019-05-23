@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 24) do
+ActiveRecord::Schema.define(version: 25) do
 
   create_table "entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
@@ -33,31 +33,29 @@ ActiveRecord::Schema.define(version: 24) do
   create_table "features", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
     t.float "average_prize_money", null: false
-    t.integer "blank"
+    t.integer "blank", null: false
     t.float "burden_weight", null: false
-    t.string "direction"
+    t.string "direction", null: false
     t.integer "distance", null: false
     t.float "distance_diff", null: false
     t.integer "entry_times", null: false
     t.string "grade", default: "N", null: false
     t.string "horse_id", null: false
-    t.string "jockey"
-    t.float "last_race_final_600m_time"
-    t.integer "last_race_order"
+    t.integer "last_race_order", null: false
     t.integer "month", null: false
     t.integer "number", null: false
     t.string "place", null: false
     t.string "race_id", null: false
-    t.float "rate_within_third"
+    t.float "rate_within_third", null: false
     t.integer "round", null: false
     t.string "running_style", null: false
-    t.integer "second_last_race_order"
+    t.integer "second_last_race_order", null: false
     t.string "sex", null: false
     t.string "track", null: false
     t.string "weather", null: false
-    t.float "weight"
-    t.float "weight_diff"
-    t.float "weight_per"
+    t.float "weight", null: false
+    t.float "weight_diff", null: false
+    t.float "weight_per", null: false
     t.integer "win_times", null: false
     t.boolean "won", default: false, null: false
     t.datetime "created_at", null: false
