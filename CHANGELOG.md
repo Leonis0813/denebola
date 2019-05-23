@@ -1,3 +1,8 @@
+# 2.4.6 (2019/05/24)
+- [ADD] index to races and entries table
+- [UPDATE] horse model to cache results before entry time
+- [UPDATE] config to output sql
+
 # 2.4.5 (2019/05/23)
 - [UPDATE] schema of races and features table
 
