@@ -40,7 +40,7 @@ class Horse < ActiveRecord::Base
   end
 
   def results_before(time)
-    target_results = results.select {|result| result.race.start_time <= time }
-    target_results.sort_by {|result| result.race.start_time }.reverse
+    @results_before ||= results.joins(:race).where('races.start_time <= ?', time)
+                               .order('races.start_time desc')
   end
 end
