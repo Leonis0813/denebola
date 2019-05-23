@@ -1,3 +1,6 @@
+# 2.4.5 (2019/05/23)
+- [UPDATE] schema of races and features table
+
 # 2.4.4 (2019/05/22)
 - [ADD] element to order and grade list
 - [FIX] mysql duplicate error
