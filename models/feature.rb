@@ -3,36 +3,30 @@
 class Feature < ActiveRecord::Base
   GRADE_LIST = Race::GRADE_LIST + %w[N]
 
-  validates :age, :average_prize_money, :burden_weight, :distance, :distance_diff,
-            :entry_times, :horse_id, :month, :number, :place, :race_id, :round,
-            :running_style, :sex, :track, :weather, :win_times,
+  validates :age, :average_prize_money, :blank, :burden_weight, :direction, :distance,
+            :distance_diff, :entry_times, :grade, :horse_id, :last_race_order, :month,
+            :number, :place, :race_id, :rate_within_third, :round, :running_style,
+            :second_last_race_order, :sex, :track, :weather, :weight, :weight_diff,
+            :weight_per, :win_times,
             presence: {message: 'absent'}
   validates :age, :distance, :number, :round,
             numericality: {only_integer: true, greater_than: 0, message: 'invalid'}
   validates :average_prize_money, :distance_diff, :rate_within_third,
             numericality: {greater_than_or_equal_to: 0, message: 'invalid'}
-  validates :blank, :last_race_order, :second_last_race_order,
-            numericality: {only_integer: true, greater_than: 0, message: 'invalid'},
-            allow_nil: true
-  validates :burden_weight,
-            numericality: {greater_than: 0, message: 'invalid'}
-  validates :direction,
-            inclusion: {in: Race::DIRECTION_LIST, message: 'invalid'},
-            allow_nil: true
-  validates :entry_times, :win_times,
+  validates :blank, :entry_times, :last_race_order, :second_last_race_order, :win_times,
             numericality: {
               only_integer: true,
               greater_than_or_equal_to: 0,
               message: 'invalid',
             }
+  validates :burden_weight, :weight, :weight_per,
+            numericality: {greater_than: 0, message: 'invalid'}
+  validates :direction,
+            inclusion: {in: Race::DIRECTION_LIST, message: 'invalid'}
   validates :grade,
-            inclusion: {in: GRADE_LIST, message: 'invalid'},
-            allow_nil: true
+            inclusion: {in: GRADE_LIST, message: 'invalid'}
   validates :horse_id, :race_id,
             format: {with: /\A\d+\z/, message: 'invalid'}
-  validates :last_race_final_600m_time, :weight, :weight_per,
-            numericality: {greater_than: 0, message: 'invalid'},
-            allow_nil: true
   validates :month,
             numericality: {
               only_integer: true,
