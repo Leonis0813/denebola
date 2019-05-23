@@ -36,8 +36,8 @@ end
 
 logger.info('Start Aggregation')
 
-entries = Entry.joins(:race).joins(:horse).where(:order => (1 .. 18).to_a.map(&:to_s))
-          .pluck('races.race_id', 'horses.horse_id').uniq
+entries = Entry.joins(:race).joins(:horse).where(order: (1..18).to_a.map(&:to_s))
+               .pluck('races.race_id', 'horses.horse_id').uniq
 features = Feature.pluck(:race_id, :horse_id).uniq
 new_features = entries - features
 
