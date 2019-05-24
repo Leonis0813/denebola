@@ -2,6 +2,8 @@
 - [ADD] index to races and entries table
 - [UPDATE] horse model to cache results before entry time
 - [UPDATE] config to output sql
+- [UPDATE] prime_money not to set null
+- [FIX] aggregation not to search null weight
 
 # 2.4.5 (2019/05/23)
 - [UPDATE] schema of races and features table
