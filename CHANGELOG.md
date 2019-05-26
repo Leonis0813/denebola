@@ -1,3 +1,6 @@
+# 2.4.7 (2019/05/26)
+- [FIX] aggregation to change integer to string for entries
+
 # 2.4.6 (2019/05/24)
 - [ADD] index to races and entries table
 - [UPDATE] horse model to cache results before entry time
