@@ -40,6 +40,7 @@ entries = Entry.joins(:race).joins(:horse)
                .where(order: (1..18).to_a.map(&:to_s))
                .where.not(weight: nil)
                .pluck('races.race_id', 'horses.horse_id').uniq
+entries.map! {|race_id, horse_id| [race_id.to_s, horse_id.to_s] }
 features = Feature.pluck(:race_id, :horse_id).uniq
 new_features = entries - features
 
