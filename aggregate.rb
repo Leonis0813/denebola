@@ -34,7 +34,7 @@ def extra_attribute(race, entry, horse)
   }
 end
 
-logger.info('Start Aggregation')
+logger.info("Start Aggregation")
 
 entries = Entry.joins(:race).joins(:horse)
                .where(order: (1..18).to_a.map(&:to_s))
