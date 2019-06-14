@@ -44,7 +44,7 @@ end
       horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
 
       file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
-      Collectutil.get_horse_html(file_path, horse_id)
+      CollectUtil.get_horse_html(file_path, horse_id)
     end
   end
 end
