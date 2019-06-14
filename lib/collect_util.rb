@@ -1,8 +1,8 @@
 require 'httpclient'
 
 class CollectUtil
-  cattr_accessor :logger, :client
-  @@client = HTTPClient.new
+  cattr_accessor :logger
+  cattr_accessor(:client) { HTTPClient.new }
 
   class << self
     def get_race_ids(race_ids_file, date)
