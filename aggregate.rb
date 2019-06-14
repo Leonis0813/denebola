@@ -67,9 +67,14 @@ new_features.each do |race_id, horse_id|
 
   attribute.merge!(extra_attribute(race, entry, horse))
 
-  feature = Feature.create!(attribute.except(:id, :order))
-
-  logger.info(action: 'create', resource: 'feature', feature_id: feature.id)
+  base_log_attribute = {action: 'create', resource: 'feature'}
+  begin
+    feature = Feature.create!(attribute.except(:id, :order))
+    logger.info(base_log_attribute.merge(feature_id: feature.id))
+  rescue ActiveRecord::RecordInvalid => e
+    logger.error(base_log_attribute.merge(errors: e.record.errors))
+    raise
+  end
 end
 
 logger.info('Finish Aggregation')

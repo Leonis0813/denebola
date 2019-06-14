@@ -4,7 +4,8 @@ require_relative 'lib/collect_util'
 require_relative 'lib/denebola_logger'
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
-LOGGER = DenebolaLogger.new(Settings.logger.path.collect)
+logger = DenebolaLogger.new(Settings.logger.path.collect)
+CollectUtil.logger = logger
 
 begin
   from = ARGV.find {|arg| arg.start_with?('--from=') }
@@ -12,7 +13,7 @@ begin
   to = ARGV.find {|arg| arg.start_with?('--to=') }
   to = to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
 rescue ArgumentError => e
-  LOGGER.error(e.backtrace.join("\n"))
+  logger.error(e.backtrace.join("\n"))
   raise e
 end
 
@@ -28,11 +29,11 @@ end
   date = date.strftime('%Y%m%d')
 
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.race_list, "#{date}.txt")
-  race_ids = get_race_ids(file_path, date)
+  race_ids = CollectUtil.get_race_ids(file_path, date)
 
   race_ids.each do |race_id|
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
-    html = get_race_html(file_path, race_id)
+    html = CollectUtil.get_race_html(file_path, race_id)
 
     parsed_html = Nokogiri::HTML.parse(html)
     _, *entries =
@@ -43,7 +44,7 @@ end
       horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
 
       file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
-      get_horse_html(file_path, horse_id)
+      CollectUtil.get_horse_html(file_path, horse_id)
     end
   end
 end
