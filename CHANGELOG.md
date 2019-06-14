@@ -1,6 +1,7 @@
 # 2.4.8 (2019/06/15)
 - [REFACTOR] collection util
 - [UPDATE] scripts to raise validation error
+- [UPDATE] gems
 
 # 2.4.7 (2019/05/26)
 - [FIX] aggregation to change integer to string for entries
