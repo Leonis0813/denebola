@@ -1,7 +1,8 @@
 require 'httpclient'
 
 class CollectUtil
-  cattr_accessor :logger
+  cattr_accessor :logger, :client
+  @@client = HTTPClient.new
 
   class << self
     def get_race_ids(race_ids_file, date)
@@ -15,7 +16,7 @@ class CollectUtil
         ids_from_file
       else
         uri = "#{Settings.url}#{Settings.path.race_list}/#{date}"
-        res = HTTPClient.new.get(uri)
+        res = client.get(uri)
         ids_from_remote = res.body.scan(%r{.*/race/(\d+)}).flatten
         logger.info(
           source: 'web',
@@ -39,7 +40,7 @@ class CollectUtil
         html_from_file
       else
         uri = "#{Settings.url}#{Settings.path.race}/#{race_id}"
-        res = HTTPClient.new.get(uri)
+        res = client.get(uri)
         logger.info(resource: 'race', souroce: 'web', uri: uri, status: res.code)
         options = {invalid: :replace, undef: :replace, replace: '?'}
         html_from_remote = res.body.encode('utf-8', 'euc-jp', options)
@@ -53,7 +54,7 @@ class CollectUtil
       return if File.exist?(horse_html_file)
 
       uri = "#{Settings.url}#{Settings.path.horse}/#{horse_id}"
-      res = HTTPClient.new.get(uri)
+      res = client.get(uri)
       logger.info(resource: 'horse', source: 'web', uri: uri, status: res.code)
       options = {invalid: :replace, undef: :replace, replace: '?'}
       html = res.body.encode('utf-8', 'euc-jp', options)
