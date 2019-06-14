@@ -54,7 +54,7 @@ class CollectUtil
 
       uri = "#{Settings.url}#{Settings.path.horse}/#{horse_id}"
       res = HTTPClient.new.get(uri)
-      @@logger.info(resource: 'horse', source: 'web', uri: uri, status: res.code)
+      logger.info(resource: 'horse', source: 'web', uri: uri, status: res.code)
       options = {invalid: :replace, undef: :replace, replace: '?'}
       html = res.body.encode('utf-8', 'euc-jp', options)
       File.open(horse_html_file, 'w') {|out| out.write(html.gsub('&nbsp;', ' ')) }
