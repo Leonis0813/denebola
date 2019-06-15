@@ -15,5 +15,6 @@ RSpec.configure do |config|
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
   config.run_all_when_everything_filtered = true
+  config.include FactoryBot::Syntax::Methods
   config.include CommonHelper
 end
