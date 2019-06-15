@@ -31,18 +31,18 @@ describe Race, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        direction: ['invalid', 1.0, 0, true, nil],
-        distance: ['invalid', 1.0, 0, true, nil],
-        grade: ['invalid', 1.0, 0, true],
-        place: ['invalid', 1.0, 0, true, nil],
+        direction: ['invalid', 1.0, 0,  nil],
+        distance: ['invalid', 1.0, 0, nil],
+        grade: ['invalid', 1.0, 0],
+        place: ['invalid', 1.0, 0, nil],
         race_id: ['invalid', nil],
-        round: ['invalid', 1.0, 0, true, nil],
-        track: ['invalid', 1.0, 0, true, nil],
-        weather: ['invalid', 1.0, 0, true, nil],
+        round: ['invalid', 1.0, 0, nil],
+        track: ['invalid', 1.0, 0, nil],
+        weather: ['invalid', 1.0, 0, nil],
       }
 
       test_cases = CommonHelper.generate_test_case(invalid_attribute)
-      test_cases.sample(test_cases / 2).each do |attribute|
+      test_cases.sample(test_cases.size / 2).each do |attribute|
         it "#{attribute}を指定した場合、エラーになること" do
           race = Race.new(attribute)
           race.validate
