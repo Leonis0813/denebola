@@ -154,14 +154,6 @@ GEM
     rspec-power_assert (1.1.0)
       power_assert (~> 1.1.0)
       rspec (>= 2.14)
-    rspec-rails (3.8.2)
-      actionpack (>= 3.0)
-      activesupport (>= 3.0)
-      railties (>= 3.0)
-      rspec-core (~> 3.8.0)
-      rspec-expectations (~> 3.8.0)
-      rspec-mocks (~> 3.8.0)
-      rspec-support (~> 3.8.0)
     rspec-support (3.8.2)
     rubocop (0.71.0)
       jaro_winkler (~> 1.5.1)
@@ -201,8 +193,8 @@ DEPENDENCIES
   pronto-rubocop
   pry
   rake
+  rspec
   rspec-power_assert
-  rspec-rails
   rubocop
   rubocop-performance
 

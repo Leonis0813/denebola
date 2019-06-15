@@ -12,7 +12,7 @@ gem 'pronto'
 gem 'pronto-rubocop', require: false
 gem 'pry'
 gem 'rake'
+gem 'rspec'
 gem 'rspec-power_assert'
-gem 'rspec-rails'
 gem 'rubocop'
 gem 'rubocop-performance'
