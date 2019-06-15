@@ -48,7 +48,8 @@ describe Entry, type: :model do
           entry.validate
           is_asserted_by { entry.errors.present? }
 
-          (invalid_attribute.keys - attribute.keys - %i[grade]).each do |absent_key|
+          allow_nil = %i[final_600m_time weight prize_money]
+          (invalid_attribute.keys - attribute.keys - allow_nil).each do |absent_key|
             is_asserted_by { entry.errors.messages[absent_key].include?('absent') }
           end
 

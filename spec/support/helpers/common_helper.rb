@@ -1,5 +1,4 @@
 module CommonHelper
-
   module_function
 
   def generate_test_case(params)

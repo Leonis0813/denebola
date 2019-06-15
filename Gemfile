@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem 'activerecord'
 gem 'config'
+gem 'database_cleaner'
+gem 'factory_bot_rails'
 gem 'fuubar'
 gem 'httpclient'
 gem 'mysql2'
