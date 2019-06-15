@@ -1,19 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    actionpack (5.2.3)
-      actionview (= 5.2.3)
-      activesupport (= 5.2.3)
-      rack (~> 2.0)
-      rack-test (>= 0.6.3)
-      rails-dom-testing (~> 2.0)
-      rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    actionview (5.2.3)
-      activesupport (= 5.2.3)
-      builder (~> 3.1)
-      erubi (~> 1.4)
-      rails-dom-testing (~> 2.0)
-      rails-html-sanitizer (~> 1.0, >= 1.0.3)
     activemodel (5.2.3)
       activesupport (= 5.2.3)
     activerecord (5.2.3)
@@ -29,14 +16,12 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     arel (9.0.0)
     ast (2.4.0)
-    builder (3.2.3)
     coderay (1.1.2)
     concurrent-ruby (1.1.5)
     config (1.7.2)
       activesupport (>= 3.0)
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 0.12, >= 0.12.2, < 1.0.0)
-    crass (1.0.4)
     database_cleaner (1.7.0)
     deep_merge (1.2.1)
     diff-lcs (1.3)
@@ -68,12 +53,8 @@ GEM
       dry-equalizer (~> 0.2)
       dry-logic (~> 0.5, >= 0.5.0)
       dry-types (~> 0.14.0)
-    erubi (1.8.0)
     factory_bot (5.0.2)
       activesupport (>= 4.2.0)
-    factory_bot_rails (5.0.2)
-      factory_bot (~> 5.0.2)
-      railties (>= 4.2.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     fuubar (2.4.0)
@@ -89,9 +70,6 @@ GEM
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
     jaro_winkler (1.5.2)
-    loofah (2.2.3)
-      crass (~> 1.0.2)
-      nokogiri (>= 1.5.9)
     method_source (0.9.2)
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
@@ -123,20 +101,6 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     public_suffix (3.1.0)
-    rack (2.0.7)
-    rack-test (1.1.0)
-      rack (>= 1.0, < 3)
-    rails-dom-testing (2.0.3)
-      activesupport (>= 4.2.0)
-      nokogiri (>= 1.6)
-    rails-html-sanitizer (1.0.4)
-      loofah (~> 2.2, >= 2.2.2)
-    railties (5.2.3)
-      actionpack (= 5.2.3)
-      activesupport (= 5.2.3)
-      method_source
-      rake (>= 0.8.7)
-      thor (>= 0.19.0, < 2.0)
     rainbow (3.0.0)
     rake (12.3.2)
     rspec (3.8.0)
@@ -184,7 +148,7 @@ DEPENDENCIES
   activerecord
   config
   database_cleaner
-  factory_bot_rails
+  factory_bot
   fuubar
   httpclient
   mysql2
