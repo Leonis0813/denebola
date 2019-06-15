@@ -31,7 +31,7 @@ describe Race, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        direction: ['invalid', 1.0, 0,  nil],
+        direction: ['invalid', 1.0, 0, nil],
         distance: ['invalid', 1.0, 0, nil],
         grade: ['invalid', 1.0, 0],
         place: ['invalid', 1.0, 0, nil],
@@ -62,11 +62,11 @@ describe Race, type: :model do
 
   describe '#month' do
     describe '正常系' do
-      (1 .. 12).each do |i|
+      (1..12).each do |i|
         context "#{i}月の場合" do
           before(:all) do
-            start_time = Time.parse("2000/#{'%02d' % i}/01 00:00:00")
-            @race = Race.new(:start_time => start_time)
+            start_time = Time.parse("2000/#{format('%02d', i)}/01 00:00:00")
+            @race = Race.new(start_time: start_time)
           end
 
           it "#{i}を返すこと" do

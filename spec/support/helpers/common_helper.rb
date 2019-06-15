@@ -1,4 +1,7 @@
 module CommonHelper
+
+  module_function
+
   def generate_test_case(params)
     [].tap do |test_cases|
       params.keys.size.times do |i|
@@ -25,6 +28,4 @@ module CommonHelper
       end
     end.flatten
   end
-
-  module_function :generate_test_case
 end
