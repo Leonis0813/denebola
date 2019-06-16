@@ -1,4 +1,7 @@
 require_relative '../db/connect'
+require 'database_cleaner'
+require 'factory_bot'
+require 'pry'
 require 'rspec-power_assert'
 
 Dir[File.join(APPLICATION_ROOT, 'models', '*.rb')].each {|f| require f }
@@ -17,4 +20,8 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.include FactoryBot::Syntax::Methods
   config.include CommonHelper
+
+  config.before(:suite) do
+    FactoryBot.find_definitions
+  end
 end

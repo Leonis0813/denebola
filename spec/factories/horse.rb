@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :horse do
-    horse_id { '1' * 16 }
+    horse_id { '1' * 8 }
     running_style { '逃げ' }
   end
 end
