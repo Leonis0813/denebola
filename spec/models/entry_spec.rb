@@ -16,11 +16,7 @@ describe Entry, type: :model do
         weight: [1, 1.0, nil],
       }
 
-      test_cases = CommonHelper.generate_test_case(valid_attribute).select do |attribute|
-        attribute.keys.sort == valid_attribute.keys.sort
-      end
-
-      test_cases.each do |attribute|
+      CommonHelper.generate_test_case(valid_attribute).each do |attribute|
         it "#{attribute.keys.join(',')}を指定した場合、エラーにならないこと" do
           entry = Entry.new(attribute)
           entry.validate
@@ -41,11 +37,7 @@ describe Entry, type: :model do
         weight: ['invalid', 0],
       }
 
-      test_cases = CommonHelper.generate_test_case(invalid_attribute)
-      invalid_test_cases = test_cases.select do |attribute|
-        attribute.keys.sort == invalid_attribute.keys.sort
-      end
-      invalid_test_cases.each do |attribute|
+      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
         it "#{attribute}を指定した場合、invalidエラーになること" do
           entry = Entry.new(attribute)
           entry.validate
