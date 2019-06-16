@@ -30,8 +30,8 @@ describe Horse, type: :model do
         horse_id: ['invalid', nil],
         running_style: ['invalid', 0, 1.0, nil],
       }
-      it_behaves_like '必須パラメーターがない場合のテスト', :horse, invalid_attribute.keys
-      it_behaves_like '不正な値を指定した場合のテスト', :horse, invalid_attribute
+      it_behaves_like '必須パラメーターがない場合のテスト', invalid_attribute.keys
+      it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
   end
 

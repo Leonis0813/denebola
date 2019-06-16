@@ -20,18 +20,18 @@ describe Race, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        direction: ['invalid', 1.0, 0, nil],
-        distance: ['invalid', 1.0, 0, nil],
-        grade: ['invalid', 1.0, 0],
-        place: ['invalid', 1.0, 0, nil],
+        direction: ['invalid', 0, 1.0, nil],
+        distance: ['invalid', 0, 1.0, nil],
+        grade: ['invalid', 0, 1.0],
+        place: ['invalid', 0, 1.0, nil],
         race_id: ['invalid', nil],
-        round: ['invalid', 1.0, 0, nil],
-        track: ['invalid', 1.0, 0, nil],
-        weather: ['invalid', 1.0, 0, nil],
+        round: ['invalid', 0, 1.0, nil],
+        track: ['invalid', 0, 1.0, nil],
+        weather: ['invalid', 0, 1.0, nil],
       }
       absent_keys = invalid_attribute.keys - %i[grade]
-      it_behaves_like '必須パラメーターがない場合のテスト', :race, absent_keys
-      it_behaves_like '不正な値を指定した場合のテスト', :race, invalid_attribute
+      it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
+      it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
   end
 

@@ -31,8 +31,8 @@ describe Entry, type: :model do
         weight: ['invalid', 0],
       }
       absent_keys = invalid_attribute.keys - %i[final_600m_time prize_money weight]
-      it_behaves_like '必須パラメーターがない場合のテスト', :entry, absent_keys
-      it_behaves_like '不正な値を指定した場合のテスト', :entry, invalid_attribute
+      it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
+      it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
   end
 
@@ -48,7 +48,7 @@ describe Entry, type: :model do
       ].each do |burden_weight, weight, weight_per|
         context "burden_weight: #{burden_weight}, weight:#{weight}の場合" do
           before(:all) do
-            @entry = Entry.new(burden_weight: burden_weight, weight: weight)
+            @entry = create(:entry, burden_weight: burden_weight, weight: weight)
           end
 
           it "#{weight_per}を返すこと" do
@@ -62,7 +62,7 @@ describe Entry, type: :model do
   describe '#won' do
     describe '正常系' do
       context 'orderが1の場合' do
-        before(:all) { @entry = Entry.new(order: '1') }
+        before(:all) { @entry = create(:entry, order: '1') }
 
         it 'trueを返すこと' do
           is_asserted_by { @entry.won }
@@ -71,7 +71,7 @@ describe Entry, type: :model do
 
       %w[2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 除 中 取 失].each do |order|
         context "orderが#{order}の場合" do
-          before(:all) { @entry = Entry.new(order: order) }
+          before(:all) { @entry = create(:entry, order: order) }
 
           it 'falseを返すこと' do
             is_asserted_by { not @entry.won }
