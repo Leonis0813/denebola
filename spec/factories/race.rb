@@ -10,8 +10,6 @@ FactoryBot.define do
     start_time { '2000-01-01 00:00:00' }
     track { '芝' }
     weather { '晴' }
-    entries {
-      [FactoryBot.create(:entry)]
-    }
+    entries { [FactoryBot.create(:entry)] }
   end
 end

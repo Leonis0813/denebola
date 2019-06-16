@@ -42,20 +42,28 @@ describe Entry, type: :model do
       }
 
       test_cases = CommonHelper.generate_test_case(invalid_attribute)
-      test_cases.sample(test_cases.size / 2).each do |attribute|
-        it "#{attribute}を指定した場合、エラーになること" do
+      invalid_test_cases = test_cases.select do |attribute|
+        attribute.keys.sort == invalid_attribute.keys.sort
+      end
+      invalid_test_cases.each do |attribute|
+        it "#{attribute}を指定した場合、invalidエラーになること" do
           entry = Entry.new(attribute)
           entry.validate
           is_asserted_by { entry.errors.present? }
 
-          allow_nil = %i[final_600m_time weight prize_money]
-          (invalid_attribute.keys - attribute.keys - allow_nil).each do |absent_key|
-            is_asserted_by { entry.errors.messages[absent_key].include?('absent') }
-          end
-
           attribute.keys.each do |invalid_key|
             is_asserted_by { entry.errors.messages[invalid_key].include?('invalid') }
           end
+        end
+      end
+
+      invalid_attribute.keys.each do |absent_key|
+        it "#{absent_key}がない場合、absentエラーになること" do
+          attribute = build(:entry).attributes.except(absent_key)
+          entry = build(:entry, attribute)
+          entry.validate
+          is_asserted_by { entry.errors.present? }
+          is_asserted_by { entry.errors.messages[absent_key].include?('absent') }
         end
       end
     end

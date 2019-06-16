@@ -42,19 +42,29 @@ describe Horse, type: :model do
         running_style: ['invalid', 0, 1.0, nil],
       }
 
-      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
-        it "#{attribute}を指定した場合、エラーになること" do
-          horse = Horse.new(attribute)
+      test_cases = CommonHelper.generate_test_case(invalid_attribute)
+      invalid_test_cases = test_cases.select do |attribute|
+        attribute.keys.sort == invalid_attribute.keys.sort
+      end
+      invalid_test_cases.each do |attribute|
+        it "#{attribute}を指定した場合、invalidエラーになること" do
+          horse = build(:horse, attribute)
           horse.validate
           is_asserted_by { horse.errors.present? }
-
-          (invalid_attribute.keys - attribute.keys).each do |absent_key|
-            is_asserted_by { horse.errors.messages[absent_key].include?('absent') }
-          end
 
           attribute.keys.each do |invalid_key|
             is_asserted_by { horse.errors.messages[invalid_key].include?('invalid') }
           end
+        end
+      end
+
+      invalid_attribute.keys.each do |absent_key|
+        it "#{absent_key}がない場合、absentエラーになること" do
+          attribute = build(:horse).attributes.except(absent_key.to_s)
+          horse = Horse.new(attribute)
+          horse.validate
+          is_asserted_by { horse.errors.present? }
+          is_asserted_by { horse.errors.messages[absent_key].include?('absent') }
         end
       end
     end

@@ -42,19 +42,28 @@ describe Race, type: :model do
       }
 
       test_cases = CommonHelper.generate_test_case(invalid_attribute)
-      test_cases.sample(test_cases.size / 2).each do |attribute|
-        it "#{attribute}を指定した場合、エラーになること" do
-          race = Race.new(attribute)
+      invalid_test_cases = test_cases.select do |attribute|
+        attribute.keys.sort == invalid_attribute.keys.sort
+      end
+      invalid_test_cases.each do |attribute|
+        it "#{attribute}を指定した場合、invalidエラーになること" do
+          race = build(:race, attribute)
           race.validate
           is_asserted_by { race.errors.present? }
-
-          (invalid_attribute.keys - attribute.keys - %i[grade]).each do |absent_key|
-            is_asserted_by { race.errors.messages[absent_key].include?('absent') }
-          end
 
           attribute.keys.each do |invalid_key|
             is_asserted_by { race.errors.messages[invalid_key].include?('invalid') }
           end
+        end
+      end
+
+      invalid_attribute.keys.each do |absent_key|
+        it "#{absent_key}がない場合、absentエラーになること" do
+          attribute = build(:race).attributes.except(absent_key)
+          race = Race.new(attribute)
+          race.validate
+          is_asserted_by { race.errors.present? }
+          is_asserted_by { race.errors.messages[absent_key].include?('absent') }
         end
       end
     end
