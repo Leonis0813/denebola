@@ -19,14 +19,7 @@ describe Feature, type: :model do
         win_times: [0],
         won: [true, false],
       }
-
-      CommonHelper.generate_test_case(valid_attribute).each do |attribute|
-        it "#{attribute.keys.join(',')}を指定した場合、エラーにならないこと" do
-          feature = create(:feature, attribute)
-          feature.validate
-          is_asserted_by { feature.errors.empty? }
-        end
-      end
+      it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
     end
 
     describe '異常系', :wip do
@@ -44,28 +37,8 @@ describe Feature, type: :model do
         win_times: ['invalid', -1, 1.0, nil],
         won: ['invalid', 0, 1.0, nil],
       }
-
-      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
-        it "#{attribute}を指定した場合、エラーになること" do
-          feature = Feature.new(attribute)
-          feature.validate
-          is_asserted_by { feature.errors.present? }
-
-          attribute.keys.each do |invalid_key|
-            is_asserted_by { feature.errors.messages[invalid_key].include?('invalid') }
-          end
-        end
-      end
-
-      invalid_attribute.keys.each do |absent_key|
-        it "#{absent_key}がない場合、absentエラーになること" do
-          attribute = build(:feature).attributes.except(absent_key)
-          feature = Feature.new(attribute)
-          feature.validate
-          is_asserted_by { feature.errors.present? }
-          is_asserted_by { feature.errors.messages[absent_key].include?('absent') }
-        end
-      end
+      it_behaves_like '必須パラメーターがない場合のテスト', :feature, invalid_attribute.keys
+      it_behaves_like '不正な値を指定した場合のテスト', :feature, invalid_attribute
     end
   end
 end

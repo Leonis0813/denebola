@@ -22,14 +22,7 @@ describe Horse, type: :model do
         horse_id: %w[0],
         running_style: %w[逃げ 先行 差し 追込],
       }
-
-      CommonHelper.generate_test_case(valid_attribute).each do |attribute|
-        it "#{attribute.keys.join(',')}を指定した場合、エラーにならないこと" do
-          horse = Horse.new(attribute)
-          horse.validate
-          is_asserted_by { horse.errors.empty? }
-        end
-      end
+      it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
     end
 
     describe '異常系' do
@@ -37,28 +30,8 @@ describe Horse, type: :model do
         horse_id: ['invalid', nil],
         running_style: ['invalid', 0, 1.0, nil],
       }
-
-      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
-        it "#{attribute}を指定した場合、invalidエラーになること" do
-          horse = build(:horse, attribute)
-          horse.validate
-          is_asserted_by { horse.errors.present? }
-
-          attribute.keys.each do |invalid_key|
-            is_asserted_by { horse.errors.messages[invalid_key].include?('invalid') }
-          end
-        end
-      end
-
-      invalid_attribute.keys.each do |absent_key|
-        it "#{absent_key}がない場合、absentエラーになること" do
-          attribute = build(:horse).attributes.except(absent_key.to_s)
-          horse = Horse.new(attribute)
-          horse.validate
-          is_asserted_by { horse.errors.present? }
-          is_asserted_by { horse.errors.messages[absent_key].include?('absent') }
-        end
-      end
+      it_behaves_like '必須パラメーターがない場合のテスト', :horse, invalid_attribute.keys
+      it_behaves_like '不正な値を指定した場合のテスト', :horse, invalid_attribute
     end
   end
 

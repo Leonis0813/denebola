@@ -16,13 +16,7 @@ describe Entry, type: :model do
         weight: [1, 1.0, nil],
       }
 
-      CommonHelper.generate_test_case(valid_attribute).each do |attribute|
-        it "#{attribute.keys.join(',')}を指定した場合、エラーにならないこと" do
-          entry = Entry.new(attribute)
-          entry.validate
-          is_asserted_by { entry.errors.empty? }
-        end
-      end
+      it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
     end
 
     describe '異常系' do
@@ -36,28 +30,9 @@ describe Entry, type: :model do
         sex: ['invalid', 0, 1.0, nil],
         weight: ['invalid', 0],
       }
-
-      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
-        it "#{attribute}を指定した場合、invalidエラーになること" do
-          entry = Entry.new(attribute)
-          entry.validate
-          is_asserted_by { entry.errors.present? }
-
-          attribute.keys.each do |invalid_key|
-            is_asserted_by { entry.errors.messages[invalid_key].include?('invalid') }
-          end
-        end
-      end
-
-      invalid_attribute.keys.each do |absent_key|
-        it "#{absent_key}がない場合、absentエラーになること" do
-          attribute = build(:entry).attributes.except(absent_key)
-          entry = build(:entry, attribute)
-          entry.validate
-          is_asserted_by { entry.errors.present? }
-          is_asserted_by { entry.errors.messages[absent_key].include?('absent') }
-        end
-      end
+      absent_keys = invalid_attribute.keys - %i[final_600m_time prize_money weight]
+      it_behaves_like '必須パラメーターがない場合のテスト', :entry, absent_keys
+      it_behaves_like '不正な値を指定した場合のテスト', :entry, invalid_attribute
     end
   end
 

@@ -15,7 +15,6 @@ describe Race, type: :model do
         track: %w[芝 ダート 障],
         weather: %w[晴 曇 小雨 雨 小雪 雪],
       }
-
       it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
     end
 
@@ -30,10 +29,9 @@ describe Race, type: :model do
         track: ['invalid', 1.0, 0, nil],
         weather: ['invalid', 1.0, 0, nil],
       }
-      absent_keys = (invalid_attribute.keys - %i[grade])
-
-      it_behaves_like '不正な値を指定した場合のテスト', :race, invalid_attribute
+      absent_keys = invalid_attribute.keys - %i[grade]
       it_behaves_like '必須パラメーターがない場合のテスト', :race, absent_keys
+      it_behaves_like '不正な値を指定した場合のテスト', :race, invalid_attribute
     end
   end
 
