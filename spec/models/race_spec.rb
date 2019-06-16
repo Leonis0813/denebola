@@ -16,13 +16,7 @@ describe Race, type: :model do
         weather: %w[晴 曇 小雨 雨 小雪 雪],
       }
 
-      CommonHelper.generate_test_case(valid_attribute).each do |attribute|
-        it "#{attribute.keys.join(',')}を指定した場合、エラーにならないこと" do
-          race = Race.new(attribute)
-          race.validate
-          is_asserted_by { race.errors.empty? }
-        end
-      end
+      it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
     end
 
     describe '異常系' do
@@ -36,38 +30,20 @@ describe Race, type: :model do
         track: ['invalid', 1.0, 0, nil],
         weather: ['invalid', 1.0, 0, nil],
       }
+      absent_keys = (invalid_attribute.keys - %i[grade])
 
-      CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
-        it "#{attribute}を指定した場合、invalidエラーになること" do
-          race = build(:race, attribute)
-          race.validate
-          is_asserted_by { race.errors.present? }
-
-          attribute.keys.each do |invalid_key|
-            is_asserted_by { race.errors.messages[invalid_key].include?('invalid') }
-          end
-        end
-      end
-
-      invalid_attribute.keys.each do |absent_key|
-        it "#{absent_key}がない場合、absentエラーになること" do
-          attribute = build(:race).attributes.except(absent_key)
-          race = Race.new(attribute)
-          race.validate
-          is_asserted_by { race.errors.present? }
-          is_asserted_by { race.errors.messages[absent_key].include?('absent') }
-        end
-      end
+      it_behaves_like '不正な値を指定した場合のテスト', :race, invalid_attribute
+      it_behaves_like '必須パラメーターがない場合のテスト', :race, absent_keys
     end
   end
 
   describe '#month' do
     describe '正常系' do
       (1..12).each do |i|
-        context "#{i}月の場合" do
+        context "#{i}月のレースの場合" do
           before(:all) do
             start_time = Time.parse("2000/#{format('%02d', i)}/01 00:00:00")
-            @race = Race.new(start_time: start_time)
+            @race = build(:race, start_time: start_time)
           end
 
           it "#{i}を返すこと" do
