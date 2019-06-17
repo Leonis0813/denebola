@@ -9,7 +9,7 @@ class Race < ActiveRecord::Base
 
   has_many :entries
 
-  validates :distance, :place, :race_id, :round, :track, :weather,
+  validates :distance, :direction, :place, :race_id, :round, :track, :weather,
             presence: {message: 'absent'}
   validates :direction,
             inclusion: {in: DIRECTION_LIST, message: 'invalid'}

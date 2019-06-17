@@ -1,3 +1,6 @@
+# 2.4.9 (2019/06/17)
+- [FIX] race validation
+
 # 2.4.8 (2019/06/15)
 - [REFACTOR] collection util
 - [UPDATE] scripts to raise validation error
