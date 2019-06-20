@@ -4,6 +4,7 @@ require 'factory_bot'
 require 'pry'
 require 'rspec-power_assert'
 
+require File.join(APPLICATION_ROOT, 'lib', 'collect_util')
 Dir[File.join(APPLICATION_ROOT, 'models', '*.rb')].each {|f| require f }
 Dir[File.join(APPLICATION_ROOT, 'spec', 'support', '**', '*.rb')].each {|f| require f }
 
