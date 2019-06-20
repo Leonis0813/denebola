@@ -42,7 +42,7 @@ pipeline {
       }
 
       steps {
-        sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{models,libs,aggregation.rb}"
+        sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{models,libs,aggregation_spec.rb}"
       }
     }
 
