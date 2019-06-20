@@ -1,3 +1,4 @@
+ENV['RAILS_ENV'] ||= 'test'
 require_relative '../db/connect'
 require 'database_cleaner'
 require 'factory_bot'
