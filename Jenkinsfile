@@ -29,7 +29,7 @@ pipeline {
       steps {
         script {
           sh "rvm ${RUBY_VERSION} do bundle install --path=vendor/bundle"
-          sh "mkdir log"
+          sh "mkdir -p log"
           sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:reset"
           sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:migrate"
         }
