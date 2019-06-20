@@ -46,7 +46,7 @@ describe CollectUtil do
         end
 
         it 'リモートから取得したファイルを保存していること' do
-          is_asserted_by { File.exists?(race_ids_file) }
+          is_asserted_by { File.exist?(race_ids_file) }
         end
 
         it 'ファイルの内容が正しいこと' do
@@ -95,7 +95,7 @@ describe CollectUtil do
         end
 
         it 'リモートから取得したファイルを保存していること' do
-          is_asserted_by { File.exists?(race_html_file) }
+          is_asserted_by { File.exist?(race_html_file) }
         end
 
         it 'ファイルの内容が正しいこと' do
@@ -140,7 +140,7 @@ describe CollectUtil do
         after(:all) { FileUtils.rm(horse_html_file) }
 
         it 'リモートから取得したファイルを保存していること' do
-          is_asserted_by { File.exists?(horse_html_file) }
+          is_asserted_by { File.exist?(horse_html_file) }
         end
 
         it 'ファイルの内容が正しいこと' do
