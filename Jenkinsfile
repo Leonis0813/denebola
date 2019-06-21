@@ -1,6 +1,11 @@
 pipeline {
   agent any
 
+  environment {
+    PATH = '/usr/local/rvm/bin:/usr/bin:/bin'
+    RUBY_VERSION = '2.4.4'
+  }
+
   options {
     disableConcurrentBuilds()
   }
@@ -9,9 +14,51 @@ pipeline {
     string(name: 'DENEBOLA_VERSION', defaultValue: '', description: 'デプロイするバージョン')
     string(name: 'SUBRA_BRANCH', defaultValue: 'master', description: 'Chefのブランチ')
     choice(name: 'SCOPE', choices: 'full\napp', description: 'デプロイ範囲')
+    booleanParam(name: 'ModuleTest', defaultValue: false, description: 'Module Testを実行するかどうか')
+    booleanParam(name: 'Deploy', defaultValue: true, description: 'Deployを実行するかどうか')
   }
 
   stages {
+    stage('Test Setting') {
+      when {
+        expression {
+          return env.ENVIRONMENT == 'development' && params.ModuleTest
+        }
+      }
+
+      steps {
+        script {
+          sh "rvm ${RUBY_VERSION} do bundle install --path=vendor/bundle"
+          sh "mkdir -p log"
+          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:reset"
+          sh "rvm ${RUBY_VERSION} do env RAILS_ENV=test bundle exec rake db:migrate"
+        }
+      }
+    }
+
+    stage('Module Test') {
+      when {
+        expression { return env.ENVIRONMENT == 'development' && params.ModuleTest }
+      }
+
+      steps {
+        parallel (
+          "race" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/race_spec.rb"
+          },
+          "entry" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/entry_spec.rb"
+          },
+          "feature" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/feature_spec.rb"
+          },
+          "other" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb} spec/models/horse_spec.rb"
+          }
+        )
+      }
+    }
+
     stage('Deploy') {
       steps {
         ws("${env.WORKSPACE}/../chef") {
