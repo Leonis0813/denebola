@@ -41,9 +41,20 @@ pipeline {
         expression { return env.ENVIRONMENT == 'development' && params.ModuleTest }
       }
 
-      steps {
-        sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{models,libs,aggregate_spec.rb}"
-      }
+      parallel (
+        "race" : {
+          sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/race_spec.rb"
+        },
+        "entry" : {
+          sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/entry_spec.rb"
+        },
+        "feature" : {
+          sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/feature_spec.rb"
+        },
+        "other" : {
+          sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb} spec/models/horse_spec.rb"
+        }
+      )
     }
 
     stage('Deploy') {
