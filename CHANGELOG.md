@@ -1,3 +1,6 @@
+# 2.4.10 (2019/06/30)
+- [UPDATE] gems
+
 # 2.4.9 (2019/06/17)
 - [FIX] race validation
 
