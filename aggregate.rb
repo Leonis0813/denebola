@@ -1,39 +1,80 @@
-require 'logger'
 require_relative 'config/initialize'
 require_relative 'db/connect'
+require_relative 'lib/denebola_logger'
 Dir['models/*'].each {|f| require_relative f }
 
-logger = Logger.new('log/aggregate.log')
-logger.formatter = proc do |severity, datetime, progname, message|
-  time = datetime.utc.strftime(Settings.logger.time_format)
-  log = "[#{severity}] [#{time}]: #{message}"
-  puts log if ENV['STDOUT'] == 'on'
-  "#{log}\n"
+logger = DenebolaLogger.new(Settings.logger.path.aggregate)
+
+def extra_attribute(race, entry, horse)
+  entry_time = race.start_time
+  results_before = horse.results_before(entry_time)
+
+  blank = if results_before.second
+            (entry_time.to_date - results_before.second.race.start_time.to_date).to_i
+          else
+            0
+          end
+
+  sum_distance = results_before.map {|result| result.race.distance }.inject(:+)
+  average_distance = sum_distance / horse.entry_times(entry_time).to_f
+  distance_diff = (race.distance - average_distance).abs / average_distance
+
+  {
+    average_prize_money: horse.average_prize_money(entry_time),
+    blank: blank,
+    distance_diff: distance_diff,
+    entry_times: horse.entry_times(entry_time),
+    last_race_order: horse.last_race_order(entry_time),
+    month: race.month,
+    rate_within_third: horse.rate_within_third(entry_time),
+    second_last_race_order: horse.second_last_race_order(entry_time),
+    weight_per: entry.weight_per,
+    win_times: horse.win_times(entry_time),
+    won: entry.won,
+  }
 end
 
 logger.info('Start Aggregation')
 
-new_features = Entry.pluck(:race_id, :id).uniq - Feature.pluck(:race_id, :entry_id).uniq
+entries = Entry.joins(:race).joins(:horse)
+               .where(order: (1..18).to_a.map(&:to_s))
+               .where.not(weight: nil)
+               .pluck('races.race_id', 'horses.horse_id').uniq
+entries.map! {|race_id, horse_id| [race_id.to_s, horse_id.to_s] }
+features = Feature.pluck(:race_id, :horse_id).uniq
+new_features = entries - features
 
 logger.info("# of Updated Features = #{new_features.size}")
 
-new_features.each do |race_id, entry_id|
-  attribute = {:race_id => race_id, :entry_id => entry_id}
+new_features.each do |race_id, horse_id|
+  attribute = {race_id: race_id, horse_id: horse_id}
+  feature_attributes = Feature.attribute_names - %w[horse_id race_id]
 
-  race = Race.find(race_id)
-  attribute.merge!(race.attributes.slice(*Feature.attribute_names))
+  race = Race.find_by(race_id: race_id)
+  next unless race
 
-  entry = Entry.find(entry_id)
-  attribute.merge!(entry.attributes.slice(*Feature.attribute_names))
+  attribute.merge!(race.attributes.slice(*feature_attributes)).symbolize_keys!
 
-  weight_per = if entry.burden_weight.to_i > 0 and entry.weight.to_i > 0
-                 entry.burden_weight / entry.weight
-               end
-  attribute.merge!(:month => race.start_time.month, :weight_per => weight_per)
+  horse = Horse.find_by(horse_id: horse_id)
+  next unless horse
 
-  Feature.create!(attribute)
+  attribute.merge!(horse.attributes.slice(*feature_attributes)).symbolize_keys!
 
-  logger.info(attribute)
+  entry = Entry.find_by(race_id: race.id, horse_id: horse.id)
+  next unless entry
+
+  attribute.merge!(entry.attributes.slice(*feature_attributes)).symbolize_keys!
+
+  attribute.merge!(extra_attribute(race, entry, horse))
+
+  base_log_attribute = {action: 'create', resource: 'feature'}
+  begin
+    feature = Feature.create!(attribute.except(:id, :order))
+    logger.info(base_log_attribute.merge(feature_id: feature.id))
+  rescue ActiveRecord::RecordInvalid => e
+    logger.error(base_log_attribute.merge(errors: e.record.errors))
+    raise
+  end
 end
 
 logger.info('Finish Aggregation')

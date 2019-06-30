@@ -7,7 +7,9 @@ path:
 
 mysql:
   adapter: 'mysql2'
-  database: 'denebola'
+  database:
+    development: 'denebola'
+    test: 'denebola_test'
   host: 'localhost'
   username: 'root'
   password: '7QiSlC?4'
@@ -18,4 +20,10 @@ backup_dir:
   horse: 'horses'
 
 logger:
+  level: 'debug'
   time_format: '%Y/%m/%d %H:%M:%S.%6N'
+  path:
+    database: 'log/database.log'
+    collect: 'log/collect.log'
+    extract: 'log/extract.log'
+    aggregate: 'log/aggregate.log'

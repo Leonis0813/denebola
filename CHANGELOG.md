@@ -1,3 +1,80 @@
+# 2.4.10 (2019/06/30)
+- [UPDATE] gems
+
+# 2.4.9 (2019/06/17)
+- [FIX] race validation
+
+# 2.4.8 (2019/06/15)
+- [REFACTOR] collection util
+- [UPDATE] scripts to raise validation error
+- [UPDATE] gems
+
+# 2.4.7 (2019/05/26)
+- [FIX] aggregation to change integer to string for entries
+
+# 2.4.6 (2019/05/24)
+- [ADD] index to races and entries table
+- [UPDATE] horse model to cache results before entry time
+- [UPDATE] config to output sql
+- [UPDATE] prime_money not to set null
+- [FIX] aggregation not to search null weight
+
+# 2.4.5 (2019/05/23)
+- [UPDATE] schema of races and features table
+
+# 2.4.4 (2019/05/22)
+- [ADD] element to order and grade list
+- [FIX] mysql duplicate error
+
+# 2.4.3 (2019/05/20)
+- [ADD] validation to race, entry, horse and feature
+- [FIX] table schema
+
+# 2.4.2 (2019/05/19)
+- [FIX] grade extraction error
+- [UPDATE] default of grade in features table
+- [UPDATE] features table schema to change order to won
+- [REFACTOR] aggregation script
+- [FIX] feature values by entry time
+
+# 2.4.1 (2019/05/18)
+- [FIX] encoding error for race and horse
+
+# 2.4.0 (2019/05/17)
+- [ADD] new entry and horse attributes
+- [ADD] the following new features
+  - average_prize_money
+  - blank
+  - distance_diff
+  - entry_times
+  - last_race_final_600m_time
+  - last_race_order
+  - rate_within_third
+  - running_style
+  - second_last_race_order
+  - win_times
+- [UPDATE] gems
+
+# 2.3.2 (2019/05/04)
+- [FIX] coding style
+- [UPDATE] gems
+
+# 2.3.1 (2019/05/02)
+- [UPDATE] ruby version to 2.4.4
+
+# 2.3.0 (2019/04/21)
+- [ADD] new horse attributes
+- [ADD] horse features to features table
+
+# 2.2.0 (2019/04/15)
+- [ADD] race_id attribute to races table
+- [REFACTOR] logger
+- [ADD] gem for HTTP client
+- [UPDATE] collecting script to remove empty files
+
+# 2.1.2 (2019/04/11)
+- [UPDATE] gems
+
 # 2.1.1 (2019/03/24)
 - [UPDATE] gems
 
