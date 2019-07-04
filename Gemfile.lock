@@ -59,7 +59,7 @@ GEM
       activesupport (>= 4.2.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
-    fuubar (2.4.0)
+    fuubar (2.4.1)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
     gitlab (4.11.0)
