@@ -1,5 +1,6 @@
 # 2.4.11 (2019/07/19)
 - [FIX] extraction order
+- [UPDATE] gems
 
 # 2.4.10 (2019/06/30)
 - [UPDATE] gems
