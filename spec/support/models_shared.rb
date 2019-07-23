@@ -23,9 +23,8 @@ shared_examples '必須パラメーターがない場合のテスト' do |absent
   end
 end
 
-shared_examples '不正な値を指定した場合のテスト' do |invalid_attribute, sampling_rate = 1|
-  test_cases = CommonHelper.generate_test_case(invalid_attribute)
-  test_cases.sample(test_cases.size * sampling_rate).each do |attribute|
+shared_examples '不正な値を指定した場合のテスト' do |invalid_attribute|
+  CommonHelper.generate_test_case(invalid_attribute).each do |attribute|
     it "#{attribute}を指定した場合、エラーになること" do
       object = build(described_class.name.downcase.to_sym, attribute)
       object.validate

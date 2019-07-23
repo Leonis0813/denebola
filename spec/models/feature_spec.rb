@@ -39,7 +39,7 @@ describe Feature, type: :model do
       }
       absent_keys = invalid_attribute.keys - %i[grade won]
       it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
-      it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute, 0.1
+      it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
   end
 end
