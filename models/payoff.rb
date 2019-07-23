@@ -5,9 +5,8 @@ class Payoff < ActiveRecord::Base
 
   belongs_to :race
 
-  validates :betting_ticket, :odds,
-            presence: {message: 'absent'}
   validates :betting_ticket,
+            presence: {message: 'absent'},
             inclusion: {in: BETTING_TICKET_LIST, message: 'invalid'}
   validates :odds,
             numericality: {greater_than: 1, message: 'invalid'}
