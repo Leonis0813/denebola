@@ -1,40 +1,38 @@
 # coding: utf-8
 
 def extract_payoff(html)
-  payoff_data = html.xpath('//dl[contains(@class, "pay_block")]')
+  payoff_tables = html.xpath('//dl[contains(@class, "pay_block")]').search('table')
 
-  win_data = payoff_data.search('table').first.search('tr')[0].search('td')
-  show_data = payoff_data.search('table').first.search('tr')[1].search('td')
-  bracket_quinella_data = payoff_data.search('table').first.search('tr')[2].search('td')
-  quinella_data = payoff_data.search('table').first.search('tr')[3].search('td')
+  win_data, show_data, bracket_quinella_data, quinella_data =
+    payoff_tables.first.search('tr')
 
-  quinella_places_data = payoff_data.search('table').second.search('tr')[0].search('td')
-  exacta_data = payoff_data.search('table').second.search('tr')[1].search('td')
+  quinella_places_data, exacta_data, trio_data, trifecta_data =
+    payoff_tables.second.search('tr')
 
   {
-    win: extract_win(win_data),
-    shows: extract_shows(show_data),
-    bracket_quinella: extract_bracket_quinella(bracket_quinella_data),
-    quinella: extract_quinella(quinella_data),
-    quinella_places: extract_quinella_places(quinella_places_data),
-    exacta: extract_exacta(exacta_data),
-    trio: extract_trio(trio_data),
-    trifecta: extract_trifecta(trifecta_data),
+    win: extract_win(win_data.search('td')),
+    shows: extract_shows(show_data.search('td')),
+    bracket_quinella: extract_bracket_quinella(bracket_quinella_data.search('td')),
+    quinella: extract_quinella(quinella_data.search('td')),
+    quinella_places: extract_quinella_places(quinella_places_data.search('td')),
+    exacta: extract_exacta(exacta_data.search('td')),
+    trio: extract_trio(trio_data.search('td')),
+    trifecta: extract_trifecta(trifecta_data.search('td')),
   }
 end
 
-def extract_win(td)
+def extract_win(tds)
   {
-    number: td.first.text.to_i,
-    odds: td.second.text.delete(',').to_f / 100,
-    favorite: td.third.text.to_i,
+    number: tds.first.text.to_i,
+    odds: tds.second.text.delete(',').to_f / 100,
+    favorite: tds.third.text.to_i,
   }
 end
 
-def extract_shows(td)
-  number_data = td.first.children.select {|data| not data.text.empty? }
-  odds_data = td.second.children.select {|data| not data.text.empty? }
-  favorite_data = td.third.children.select {|data| not data.text.empty? }
+def extract_shows(tds)
+  number_data = tds.first.children.reject {|data| data.text.empty? }
+  odds_data = tds.second.children.reject {|data| data.text.empty? }
+  favorite_data = tds.third.children.reject {|data| data.text.empty? }
 
   number_data.map.with_index do |number, i|
     {
@@ -45,30 +43,30 @@ def extract_shows(td)
   end
 end
 
-def extract_bracket_quinella(td)
-  entries = td.first.text.split(' - ')
+def extract_bracket_quinella(tds)
+  entries = tds.first.text.split(' - ')
   {
     entry1: entries.first.to_i,
     entry2: entries.second.to_i,
-    odds: td.second.text.delete(',').to_f / 100,
-    favorite: td.third.text.to_i,
+    odds: tds.second.text.delete(',').to_f / 100,
+    favorite: tds.third.text.to_i,
   }
 end
 
-def extract_quinella(td)
-  entries = td.first.text.split(' - ')
+def extract_quinella(tds)
+  entries = tds.first.text.split(' - ')
   {
     entry1: entries.first.to_i,
     entry2: entries.second.to_i,
-    odds: td.second.text.delete(',').to_f / 100,
-    favorite: td.third.text.to_i,
+    odds: tds.second.text.delete(',').to_f / 100,
+    favorite: tds.third.text.to_i,
   }
 end
 
-def extract_quinella_places(td)
-  number_data = td.first.children.select {|data| not data.text.empty? }
-  odds_data = td.second.children.select {|data| not data.text.empty? }
-  favorite_data = td.third.children.select {|data| not data.text.empty? }
+def extract_quinella_places(tds)
+  number_data = tds.first.children.reject {|data| data.text.empty? }
+  odds_data = tds.second.children.reject {|data| data.text.empty? }
+  favorite_data = tds.third.children.reject {|data| data.text.empty? }
 
   number_data.map.with_index do |number, i|
     entries = number.text.split(' - ')
@@ -81,34 +79,34 @@ def extract_quinella_places(td)
   end
 end
 
-def extract_exacta(td)
-  entries = td.first.split(' → ')
+def extract_exacta(tds)
+  entries = tds.first.split(' → ')
   {
     first_place: entries.first.to_i,
     second_place: entries.second.to_i,
-    odds: td.second.text.delete(',').to_f / 100,
-    favorite: td.third.text.to_i,
+    odds: tds.second.text.delete(',').to_f / 100,
+    favorite: tds.third.text.to_i,
   }
 end
 
-def extract_trio(td)
-  entries = td.first.split(' - ')
+def extract_trio(tds)
+  entries = tds.first.split(' - ')
   {
     entry1: entries.first.to_i,
     entry2: entries.second.to_i,
     entry3: entries.third.to_i,
-    odds: td.second.text.delete(',').to_f / 100,
-    favorite: td.third.text.to_i,
+    odds: tds.second.text.delete(',').to_f / 100,
+    favorite: tds.third.text.to_i,
   }
 end
 
-def extract_trifecta(td)
-  entries = td.first.split(' → ')
+def extract_trifecta(tds)
+  entries = tds.first.split(' → ')
   {
     first_place: entries.first.to_i,
     second_place: entries.second.to_i,
     third_place: entries.third.to_i,
-    odds: td.second.text.delete(',').to_f / 100,
-    favorite: td.third.text.to_i,
+    odds: tds.second.text.delete(',').to_f / 100,
+    favorite: tds.third.text.to_i,
   }
 end
