@@ -12,6 +12,18 @@
 
 ActiveRecord::Schema.define(version: 29) do
 
+  create_table "bracket_quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "race_id", null: false
+    t.integer "entry1_id", null: false
+    t.integer "entry2_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry1_id"], name: "fk_rails_58ff7ed11e"
+    t.index ["entry2_id"], name: "fk_rails_0713565dc9"
+  end
+
   create_table "entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
     t.float "burden_weight", null: false
@@ -29,6 +41,18 @@ ActiveRecord::Schema.define(version: 29) do
     t.datetime "updated_at", null: false
     t.index ["horse_id", "race_id"], name: "index_entries_on_horse_id_and_race_id", unique: true
     t.index ["race_id", "number"], name: "index_entries_on_race_id_and_number", unique: true
+  end
+
+  create_table "exactas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "race_id", null: false
+    t.integer "first_place_id", null: false
+    t.integer "second_place_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["first_place_id"], name: "fk_rails_96fe7cd245"
+    t.index ["second_place_id"], name: "fk_rails_d8b33e3691"
   end
 
   create_table "features", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -71,12 +95,28 @@ ActiveRecord::Schema.define(version: 29) do
     t.index ["horse_id"], name: "index_horses_on_horse_id", unique: true
   end
 
-  create_table "payoffs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "betting_ticket", null: false
-    t.float "odds", default: 0.0, null: false
+  create_table "quinella_places", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
     t.integer "race_id", null: false
+    t.integer "entry1_id", null: false
+    t.integer "entry2_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["entry1_id"], name: "fk_rails_a980b645c1"
+    t.index ["entry2_id"], name: "fk_rails_193526d5fc"
+  end
+
+  create_table "quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "race_id", null: false
+    t.integer "entry1_id", null: false
+    t.integer "entry2_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry1_id"], name: "fk_rails_3a74dde86c"
+    t.index ["entry2_id"], name: "fk_rails_e49b528035"
   end
 
   create_table "races", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -95,4 +135,64 @@ ActiveRecord::Schema.define(version: 29) do
     t.index ["race_id"], name: "index_races_on_race_id", unique: true
   end
 
+  create_table "shows", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "race_id", null: false
+    t.integer "entry_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "trifectas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "race_id", null: false
+    t.integer "first_place_id", null: false
+    t.integer "second_place_id", null: false
+    t.integer "third_place_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["first_place_id"], name: "fk_rails_cf2ae3cc71"
+    t.index ["second_place_id"], name: "fk_rails_9b89281242"
+    t.index ["third_place_id"], name: "fk_rails_6f14d84ad4"
+  end
+
+  create_table "trios", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "race_id", null: false
+    t.integer "entry1_id", null: false
+    t.integer "entry2_id", null: false
+    t.integer "entry3_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry1_id"], name: "fk_rails_44ef9d515a"
+    t.index ["entry2_id"], name: "fk_rails_722471329f"
+    t.index ["entry3_id"], name: "fk_rails_17f52249b0"
+  end
+
+  create_table "wins", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "race_id", null: false
+    t.integer "entry_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "bracket_quinellas", "entries", column: "entry1_id"
+  add_foreign_key "bracket_quinellas", "entries", column: "entry2_id"
+  add_foreign_key "exactas", "entries", column: "first_place_id"
+  add_foreign_key "exactas", "entries", column: "second_place_id"
+  add_foreign_key "quinella_places", "entries", column: "entry1_id"
+  add_foreign_key "quinella_places", "entries", column: "entry2_id"
+  add_foreign_key "quinellas", "entries", column: "entry1_id"
+  add_foreign_key "quinellas", "entries", column: "entry2_id"
+  add_foreign_key "trifectas", "entries", column: "first_place_id"
+  add_foreign_key "trifectas", "entries", column: "second_place_id"
+  add_foreign_key "trifectas", "entries", column: "third_place_id"
+  add_foreign_key "trios", "entries", column: "entry1_id"
+  add_foreign_key "trios", "entries", column: "entry2_id"
+  add_foreign_key "trios", "entries", column: "entry3_id"
 end
