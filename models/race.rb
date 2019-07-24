@@ -8,7 +8,14 @@ class Race < ActiveRecord::Base
   WEATHER_LIST = %w[晴 曇 小雨 雨 小雪 雪].freeze
 
   has_many :entries
-  has_many :payoffs
+  has_one :win
+  has_many :shows
+  has_one :bracket_quinella
+  has_one :quinella
+  has_many :quinella_places
+  has_one :exacta
+  has_one :trio
+  has_one :trifecta
 
   validates :distance, :direction, :place, :race_id, :round, :track, :weather,
             presence: {message: 'absent'}
