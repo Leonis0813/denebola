@@ -1,13 +1,16 @@
 # coding: utf-8
 
 class Payoff < ActiveRecord::Base
-  BETTING_TICKET_LIST = %w[単勝 複勝 枠連 馬連 ワイド 馬単 三連複 三連単].freeze
-
   belongs_to :race
 
-  validates :betting_ticket,
-            presence: {message: 'absent'},
-            inclusion: {in: BETTING_TICKET_LIST, message: 'invalid'}
+  validates :odds, :favorite,
+            presence: {message: 'absent'}
   validates :odds,
             numericality: {greater_than: 1, message: 'invalid'}
+  validates :favorite,
+            numericality: {
+              only_integer: true,
+              greater_than_or_equal_to: 1,
+              message: 'invalid',
+            }
 end
