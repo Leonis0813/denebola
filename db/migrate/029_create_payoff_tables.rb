@@ -16,9 +16,9 @@ class CreatePayoffTables < ActiveRecord::Migration[4.2]
     create_table :wins do |t|
       t.float :odds, null: false
       t.integer :favorite, null: false
+      t.integer :number, null: false
 
       t.references :race, null: false
-      t.references :entry, null: false
 
       t.timestamps null: false
     end
@@ -28,9 +28,9 @@ class CreatePayoffTables < ActiveRecord::Migration[4.2]
     create_table :shows do |t|
       t.float :odds, null: false
       t.integer :favorite, null: false
+      t.integer :number, null: false
 
       t.references :race, null: false
-      t.references :entry, null: false
 
       t.timestamps null: false
     end
@@ -40,10 +40,10 @@ class CreatePayoffTables < ActiveRecord::Migration[4.2]
     create_table :bracket_quinellas do |t|
       t.float :odds, null: false
       t.integer :favorite, null: false
+      t.integer :bracket_number1, null: false
+      t.integer :bracket_number2, null: false
 
       t.references :race, null: false
-      t.references :entry1, null: false, foreign_key: {to_table: :entries}
-      t.references :entry2, null: false, foreign_key: {to_table: :entries}
 
       t.timestamps null: false
     end
@@ -53,10 +53,10 @@ class CreatePayoffTables < ActiveRecord::Migration[4.2]
     create_table :quinellas do |t|
       t.float :odds, null: false
       t.integer :favorite, null: false
+      t.integer :number1, null: false
+      t.integer :number2, null: false
 
       t.references :race, null: false
-      t.references :entry1, null: false, foreign_key: {to_table: :entries}
-      t.references :entry2, null: false, foreign_key: {to_table: :entries}
 
       t.timestamps null: false
     end
@@ -66,10 +66,10 @@ class CreatePayoffTables < ActiveRecord::Migration[4.2]
     create_table :quinella_places do |t|
       t.float :odds, null: false
       t.integer :favorite, null: false
+      t.integer :number1, null: false
+      t.integer :number2, null: false
 
       t.references :race, null: false
-      t.references :entry1, null: false, foreign_key: {to_table: :entries}
-      t.references :entry2, null: false, foreign_key: {to_table: :entries}
 
       t.timestamps null: false
     end
@@ -79,10 +79,10 @@ class CreatePayoffTables < ActiveRecord::Migration[4.2]
     create_table :exactas do |t|
       t.float :odds, null: false
       t.integer :favorite, null: false
+      t.integer :first_place_number, null: false
+      t.integer :second_place_number, null: false
 
       t.references :race, null: false
-      t.references :first_place, null: false, foreign_key: {to_table: :entries}
-      t.references :second_place, null: false, foreign_key: {to_table: :entries}
 
       t.timestamps null: false
     end
@@ -92,11 +92,11 @@ class CreatePayoffTables < ActiveRecord::Migration[4.2]
     create_table :trios do |t|
       t.float :odds, null: false
       t.integer :favorite, null: false
+      t.integer :number1, null: false
+      t.integer :number2, null: false
+      t.integer :number3, null: false
 
       t.references :race, null: false
-      t.references :entry1, null: false, foreign_key: {to_table: :entries}
-      t.references :entry2, null: false, foreign_key: {to_table: :entries}
-      t.references :entry3, null: false, foreign_key: {to_table: :entries}
 
       t.timestamps null: false
     end
@@ -106,11 +106,11 @@ class CreatePayoffTables < ActiveRecord::Migration[4.2]
     create_table :trifectas do |t|
       t.float :odds, null: false
       t.integer :favorite, null: false
+      t.integer :first_place_number, null: false
+      t.integer :second_place_number, null: false
+      t.integer :third_place_number, null: false
 
       t.references :race, null: false
-      t.references :first_place, null: false, foreign_key: {to_table: :entries}
-      t.references :second_place, null: false, foreign_key: {to_table: :entries}
-      t.references :third_place, null: false, foreign_key: {to_table: :entries}
 
       t.timestamps null: false
     end
