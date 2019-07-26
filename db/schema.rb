@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 28) do
+ActiveRecord::Schema.define(version: 29) do
+
+  create_table "bracket_quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "bracket_number1", null: false
+    t.integer "bracket_number2", null: false
+    t.integer "race_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
@@ -29,6 +39,16 @@ ActiveRecord::Schema.define(version: 28) do
     t.datetime "updated_at", null: false
     t.index ["horse_id", "race_id"], name: "index_entries_on_horse_id_and_race_id", unique: true
     t.index ["race_id", "number"], name: "index_entries_on_race_id_and_number", unique: true
+  end
+
+  create_table "exactas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "first_place_number", null: false
+    t.integer "second_place_number", null: false
+    t.integer "race_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "features", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -71,6 +91,26 @@ ActiveRecord::Schema.define(version: 28) do
     t.index ["horse_id"], name: "index_horses_on_horse_id", unique: true
   end
 
+  create_table "quinella_places", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "number1", null: false
+    t.integer "number2", null: false
+    t.integer "race_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "number1", null: false
+    t.integer "number2", null: false
+    t.integer "race_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "races", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "direction", null: false
     t.integer "distance", null: false
@@ -85,6 +125,46 @@ ActiveRecord::Schema.define(version: 28) do
     t.datetime "updated_at", null: false
     t.index ["place", "start_time"], name: "index_races_on_place_and_start_time", unique: true
     t.index ["race_id"], name: "index_races_on_race_id", unique: true
+  end
+
+  create_table "shows", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "number", null: false
+    t.integer "race_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "trifectas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "first_place_number", null: false
+    t.integer "second_place_number", null: false
+    t.integer "third_place_number", null: false
+    t.integer "race_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "trios", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "number1", null: false
+    t.integer "number2", null: false
+    t.integer "number3", null: false
+    t.integer "race_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "wins", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.float "odds", null: false
+    t.integer "favorite", null: false
+    t.integer "number", null: false
+    t.integer "race_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end

@@ -14,7 +14,7 @@ pipeline {
     string(name: 'DENEBOLA_VERSION', defaultValue: '', description: 'デプロイするバージョン')
     string(name: 'SUBRA_BRANCH', defaultValue: 'master', description: 'Chefのブランチ')
     choice(name: 'SCOPE', choices: 'full\napp', description: 'デプロイ範囲')
-    booleanParam(name: 'ModuleTest', defaultValue: false, description: 'Module Testを実行するかどうか')
+    booleanParam(name: 'ModuleTest', defaultValue: true, description: 'Module Testを実行するかどうか')
     booleanParam(name: 'Deploy', defaultValue: true, description: 'Deployを実行するかどうか')
   }
 
@@ -43,17 +43,17 @@ pipeline {
 
       steps {
         parallel (
-          "race" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/race_spec.rb"
+          "models/[b-e]" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/[b-e]*"
           },
-          "entry" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/entry_spec.rb"
-          },
-          "feature" : {
+          "models/feature" : {
             sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/feature_spec.rb"
           },
+          "models/[h-q]*" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/[h-q]*"
+          },
           "other" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb} spec/models/horse_spec.rb"
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb} spec/models/[r-w]*"
           }
         )
       }

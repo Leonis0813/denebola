@@ -24,22 +24,22 @@ describe Feature, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        average_prize_money: ['invalid', -1.0, nil],
-        blank: ['invalid', -1, 1.0, nil],
-        distance_diff: ['invalid', -1.0, nil],
-        entry_times: ['invalid', -1, 1.0, nil],
-        grade: ['invalid', 0, 1.0],
-        last_race_order: ['invalid', -1, 1.0, nil],
-        month: ['invalid', 0, 13, 1.0, nil],
-        rate_within_third: ['invalid', -1.0, nil],
-        second_last_race_order: ['invalid', -1, 1.0, nil],
-        weight_per: ['invalid', 0, nil],
-        win_times: ['invalid', -1, 1.0, nil],
+        average_prize_money: [-1.0, nil],
+        blank: [-1, 1.0, nil],
+        distance_diff: [-1.0, nil],
+        entry_times: [-1, 1.0, nil],
+        grade: ['invalid'],
+        last_race_order: [-1, 1.0, nil],
+        month: [0, 13, 1.0, nil],
+        rate_within_third: [-1.0, nil],
+        second_last_race_order: [-1, 1.0, nil],
+        weight_per: [0, nil],
+        win_times: [-1, 1.0, nil],
         won: [nil],
       }
       absent_keys = invalid_attribute.keys - %i[grade won]
       it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
-      it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute, 0.05
+      it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
   end
 end

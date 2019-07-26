@@ -3,7 +3,8 @@ require_relative 'config/initialize'
 require_relative 'db/connect'
 require_relative 'lib/denebola_logger'
 Dir['extract/*'].each {|f| require_relative f }
-Dir['models/*'].each {|f| require_relative f }
+Dir['models/concern/*'].each {|f| require_relative f }
+Dir['models/*.rb'].each {|f| require_relative f }
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 logger = DenebolaLogger.new(Settings.logger.path.extract)
@@ -34,8 +35,8 @@ end
     html = File.read(file_path)
     logger.info(action: 'read', resource: 'race', file_path: File.basename(file_path))
 
-    parsed_html = Nokogiri::HTML.parse(html)
-    race_attribute = extract_race(parsed_html) rescue next
+    race_html = Nokogiri::HTML.parse(html)
+    race_attribute = extract_race(race_html) rescue next
 
     race = Race.find_by(race_id: race_id)
     unless race
@@ -49,7 +50,7 @@ end
       end
     end
 
-    _, *rows = parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
+    _, *rows = race_html.xpath('//table[contains(@class, "race_table")]').search('tr')
     rows.each do |row|
       entry_attribute = extract_entry(row) rescue next
       entry = race.entries.find_by(entry_attribute.slice(:race_id, :number))
@@ -89,5 +90,8 @@ end
 
       horse.results << entry
     end
+
+    payoff_attribute = extract_payoff(race_html)
+    race.create_payoff(payoff_attribute.compact)
   end
 end
