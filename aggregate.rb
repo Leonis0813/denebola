@@ -1,7 +1,8 @@
 require_relative 'config/initialize'
 require_relative 'db/connect'
 require_relative 'lib/denebola_logger'
-Dir['models/*'].each {|f| require_relative f }
+Dir['models/concern/*'].each {|f| require_relative f }
+Dir['models/*.rb'].each {|f| require_relative f }
 
 logger = DenebolaLogger.new(Settings.logger.path.aggregate)
 
