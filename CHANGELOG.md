@@ -1,3 +1,6 @@
+# 2.5.0 (2019/07/26)
+- [UPDATE] script to extract payoff
+
 # 2.4.11 (2019/07/19)
 - [FIX] extraction order
 - [UPDATE] gems
