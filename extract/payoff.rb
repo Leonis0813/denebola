@@ -4,30 +4,22 @@ def extract_payoff(html)
   payoff_tables = html.xpath('//dl[contains(@class, "pay_block")]').search('table')
 
   left_table = payoff_tables[0].search('tr')
-  win_data = left_table.xpath('//tr/th[@class="tan"]').first&.parent
-  show_data = left_table.xpath('//tr/th[@class="fuku"]').first&.parent
-  bracket_quinella_data = left_table.xpath('//tr/th[@class="waku"]').first&.parent
-  quinella_data = left_table.xpath('//tr/th[@class="uren"]').first&.parent
-
   right_table = payoff_tables[1].search('tr')
-  quinella_places_data = right_table.xpath('//tr/th[@class="wide"]').first&.parent
-  exacta_data = right_table.xpath('//tr/th[@class="utan"]').first&.parent
-  trio_data = right_table.xpath('//tr/th[@class="sanfuku"]').first&.parent
-  trifecta_data = right_table.xpath('//tr/th[@class="santan"]').first&.parent
 
   {
-    win: extract_win(win_data&.search('td')),
-    shows: extract_shows(show_data&.search('td')),
-    bracket_quinella: extract_bracket_quinella(bracket_quinella_data&.search('td')),
-    quinella: extract_quinella(quinella_data&.search('td')),
-    quinella_places: extract_quinella_places(quinella_places_data&.search('td')),
-    exacta: extract_exacta(exacta_data&.search('td')),
-    trio: extract_trio(trio_data&.search('td')),
-    trifecta: extract_trifecta(trifecta_data&.search('td')),
+    win: extract_win(left_table),
+    shows: extract_shows(left_table),
+    bracket_quinella: extract_bracket_quinella(left_table),
+    quinella: extract_quinella(left_table),
+    quinella_places: extract_quinella_places(right_table),
+    exacta: extract_exacta(right_table),
+    trio: extract_trio(right_table),
+    trifecta: extract_trifecta(right_table),
   }
 end
 
-def extract_win(tds)
+def extract_win(table)
+  tds = table.xpath('//tr/th[@class="tan"]').first&.parent&.search('td')
   return unless tds
 
   {
@@ -37,7 +29,8 @@ def extract_win(tds)
   }
 end
 
-def extract_shows(tds)
+def extract_shows(table)
+  tds = table.xpath('//tr/th[@class="fuku"]').first&.parent&.search('td')
   return unless tds
 
   number_data = tds[0].children.reject {|data| data.text.empty? }
@@ -53,7 +46,8 @@ def extract_shows(tds)
   end
 end
 
-def extract_bracket_quinella(tds)
+def extract_bracket_quinella(table)
+  tds = table.xpath('//tr/th[@class="waku"]').first&.parent&.search('td')
   return unless tds
 
   entries = tds[0].text.split(' - ')
@@ -65,7 +59,8 @@ def extract_bracket_quinella(tds)
   }
 end
 
-def extract_quinella(tds)
+def extract_quinella(table)
+  tds = table.xpath('//tr/th[@class="uren"]').first&.parent&.search('td')
   return unless tds
 
   entries = tds[0].text.split(' - ')
@@ -77,7 +72,8 @@ def extract_quinella(tds)
   }
 end
 
-def extract_quinella_places(tds)
+def extract_quinella_places(table)
+  tds = table.xpath('//tr/th[@class="wide"]').first&.parent&.search('td')
   return unless tds
 
   number_data = tds[0].children.reject {|data| data.text.empty? }
@@ -95,7 +91,8 @@ def extract_quinella_places(tds)
   end
 end
 
-def extract_exacta(tds)
+def extract_exacta(table)
+  tds = table.xpath('//tr/th[@class="utan"]').first&.parent&.search('td')
   return unless tds
 
   entries = tds[0].text.split(' → ')
@@ -107,7 +104,8 @@ def extract_exacta(tds)
   }
 end
 
-def extract_trio(tds)
+def extract_trio(table)
+  tds = table.xpath('//tr/th[@class="sanfuku"]').first&.parent&.search('td')
   return unless tds
 
   entries = tds[0].text.split(' - ')
@@ -120,7 +118,8 @@ def extract_trio(tds)
   }
 end
 
-def extract_trifecta(tds)
+def extract_trifecta(table)
+  tds = table.xpath('//tr/th[@class="santan"]').first&.parent&.search('td')
   return unless tds
 
   entries = tds[0].text.split(' → ')
