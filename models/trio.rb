@@ -1,7 +1,9 @@
-# coding: utf-8
+class Trio < ActiveRecord::Base
+  include PayoffValidator
 
-class QuinellaPlace < Payoff
-  validates :number1, :number2,
+  belongs_to :race
+
+  validates :number1, :number2, :number3,
             presence: {message: 'absent'},
             numericality: {
               only_integer: true,

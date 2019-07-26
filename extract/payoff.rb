@@ -3,36 +3,46 @@
 def extract_payoff(html)
   payoff_tables = html.xpath('//dl[contains(@class, "pay_block")]').search('table')
 
-  win_data, show_data, bracket_quinella_data, quinella_data =
-    payoff_tables.first.search('tr')
+  left_table = payoff_tables[0].search('tr')
+  win_data = left_table.xpath('//tr/th[@class="tan"]').first&.parent
+  show_data = left_table.xpath('//tr/th[@class="fuku"]').first&.parent
+  bracket_quinella_data = left_table.xpath('//tr/th[@class="waku"]').first&.parent
+  quinella_data = left_table.xpath('//tr/th[@class="uren"]').first&.parent
 
-  quinella_places_data, exacta_data, trio_data, trifecta_data =
-    payoff_tables.second.search('tr')
+  right_table = payoff_tables[1].search('tr')
+  quinella_places_data = right_table.xpath('//tr/th[@class="wide"]').first&.parent
+  exacta_data = right_table.xpath('//tr/th[@class="utan"]').first&.parent
+  trio_data = right_table.xpath('//tr/th[@class="sanfuku"]').first&.parent
+  trifecta_data = right_table.xpath('//tr/th[@class="santan"]').first&.parent
 
   {
-    win: extract_win(win_data.search('td')),
-    shows: extract_shows(show_data.search('td')),
-    bracket_quinella: extract_bracket_quinella(bracket_quinella_data.search('td')),
-    quinella: extract_quinella(quinella_data.search('td')),
-    quinella_places: extract_quinella_places(quinella_places_data.search('td')),
-    exacta: extract_exacta(exacta_data.search('td')),
-    trio: extract_trio(trio_data.search('td')),
-    trifecta: extract_trifecta(trifecta_data.search('td')),
+    win: extract_win(win_data&.search('td')),
+    shows: extract_shows(show_data&.search('td')),
+    bracket_quinella: extract_bracket_quinella(bracket_quinella_data&.search('td')),
+    quinella: extract_quinella(quinella_data&.search('td')),
+    quinella_places: extract_quinella_places(quinella_places_data&.search('td')),
+    exacta: extract_exacta(exacta_data&.search('td')),
+    trio: extract_trio(trio_data&.search('td')),
+    trifecta: extract_trifecta(trifecta_data&.search('td')),
   }
 end
 
 def extract_win(tds)
+  return unless tds
+
   {
-    number: tds.first.text.to_i,
-    odds: tds.second.text.delete(',').to_f / 100,
-    favorite: tds.third.text.to_i,
+    number: tds[0].text.to_i,
+    odds: tds[1].text.delete(',').to_f / 100,
+    favorite: tds[2].text.to_i,
   }
 end
 
 def extract_shows(tds)
-  number_data = tds.first.children.reject {|data| data.text.empty? }
-  odds_data = tds.second.children.reject {|data| data.text.empty? }
-  favorite_data = tds.third.children.reject {|data| data.text.empty? }
+  return unless tds
+
+  number_data = tds[0].children.reject {|data| data.text.empty? }
+  odds_data = tds[1].children.reject {|data| data.text.empty? }
+  favorite_data = tds[2].children.reject {|data| data.text.empty? }
 
   number_data.map.with_index do |number, i|
     {
@@ -44,35 +54,41 @@ def extract_shows(tds)
 end
 
 def extract_bracket_quinella(tds)
-  entries = tds.first.text.split(' - ')
+  return unless tds
+
+  entries = tds[0].text.split(' - ')
   {
-    entry1: entries.first.to_i,
-    entry2: entries.second.to_i,
-    odds: tds.second.text.delete(',').to_f / 100,
-    favorite: tds.third.text.to_i,
+    bracket_number1: entries[0].to_i,
+    bracket_number2: entries[1].to_i,
+    odds: tds[1].text.delete(',').to_f / 100,
+    favorite: tds[2].text.to_i,
   }
 end
 
 def extract_quinella(tds)
-  entries = tds.first.text.split(' - ')
+  return unless tds
+
+  entries = tds[0].text.split(' - ')
   {
-    entry1: entries.first.to_i,
-    entry2: entries.second.to_i,
-    odds: tds.second.text.delete(',').to_f / 100,
-    favorite: tds.third.text.to_i,
+    number1: entries[0].to_i,
+    number2: entries[1].to_i,
+    odds: tds[1].text.delete(',').to_f / 100,
+    favorite: tds[2].text.to_i,
   }
 end
 
 def extract_quinella_places(tds)
-  number_data = tds.first.children.reject {|data| data.text.empty? }
-  odds_data = tds.second.children.reject {|data| data.text.empty? }
-  favorite_data = tds.third.children.reject {|data| data.text.empty? }
+  return unless tds
+
+  number_data = tds[0].children.reject {|data| data.text.empty? }
+  odds_data = tds[1].children.reject {|data| data.text.empty? }
+  favorite_data = tds[2].children.reject {|data| data.text.empty? }
 
   number_data.map.with_index do |number, i|
     entries = number.text.split(' - ')
     {
-      entry1: entries.first.to_i,
-      entry2: entries.second.to_i,
+      number1: entries[0].to_i,
+      number2: entries[1].to_i,
       odds: odds_data[i].text.delete(',').to_f / 100,
       favorite: favorite_data[i].text.to_i,
     }
@@ -80,33 +96,39 @@ def extract_quinella_places(tds)
 end
 
 def extract_exacta(tds)
-  entries = tds.first.split(' → ')
+  return unless tds
+
+  entries = tds[0].text.split(' → ')
   {
-    first_place: entries.first.to_i,
-    second_place: entries.second.to_i,
-    odds: tds.second.text.delete(',').to_f / 100,
-    favorite: tds.third.text.to_i,
+    first_place_number: entries[0].to_i,
+    second_place_number: entries[1].to_i,
+    odds: tds[1].text.delete(',').to_f / 100,
+    favorite: tds[2].text.to_i,
   }
 end
 
 def extract_trio(tds)
-  entries = tds.first.split(' - ')
+  return unless tds
+
+  entries = tds[0].text.split(' - ')
   {
-    entry1: entries.first.to_i,
-    entry2: entries.second.to_i,
-    entry3: entries.third.to_i,
-    odds: tds.second.text.delete(',').to_f / 100,
-    favorite: tds.third.text.to_i,
+    number1: entries[0].to_i,
+    number2: entries[1].to_i,
+    number3: entries[2].to_i,
+    odds: tds[1].text.delete(',').to_f / 100,
+    favorite: tds[2].text.to_i,
   }
 end
 
 def extract_trifecta(tds)
-  entries = tds.first.split(' → ')
+  return unless tds
+
+  entries = tds[0].text.split(' → ')
   {
-    first_place: entries.first.to_i,
-    second_place: entries.second.to_i,
-    third_place: entries.third.to_i,
-    odds: tds.second.text.delete(',').to_f / 100,
-    favorite: tds.third.text.to_i,
+    first_place_number: entries[0].to_i,
+    second_place_number: entries[1].to_i,
+    third_place_number: entries[2].to_i,
+    odds: tds[1].text.delete(',').to_f / 100,
+    favorite: tds[2].text.to_i,
   }
 end

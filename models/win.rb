@@ -1,8 +1,9 @@
-# coding: utf-8
+class Win < ActiveRecord::Base
+  include PayoffValidator
 
-class Exacta < Payoff
-  validates :first_place_number,
-            :second_place_number,
+  belongs_to :race
+
+  validates :number,
             presence: {message: 'absent'},
             numericality: {
               only_integer: true,

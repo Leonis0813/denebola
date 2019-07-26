@@ -1,9 +1,9 @@
-# coding: utf-8
+class QuinellaPlace < ActiveRecord::Base
+  include PayoffValidator
 
-class Trifecta < Payoff
-  validates :first_place_number,
-            :second_place_number,
-            :third_place_number,
+  belongs_to :race
+
+  validates :number1, :number2,
             presence: {message: 'absent'},
             numericality: {
               only_integer: true,

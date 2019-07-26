@@ -1,7 +1,10 @@
-# coding: utf-8
+class BracketQuinella < ActiveRecord::Base
+  include PayoffValidator
 
-class Quinella < Payoff
-  validates :number1, :number2,
+  belongs_to :race
+
+  validates :bracket_number1,
+            :bracket_number2,
             presence: {message: 'absent'},
             numericality: {
               only_integer: true,
