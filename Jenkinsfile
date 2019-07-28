@@ -43,17 +43,19 @@ pipeline {
 
       steps {
         parallel (
-          "models/[b-e]" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/[b-e]*"
+          "models/entry" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/entry_spec.rb"
           },
           "models/feature" : {
             sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/feature_spec.rb"
           },
-          "models/[h-q]*" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/[h-q]*"
+          "models/race" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/race_spec.rb"
           },
           "other" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb} spec/models/[r-w]*"
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb}"
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/[b,h-q,s-w]*"
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/exacta_spec.rb"
           }
         )
       }
