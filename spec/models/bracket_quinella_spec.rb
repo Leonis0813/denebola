@@ -16,10 +16,10 @@ describe BracketQuinella, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        odds: [0.9, nil],
-        favorite: [0, nil],
-        bracket_number1: [0, nil],
-        bracket_number2: [0, nil],
+        odds: [0.9],
+        favorite: [0],
+        bracket_number1: [0],
+        bracket_number2: [0],
       }
       it_behaves_like '必須パラメーターがない場合のテスト', invalid_attribute.keys
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute

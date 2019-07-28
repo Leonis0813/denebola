@@ -21,13 +21,13 @@ describe Entry, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        age: [0, 1.0, nil],
-        burden_weight: [0, nil],
+        age: [0, 1.0],
+        burden_weight: [0],
         final_600m_time: [0],
-        number: [0, 1.0, nil],
-        order: ['invalid', nil],
+        number: [0, 1.0],
+        order: ['invalid'],
         prize_money: [-1, 0.0],
-        sex: ['invalid', nil],
+        sex: ['invalid'],
         weight: [0],
       }
       absent_keys = invalid_attribute.keys - %i[final_600m_time prize_money weight]

@@ -13,7 +13,7 @@ describe Jockey, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        jockey_id: ['invalid', nil],
+        jockey_id: ['invalid'],
       }
       it_behaves_like '必須パラメーターがない場合のテスト', invalid_attribute.keys
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
