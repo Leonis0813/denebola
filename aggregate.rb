@@ -65,7 +65,7 @@ new_features.each do |race_id, horse_id|
   attribute.merge!(horse.attributes.slice(*feature_attributes)).symbolize_keys!
 
   entry = Entry.find_by(race_id: race.id, horse_id: horse.id)
-  next unless entry and entry.jockey
+  next unless entry&.jockey
 
   attribute.merge!(entry.attributes.slice(*feature_attributes)).symbolize_keys!
 
