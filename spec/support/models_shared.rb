@@ -17,6 +17,7 @@ shared_examples '必須パラメーターがない場合のテスト' do |absent
                   .attributes.except(absent_key.to_s)
       object = described_class.new(attribute)
       object.validate
+
       is_asserted_by { object.errors.present? }
       is_asserted_by { object.errors.messages[absent_key].include?('absent') }
     end
@@ -28,6 +29,7 @@ shared_examples '不正な値を指定した場合のテスト' do |invalid_attr
     it "#{attribute}を指定した場合、エラーになること" do
       object = build(described_class.name.underscore.downcase.to_sym, attribute)
       object.validate
+
       is_asserted_by { object.errors.present? }
 
       attribute.keys.each do |invalid_key|
