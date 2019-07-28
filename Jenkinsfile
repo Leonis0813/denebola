@@ -62,6 +62,10 @@ pipeline {
     }
 
     stage('Deploy') {
+      when {
+        expression { return params.Deploy }
+      }
+
       steps {
         ws("${env.WORKSPACE}/../chef") {
           script {
