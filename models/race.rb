@@ -22,22 +22,29 @@ class Race < ActiveRecord::Base
   validates :distance, :direction, :place, :race_id, :round, :track, :weather,
             presence: {message: 'absent'}
   validates :direction,
-            inclusion: {in: DIRECTION_LIST, message: 'invalid'}
+            inclusion: {in: DIRECTION_LIST, message: 'invalid'},
+            allow_nil: true
   validates :distance, :round,
-            numericality: {only_integer: true, greater_than: 0, message: 'invalid'}
+            numericality: {only_integer: true, greater_than: 0, message: 'invalid'},
+            allow_nil: true
   validates :grade,
             inclusion: {in: GRADE_LIST, message: 'invalid'},
             allow_nil: true
   validates :place,
-            inclusion: {in: PLACE_LIST, message: 'invalid'}
+            inclusion: {in: PLACE_LIST, message: 'invalid'},
+            allow_nil: true
   validates :race_id,
-            format: {with: /\A\d+\z/, message: 'invalid'}
+            format: {with: /\A\d+\z/, message: 'invalid'},
+            allow_nil: true
   validates :round,
-            numericality: {only_integer: true, greater_than: 0, message: 'invalid'}
+            numericality: {only_integer: true, greater_than: 0, message: 'invalid'},
+            allow_nil: true
   validates :track,
-            inclusion: {in: TRACK_LIST, message: 'invalid'}
+            inclusion: {in: TRACK_LIST, message: 'invalid'},
+            allow_nil: true
   validates :weather,
-            inclusion: {in: WEATHER_LIST, message: 'invalid'}
+            inclusion: {in: WEATHER_LIST, message: 'invalid'},
+            allow_nil: true
 
   def month
     start_time.month

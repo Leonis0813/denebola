@@ -42,8 +42,8 @@ namespace :db do
 
   task :environment do
     ENV['RAILS_ENV'] ||= 'development'
-    settings = Settings.mysql.map {|key, value| [key.to_s, value] }.to_h.except('database')
-    settings.merge!('database' => Settings.mysql.database[ENV['RAILS_ENV']])
+    settings = Settings.mysql.map {|key, value| [key.to_s, value] }.to_h
+    settings['database'] = Settings.mysql.database[ENV['RAILS_ENV']]
     ActiveRecord::Tasks::DatabaseTasks.database_configuration = settings
     ActiveRecord::Base.configurations = {ENV['RAILS_ENV'] => settings}
     ActiveRecord::Base.logger = DenebolaLogger.new(Settings.logger.path.database)

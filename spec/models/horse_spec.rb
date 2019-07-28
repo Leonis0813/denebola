@@ -27,8 +27,8 @@ describe Horse, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        horse_id: ['invalid', nil],
-        running_style: ['invalid', nil],
+        horse_id: ['invalid'],
+        running_style: ['invalid'],
       }
       it_behaves_like '必須パラメーターがない場合のテスト', invalid_attribute.keys
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute

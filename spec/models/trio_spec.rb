@@ -17,11 +17,11 @@ describe Trio, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        odds: [0.9, nil],
-        favorite: [0, nil],
-        number1: [0, nil],
-        number2: [0, nil],
-        number3: [0, nil],
+        odds: [0.9],
+        favorite: [0],
+        number1: [0],
+        number2: [0],
+        number3: [0],
       }
       it_behaves_like '必須パラメーターがない場合のテスト', invalid_attribute.keys
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute

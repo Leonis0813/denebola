@@ -5,10 +5,13 @@ class BracketQuinella < ActiveRecord::Base
 
   validates :bracket_number1,
             :bracket_number2,
-            presence: {message: 'absent'},
+            presence: {message: 'absent'}
+  validates :bracket_number1,
+            :bracket_number2,
             numericality: {
               only_integer: true,
               greater_than_or_equal_to: 1,
               message: 'invalid',
-            }
+            },
+            allow_nil: true
 end

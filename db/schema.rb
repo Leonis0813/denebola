@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 29) do
+ActiveRecord::Schema.define(version: 32) do
 
   create_table "bracket_quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.float "odds", null: false
@@ -26,7 +26,6 @@ ActiveRecord::Schema.define(version: 29) do
     t.integer "age", null: false
     t.float "burden_weight", null: false
     t.float "final_600m_time"
-    t.string "jockey"
     t.integer "number", null: false
     t.string "order", null: false
     t.integer "prize_money", null: false
@@ -34,10 +33,12 @@ ActiveRecord::Schema.define(version: 29) do
     t.float "weight"
     t.float "weight_diff"
     t.integer "horse_id"
+    t.integer "jockey_id"
     t.integer "race_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["horse_id", "race_id"], name: "index_entries_on_horse_id_and_race_id", unique: true
+    t.index ["jockey_id", "race_id"], name: "index_entries_on_jockey_id_and_race_id", unique: true
     t.index ["race_id", "number"], name: "index_entries_on_race_id_and_number", unique: true
   end
 
@@ -53,7 +54,6 @@ ActiveRecord::Schema.define(version: 29) do
 
   create_table "features", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "age", null: false
-    t.float "average_prize_money", null: false
     t.integer "blank", null: false
     t.float "burden_weight", null: false
     t.string "direction", null: false
@@ -61,6 +61,10 @@ ActiveRecord::Schema.define(version: 29) do
     t.float "distance_diff", null: false
     t.integer "entry_times", null: false
     t.string "grade", default: "N", null: false
+    t.float "horse_average_prize_money", null: false
+    t.float "jockey_average_prize_money", null: false
+    t.float "jockey_win_rate", null: false
+    t.float "jockey_win_rate_last_four_races", null: false
     t.string "horse_id", null: false
     t.integer "last_race_order", null: false
     t.integer "month", null: false
@@ -89,6 +93,13 @@ ActiveRecord::Schema.define(version: 29) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["horse_id"], name: "index_horses_on_horse_id", unique: true
+  end
+
+  create_table "jockeys", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "jockey_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["jockey_id"], name: "index_jockeys_on_jockey_id", unique: true
   end
 
   create_table "quinella_places", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

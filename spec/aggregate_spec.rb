@@ -7,9 +7,10 @@ describe 'aggregate' do
 
   before(:all) do
     horse = create(:horse)
+    jockey = create(:jockey)
     5.times do |i|
       race = create(:race, race_id: (i + 1).to_s * 8, start_time: Time.now + i)
-      race.entries.first.update!(horse_id: horse.id)
+      race.entries.first.update!(jockey_id: jockey.id, horse_id: horse.id)
     end
     load "#{APPLICATION_ROOT}/aggregate.rb"
   end
