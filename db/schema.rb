@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 29) do
+ActiveRecord::Schema.define(version: 30) do
 
   create_table "bracket_quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.float "odds", null: false
@@ -26,7 +26,6 @@ ActiveRecord::Schema.define(version: 29) do
     t.integer "age", null: false
     t.float "burden_weight", null: false
     t.float "final_600m_time"
-    t.string "jockey"
     t.integer "number", null: false
     t.string "order", null: false
     t.integer "prize_money", null: false
