@@ -5,5 +5,7 @@ class CreateJockeys < ActiveRecord::Migration[4.2]
 
       t.timestamps null: false
     end
+
+    add_index :jockeys, %i[jockey_id], unique: true
   end
 end

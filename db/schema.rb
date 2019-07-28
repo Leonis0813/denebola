@@ -33,10 +33,12 @@ ActiveRecord::Schema.define(version: 31) do
     t.float "weight"
     t.float "weight_diff"
     t.integer "horse_id"
+    t.integer "jockey_id"
     t.integer "race_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["horse_id", "race_id"], name: "index_entries_on_horse_id_and_race_id", unique: true
+    t.index ["jockey_id", "race_id"], name: "index_entries_on_jockey_id_and_race_id", unique: true
     t.index ["race_id", "number"], name: "index_entries_on_race_id_and_number", unique: true
   end
 
@@ -94,6 +96,7 @@ ActiveRecord::Schema.define(version: 31) do
     t.string "jockey_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["jockey_id"], name: "index_jockeys_on_jockey_id", unique: true
   end
 
   create_table "quinella_places", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
