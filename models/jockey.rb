@@ -10,7 +10,7 @@ class Jockey < ActiveRecord::Base
   end
 
   def win_rate(time)
-    win_times(time).to_f / entry_times(time)
+    results_before(time).select(&:won).size.to_f / entry_times(time)
   end
 
   def win_rate_last_four_races(time)

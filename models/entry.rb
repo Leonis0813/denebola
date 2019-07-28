@@ -5,8 +5,8 @@ class Entry < ActiveRecord::Base
   SEX_LIST = %w[牝 牡 セ].freeze
 
   belongs_to :race
-  has_one :horse
-  has_one :jockey
+  belongs_to :horse
+  belongs_to :jockey
 
   validates :age, :burden_weight, :number, :order, :sex,
             presence: {message: 'absent'}
