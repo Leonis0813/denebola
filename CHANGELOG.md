@@ -1,3 +1,6 @@
+# 2.6.0 (2019/07/28)
+- [UPDATE] script to extract jockey
+
 # 2.5.0 (2019/07/26)
 - [UPDATE] script to extract payoff
 
