@@ -1,3 +1,6 @@
+# 2.6.1 (2019/08/03)
+- [UPDATE] ruby version to 2.5.5
+
 # 2.6.0 (2019/07/28)
 - [UPDATE] script to extract jockey
 
