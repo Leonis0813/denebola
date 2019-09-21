@@ -32,7 +32,7 @@ end
     file_path = File.join(BACKUP_DIR, Settings.backup_dir.race, "#{race_id}.html")
     next unless File.exist?(file_path)
 
-    html = File.read(file_path)
+    html = File.read(file_path, encoding: 'UTF-8')
     logger.info(action: 'read', resource: 'race', file_path: File.basename(file_path))
 
     race_html = Nokogiri::HTML.parse(html)
@@ -88,7 +88,7 @@ end
       file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
       next unless File.exist?(file_path)
 
-      html = File.read(file_path)
+      html = File.read(file_path, encoding: 'UTF-8')
       logger.info(action: 'read', resource: 'horse', file_path: File.basename(file_path))
 
       parsed_html = Nokogiri::HTML.parse(html)
