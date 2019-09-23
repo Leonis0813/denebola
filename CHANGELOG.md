@@ -1,3 +1,7 @@
+# 2.6.2 (2019/09/23)
+- [FIX] extraction script
+- [UPDATE] index on entries table
+
 # 2.6.1 (2019/08/03)
 - [UPDATE] ruby version to 2.5.5
 
