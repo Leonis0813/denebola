@@ -8,9 +8,11 @@ class Horse < ActiveRecord::Base
   validates :horse_id, :running_style,
             presence: {message: 'absent'}
   validates :horse_id,
-            format: {with: /\A\d+\z/, message: 'invalid'}
+            format: {with: /\A\d+\z/, message: 'invalid'},
+            allow_nil: true
   validates :running_style,
-            inclusion: {in: RUNNING_STYLE_LIST, message: 'invalid'}
+            inclusion: {in: RUNNING_STYLE_LIST, message: 'invalid'},
+            allow_nil: true
 
   def average_prize_money(time)
     results_before(time).map(&:prize_money).inject(:+) / entry_times(time).to_f

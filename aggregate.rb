@@ -1,7 +1,8 @@
 require_relative 'config/initialize'
 require_relative 'db/connect'
 require_relative 'lib/denebola_logger'
-Dir['models/*'].each {|f| require_relative f }
+Dir['models/concern/*'].each {|f| require_relative f }
+Dir['models/*.rb'].each {|f| require_relative f }
 
 logger = DenebolaLogger.new(Settings.logger.path.aggregate)
 
@@ -20,10 +21,13 @@ def extra_attribute(race, entry, horse)
   distance_diff = (race.distance - average_distance).abs / average_distance
 
   {
-    average_prize_money: horse.average_prize_money(entry_time),
     blank: blank,
     distance_diff: distance_diff,
     entry_times: horse.entry_times(entry_time),
+    horse_average_prize_money: horse.average_prize_money(entry_time),
+    jockey_average_prize_money: entry.jockey.average_prize_money(entry_time),
+    jockey_win_rate: entry.jockey.win_rate(entry_time),
+    jockey_win_rate_last_four_races: entry.jockey.win_rate_last_four_races(entry_time),
     last_race_order: horse.last_race_order(entry_time),
     month: race.month,
     rate_within_third: horse.rate_within_third(entry_time),
@@ -61,7 +65,7 @@ new_features.each do |race_id, horse_id|
   attribute.merge!(horse.attributes.slice(*feature_attributes)).symbolize_keys!
 
   entry = Entry.find_by(race_id: race.id, horse_id: horse.id)
-  next unless entry
+  next unless entry&.jockey
 
   attribute.merge!(entry.attributes.slice(*feature_attributes)).symbolize_keys!
 

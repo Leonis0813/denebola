@@ -21,14 +21,14 @@ describe Entry, type: :model do
 
     describe '異常系' do
       invalid_attribute = {
-        age: ['invalid', 0, 1.0, nil],
-        burden_weight: ['invalid', 0, nil],
-        final_600m_time: ['invalid', 0],
-        number: ['invalid', 0, 1.0, nil],
-        order: ['invalid', 0, 1.0, nil],
-        prize_money: ['invalid', -1, 0.0],
-        sex: ['invalid', 0, 1.0, nil],
-        weight: ['invalid', 0],
+        age: [0, 1.0],
+        burden_weight: [0],
+        final_600m_time: [0],
+        number: [0, 1.0],
+        order: ['invalid'],
+        prize_money: [-1, 0.0],
+        sex: ['invalid'],
+        weight: [0],
       }
       absent_keys = invalid_attribute.keys - %i[final_600m_time prize_money weight]
       it_behaves_like '必須パラメーターがない場合のテスト', absent_keys

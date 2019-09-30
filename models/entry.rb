@@ -6,18 +6,22 @@ class Entry < ActiveRecord::Base
 
   belongs_to :race
   belongs_to :horse
+  belongs_to :jockey
 
   validates :age, :burden_weight, :number, :order, :sex,
             presence: {message: 'absent'}
   validates :age, :number,
-            numericality: {only_integer: true, greater_than: 0, message: 'invalid'}
+            numericality: {only_integer: true, greater_than: 0, message: 'invalid'},
+            allow_nil: true
   validates :burden_weight,
-            numericality: {greater_than: 0, message: 'invalid'}
+            numericality: {greater_than: 0, message: 'invalid'},
+            allow_nil: true
   validates :final_600m_time, :weight,
             numericality: {greater_than: 0, message: 'invalid'},
             allow_nil: true
   validates :order,
-            inclusion: {in: ORDER_LIST, message: 'invalid'}
+            inclusion: {in: ORDER_LIST, message: 'invalid'},
+            allow_nil: true
   validates :prize_money,
             numericality: {
               only_integer: true,
@@ -26,7 +30,8 @@ class Entry < ActiveRecord::Base
             },
             allow_nil: true
   validates :sex,
-            inclusion: {in: SEX_LIST, message: 'invalid'}
+            inclusion: {in: SEX_LIST, message: 'invalid'},
+            allow_nil: true
 
   def weight_per
     return 0.0 unless burden_weight.to_i.positive? and weight.to_i.positive?

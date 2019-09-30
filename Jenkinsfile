@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     PATH = '/usr/local/rvm/bin:/usr/bin:/bin'
-    RUBY_VERSION = '2.4.4'
+    RUBY_VERSION = '2.5.5'
   }
 
   options {
@@ -14,7 +14,7 @@ pipeline {
     string(name: 'DENEBOLA_VERSION', defaultValue: '', description: 'デプロイするバージョン')
     string(name: 'SUBRA_BRANCH', defaultValue: 'master', description: 'Chefのブランチ')
     choice(name: 'SCOPE', choices: 'full\napp', description: 'デプロイ範囲')
-    booleanParam(name: 'ModuleTest', defaultValue: false, description: 'Module Testを実行するかどうか')
+    booleanParam(name: 'ModuleTest', defaultValue: true, description: 'Module Testを実行するかどうか')
     booleanParam(name: 'Deploy', defaultValue: true, description: 'Deployを実行するかどうか')
   }
 
@@ -43,23 +43,29 @@ pipeline {
 
       steps {
         parallel (
-          "race" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/race_spec.rb"
-          },
-          "entry" : {
+          "models/entry" : {
             sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/entry_spec.rb"
           },
-          "feature" : {
+          "models/feature" : {
             sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/feature_spec.rb"
           },
+          "models/race" : {
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/race_spec.rb"
+          },
           "other" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb} spec/models/horse_spec.rb"
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb}"
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/[b,h-q,s-w]*"
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/exacta_spec.rb"
           }
         )
       }
     }
 
     stage('Deploy') {
+      when {
+        expression { return params.Deploy }
+      }
+
       steps {
         ws("${env.WORKSPACE}/../chef") {
           script {

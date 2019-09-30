@@ -1,3 +1,20 @@
+# 2.6.2 (2019/09/23)
+- [FIX] extraction script
+- [UPDATE] index on entries table
+
+# 2.6.1 (2019/08/03)
+- [UPDATE] ruby version to 2.5.5
+
+# 2.6.0 (2019/07/28)
+- [UPDATE] script to extract jockey
+
+# 2.5.0 (2019/07/26)
+- [UPDATE] script to extract payoff
+
+# 2.4.11 (2019/07/19)
+- [FIX] extraction order
+- [UPDATE] gems
+
 # 2.4.10 (2019/06/30)
 - [UPDATE] gems
 
