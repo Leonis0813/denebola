@@ -1,5 +1,6 @@
 # 2.7.0 (2019/11/19)
 - [ADD] new race attribute
+- [UPDATE] gems
 
 # 2.6.2 (2019/09/23)
 - [FIX] extraction script
