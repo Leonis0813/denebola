@@ -19,7 +19,8 @@ class Race < ActiveRecord::Base
   has_one :trio
   has_one :trifecta
 
-  validates :distance, :direction, :place, :race_id, :round, :track, :weather,
+  validates :distance, :direction, :place, :race_id, :race_name, :round, :track,
+            :weather,
             presence: {message: 'absent'}
   validates :direction,
             inclusion: {in: DIRECTION_LIST, message: 'invalid'},
