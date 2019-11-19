@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 33) do
+ActiveRecord::Schema.define(version: 34) do
 
   create_table "bracket_quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.float "odds", null: false
@@ -128,6 +128,7 @@ ActiveRecord::Schema.define(version: 33) do
     t.string "grade"
     t.string "place", null: false
     t.string "race_id", null: false
+    t.string "race_name"
     t.integer "round", null: false
     t.datetime "start_time", null: false
     t.string "track", null: false
