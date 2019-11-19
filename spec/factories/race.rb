@@ -6,6 +6,7 @@ FactoryBot.define do
     distance { 2000 }
     place { '中京' }
     race_id { '0' * 8 }
+    race_name { 'レース名' }
     round { 1 }
     start_time { '2000-01-01 00:00:00' }
     track { '芝' }

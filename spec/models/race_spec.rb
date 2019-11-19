@@ -11,6 +11,7 @@ describe Race, type: :model do
         grade: ['G1', 'G2', 'G3', 'G', 'J.G1', 'J.G2', 'J.G3', 'L', 'OP', nil],
         place: %w[中京 中山 京都 函館 小倉 新潟 札幌 東京 福島 阪神],
         race_id: %w[0],
+        race_name: %w[レース名],
         round: [1],
         track: %w[芝 ダート 障],
         weather: %w[晴 曇 小雨 雨 小雪 雪],
@@ -29,7 +30,7 @@ describe Race, type: :model do
         track: ['invalid'],
         weather: ['invalid'],
       }
-      absent_keys = invalid_attribute.keys - %i[grade]
+      absent_keys = invalid_attribute.keys - %i[grade] + %i[race_name]
       it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
