@@ -1,4 +1,4 @@
-class Jockey < ActiveRecord::Base
+class Jockey < ApplicationRecord
   has_many :results, class_name: 'Entry'
 
   validates :jockey_id,
@@ -6,6 +6,15 @@ class Jockey < ActiveRecord::Base
   validates :jockey_id,
             format: {with: /\A\d+\z/, message: 'invalid'},
             allow_nil: true
+
+  def self.create_or_update!(attribute)
+    jockey = find_by(attribute.slice(:jockey_id))
+    super(jockey, attribute)
+  end
+
+  def self.log_attribute
+    super.merge(resource: 'jockey')
+  end
 
   def average_prize_money(time)
     results_before(time).map(&:prize_money).inject(:+) / entry_times(time).to_f

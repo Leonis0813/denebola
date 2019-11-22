@@ -9,6 +9,15 @@ Dir['models/*.rb'].each {|f| require_relative f }
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 logger = DenebolaLogger.new(Settings.logger.path.extract)
 
+def handle_active_record_error(logger, log_attribute)
+  record = yield
+  logger.info(log_attribute)
+  record
+rescue ActiveRecord::RecordInvalid => e
+  logger.error(log_attribute.merge(errors: e.record.errors))
+  raise
+end
+
 begin
   from = ARGV.find {|arg| arg.start_with?('--from=') }
   from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 30)
@@ -25,6 +34,8 @@ unless VALID_OPERATIONS.include?(operation)
   logger.error("invalid operation specified: #{operation}")
   return
 end
+
+ApplicationRecord.operation = operation
 
 (from..to).each do |date|
   date = date.strftime('%Y%m%d')
@@ -44,98 +55,33 @@ end
 
     race_html = Nokogiri::HTML.parse(html)
     race_attribute = extract_race(race_html) rescue next
-
-    race = Race.find_by(race_id: race_id)
-    next if race.nil? and operation == 'update'
-
-    if race
-      if %w[update upsert].include?(operation)
-        base_log_attribute = {action: 'update', resource: 'race'}
-        begin
-          race.update!(race_attribute.merge(race_id: race_id))
-          logger.info(base_log_attribute.merge(race_id: race_id))
-        rescue ActiveRecord::RecordInvalid => e
-          logger.error(base_log_attribute.merge(errors: e.record.errors))
-          raise
-        end
-      end
-    else
-      if %w[create upsert].include?(operation)
-        base_log_attribute = {action: 'create', resource: 'race'}
-        begin
-          race = Race.create!(race_attribute.merge(race_id: race_id))
-          logger.info(base_log_attribute.merge(race_id: race_id))
-        rescue ActiveRecord::RecordInvalid => e
-          logger.error(base_log_attribute.merge(errors: e.record.errors))
-          raise
-        end
-      end
+    log_attribute = Race.log_attribute.merge(race_id: race_id)
+    race = handle_active_record_error(logger, log_attribute) do
+      Race.create_or_update!(race_attribute.merge(race_id: race_id))
     end
+
+    next if race.nil?
 
     _, *rows = race_html.xpath('//table[contains(@class, "race_table")]').search('tr')
     rows.each do |row|
       entry_attribute = extract_entry(row) rescue next
-      entry = race.entries.find_by(entry_attribute.slice(:race_id, :number))
-
-      if entry
-        if %w[update upsert].include?(operation)
-          base_log_attribute = {action: 'update', resource: 'entry'}
-          begin
-            entry.update!(entry_attribute.except(:horse_id, :jockey_id))
-            logger.info(
-              base_log_attribute.merge(race_id: race.race_id, entry_id: entry.id),
-            )
-          rescue ActiveRecord::RecordInvalid => e
-            logger.error(base_log_attribute.merge(errors: e.record.errors))
-            raise
-          end
-        end
-      else
-        if %w[create upsert].include?(operation)
-          base_log_attribute = {action: 'create', resource: 'entry'}
-          begin
-            entry = race.entries.create!(entry_attribute.except(:horse_id, :jockey_id))
-            logger.info(
-              base_log_attribute.merge(race_id: race.race_id, entry_id: entry.id),
-            )
-          rescue ActiveRecord::RecordInvalid => e
-            logger.error(base_log_attribute.merge(errors: e.record.errors))
-            raise
-          end
-        end
+      log_attribute = Entry.log_attribute.merge(
+        race_id: race_id,
+        number: entry_attribute[:number],
+      )
+      entry = handle_active_record_error(logger, log_attribute) do
+        Entry.create_or_upsert!(entry_attribute)
       end
 
-      jockey = Jockey.find_by(jockey_id: entry_attribute[:jockey_id])
-
-      if jockey
-        if %w[update upsert].include?(operation)
-          base_log_attribute = {action: 'update', resource: 'jockey'}
-          begin
-            jockey.update!(jockey_id: entry_attribute[:jockey_id])
-            logger.info(
-              base_log_attribute.merge(race_id: race.race_id, jockey_id: jockey.id),
-            )
-          rescue ActiveRecord::RecordInvalid => e
-            logger.error(base_log_attribute.merge(errors: e.record.errors))
-            raise
-          end
-        end
-      else
-        if %w[create upsert].include?(operation)
-          base_log_attribute = {action: 'create', resource: 'jockey'}
-          begin
-            jockey = Jockey.create!(jockey_id: entry_attribute[:jockey_id])
-            logger.info(
-              base_log_attribute.merge(race_id: race.race_id, jockey_id: jockey.id),
-            )
-          rescue ActiveRecord::RecordInvalid => e
-            logger.error(base_log_attribute.merge(errors: e.record.errors))
-            raise
-          end
-        end
+      log_attribute = Jockey.log_attribute.merge(
+        race_id: race_id,
+        jockey_id: entry_attribute[:jockey_id],
+      )
+      jockey = handle_active_record_error(logger, log_attribute) do
+        Jockey.create_or_update!(jockey_id: entry_attribute[:jockey_id])
       end
 
-      if entry
+      if jockey and entry
         jockey.results << entry
         entry.jockey = jockey
       end
@@ -149,33 +95,12 @@ end
 
       parsed_html = Nokogiri::HTML.parse(html)
       horse_attribute = extract_horse(parsed_html) rescue next
-      horse = Horse.find_by(horse_id: horse_id)
-
-      if horse
-        if %w[update upsert].include?(operation)
-          base_log_attribute = {action: 'update', resource: 'horse'}
-          begin
-            horse.update!(horse_attribute.merge(horse_id: horse_id))
-            logger.info(base_log_attribute.merge(horse_id: horse_id))
-          rescue ActiveRecord::RecordInvalid => e
-            logger.error(base_log_attribute.merge(errors: e.record.errors))
-            raise
-          end
-        end
-      else
-        if %w[create upsert].include?(operation)
-          base_log_attribute = {action: 'create', resource: 'horse'}
-          begin
-            horse = Horse.create!(horse_attribute.merge(horse_id: horse_id))
-            logger.info(base_log_attribute.merge(horse_id: horse_id))
-          rescue ActiveRecord::RecordInvalid => e
-            logger.error(base_log_attribute.merge(errors: e.record.errors))
-            raise
-          end
-        end
+      log_attribute = Horse.log_attribute.merge(horse_id: horse_id)
+      horse = handle_active_record_error(logger, log_attribute) do
+        Horse.create_or_update!(horse_attribute.merge(horse_id: horse_id))
       end
 
-      if entry
+      if horse and entry
         horse.results << entry
         entry.horse = horse
       end

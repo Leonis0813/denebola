@@ -1,6 +1,6 @@
 # coding: utf-8
 
-class Race < ActiveRecord::Base
+class Race < ApplicationRecord
   DIRECTION_LIST = %w[左 右 直 障].freeze
   GRADE_LIST = %w[G1 G2 G3 G J.G1 J.G2 J.G3 L OP].freeze
   PLACE_LIST = %w[中京 中山 京都 函館 小倉 新潟 札幌 東京 福島 阪神].freeze
@@ -46,6 +46,15 @@ class Race < ActiveRecord::Base
   validates :weather,
             inclusion: {in: WEATHER_LIST, message: 'invalid'},
             allow_nil: true
+
+  def self.create_or_update!(attribute)
+    race = find_by(attribute.slice(:race_id))
+    super(race, attribute)
+  end
+
+  def self.log_attribute
+    super.merge(resource: 'race')
+  end
 
   def month
     start_time.month

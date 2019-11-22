@@ -1,6 +1,6 @@
 # coding: utf-8
 
-class Horse < ActiveRecord::Base
+class Horse < ApplicationRecord
   RUNNING_STYLE_LIST = %w[逃げ 先行 差し 追込].freeze
 
   has_many :results, class_name: 'Entry'
@@ -13,6 +13,15 @@ class Horse < ActiveRecord::Base
   validates :running_style,
             inclusion: {in: RUNNING_STYLE_LIST, message: 'invalid'},
             allow_nil: true
+
+  def self.create_or_update!(attribute)
+    horse = find_by(attribute.slice(:horse_id))
+    super(horse, attribute)
+  end
+
+  def self.log_attribute
+    super.merge(resource: 'horse')
+  end
 
   def average_prize_money(time)
     results_before(time).map(&:prize_money).inject(:+) / entry_times(time).to_f
