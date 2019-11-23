@@ -1,3 +1,6 @@
+# 2.7.1 (2019/11/23)
+- [UPDATE] gems
+
 # 2.7.0 (2019/11/19)
 - [ADD] new race attribute
 - [UPDATE] gems
