@@ -65,10 +65,10 @@ def create_feature(entry)
   attribute = {race_id: entry.race.race_id, horse_id: entry.horse.horse_id}
   feature_attribute_names = Feature.attribute_names - %w[horse_id race_id]
 
-  attribute.merge!(entry.race.attributes.slice(*feature_attributes)).symbolize_keys!
-  attribute.merge!(entry.horse.attributes.slice(*feature_attributes)).symbolize_keys!
-  attribute.merge!(entry.attributes.slice(*feature_attributes)).symbolize_keys!
-  attribute.merge(extra_attribute(entry))
+  attribute.merge!(entry.race.attributes.slice(*feature_attribute_names))
+  attribute.merge!(entry.horse.attributes.slice(*feature_attribute_names))
+  attribute.merge!(entry.attributes.slice(*feature_attribute_names))
+  attribute.merge(extra_attribute(entry)).symbolize_keys
 end
 
 logger.info('Start Aggregation')

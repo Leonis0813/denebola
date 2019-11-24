@@ -2,10 +2,16 @@
 
 require_relative '../models/entry'
 
+def horse_link(html)
+  html.search('td')[3].first_element_child.attribute('href').value
+end
+
+def jockey_link(html)
+  html.search('td')[6].first_element_child.attribute('href').value
+end
+
 def extract_entry(html)
   attributes = html.search('td').map(&:text).map(&:strip)
-  horse_link = html.search('td')[3].first_element_child.attribute('href').value
-  jockey_link = html.search('td')[6].first_element_child.attribute('href').value
   weight, weight_diff = begin
                           attributes[14].match(/\A(\d+)\((.+)\)\z/)[1, 2].map(&:to_f)
                         rescue NoMethodError
