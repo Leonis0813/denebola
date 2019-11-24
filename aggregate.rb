@@ -76,9 +76,9 @@ logger.info('Start Aggregation')
 entries = Entry.joins(:race).joins(:horse)
                .where(order: (1..18).to_a.map(&:to_s))
                .where.not(weight: nil)
-               .where('DATE(updated_at) >= ?', from.strftime('%F'))
-               .where('DATE(updated_at) <= ?', to.strftime('%F'))
-               .pluck('races.race_id', 'horses.horse_id').uniq
+               .where('DATE(entries.updated_at) >= ?', from.strftime('%F'))
+               .where('DATE(entries.updated_at) <= ?', to.strftime('%F'))
+               .uniq
 
 logger.info("# of Target Features = #{entries.size}")
 
