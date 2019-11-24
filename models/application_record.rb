@@ -3,25 +3,23 @@ class ApplicationRecord < ActiveRecord::Base
 
   cattr_accessor :operation
 
-  def self.create_or_update!(record, attribute)
-    if record.present? and %w[update upsert].include?(operation)
-      record.update!(attribute)
-    elsif record.nil? and %w[create upsert].include?(operation)
-      record = create!(attribute)
+  class << self
+    def create_or_update!(record, attribute)
+      record.update!(attribute) if record.present? and updatable?
+      record = create!(attribute) if record.nil? and creatable?
+      record
     end
 
-    record
-  end
+    def creatable?
+      %w[create upsert].include?(operation)
+    end
 
-  def creatable?
-    %w[create upsert].include?(self.class.operation)
-  end
+    def updatable?
+      %w[update upsert].include?(operation)
+    end
 
-  def updatable?
-    %w[update upsert].include?(self.class.operation)
-  end
-
-  def self.log_attribute
-    {action: operation}
+    def log_attribute
+      {action: operation}
+    end
   end
 end

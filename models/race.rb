@@ -65,8 +65,8 @@ class Race < ApplicationRecord
   def create_or_update_payoff(attribute)
     attribute.slice(*ONE_PATTERN_TICKET_LIST).each do |betting_ticket, attr|
       ticket = send(betting_ticket)
-      ticket.update!(attr) if ticket.present? and updatable?
-      send("create_#{betting_ticket}") if ticket.nil? and creatable?
+      ticket.update!(attr) if ticket.present? and self.class.updatable?
+      send("create_#{betting_ticket}") if ticket.nil? and self.class.creatable?
     end
 
     attribute.slice(*MULTI_PATTERNS_TICKET_LIST).each do |betting_ticket, attrs|
