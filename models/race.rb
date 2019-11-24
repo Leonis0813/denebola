@@ -66,7 +66,7 @@ class Race < ApplicationRecord
     attribute.slice(*ONE_PATTERN_TICKET_LIST).each do |betting_ticket, attr|
       ticket = send(betting_ticket)
       ticket.update!(attr) if ticket.present? and updatable?
-      ticket = send("create_#{betting_ticket}") if ticket.nil? and creatable?
+      send("create_#{betting_ticket}") if ticket.nil? and creatable?
     end
 
     attribute.slice(*MULTI_PATTERNS_TICKET_LIST).each do |betting_ticket, attrs|
