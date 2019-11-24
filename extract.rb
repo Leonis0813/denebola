@@ -18,7 +18,7 @@ rescue ActiveRecord::RecordInvalid => e
   raise
 end
 
-def update_race_info(html, logger)
+def update_race_info(html, race_id, logger)
   race_attribute = extract_race(html) rescue return
   log_attribute = Race.log_attribute.merge(race_id: race_id)
   handle_active_record_error(logger, log_attribute) do
@@ -26,11 +26,8 @@ def update_race_info(html, logger)
   end
 end
 
-def update_entry_info(attribute, race_id, logger)
-  log_attribute = Entry.log_attribute.merge(
-    race_id: race_id,
-    number: attribute[:number],
-  )
+def update_entry_info(attribute, logger)
+  log_attribute = Entry.log_attribute.merge(attribute.slice(:race_id, :number))
   handle_active_record_error(logger, log_attribute) do
     Entry.create_or_update!(attribute)
   end
@@ -43,7 +40,7 @@ def update_jockey_info(jockey_id, race_id, logger)
   end
 end
 
-def update_horse_info(horse_id)
+def update_horse_info(horse_id, logger)
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
   return unless File.exist?(file_path)
 
@@ -94,13 +91,13 @@ ApplicationRecord.operation = operation
     logger.info(action: 'read', resource: 'race', file_path: File.basename(file_path))
 
     race_html = Nokogiri::HTML.parse(html)
-    race = update_race_info(race_html, logger)
+    race = update_race_info(race_html, race_id, logger)
     next if race.nil?
 
     _, *rows = race_html.xpath('//table[contains(@class, "race_table")]').search('tr')
     rows.each do |row|
       entry_attribute = extract_entry(row) rescue next
-      entry = update_entry_info(entry_attribute, race_id, logger)
+      entry = update_entry_info(entry_attribute.merge(race_id: race.id), logger)
       jockey = update_jockey_info(entry_attribute[:jockey_id], race_id, logger)
 
       if jockey and entry
@@ -109,7 +106,7 @@ ApplicationRecord.operation = operation
       end
 
       horse_id = entry_attribute[:horse_id]
-      horse = update_horse_info(horse_id)
+      horse = update_horse_info(horse_id, logger)
 
       if horse and entry
         horse.results << entry
@@ -118,6 +115,6 @@ ApplicationRecord.operation = operation
     end
 
     payoff_attribute = extract_payoff(race_html)
-    race.create_payoff(payoff_attribute.compact)
+    race.create_or_update_payoff(payoff_attribute.compact)
   end
 end
