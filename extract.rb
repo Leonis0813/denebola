@@ -26,14 +26,13 @@ def update_race_info(html, logger)
   end
 end
 
-def update_entry_info(row, race_id, logger)
-  entry_attribute = extract_entry(row) rescue return
+def update_entry_info(attribute, race_id, logger)
   log_attribute = Entry.log_attribute.merge(
     race_id: race_id,
-    number: entry_attribute[:number],
+    number: attribute[:number],
   )
   handle_active_record_error(logger, log_attribute) do
-    Entry.create_or_update!(entry_attribute)
+    Entry.create_or_update!(attribute)
   end
 end
 
@@ -46,13 +45,13 @@ end
 
 def update_horse_info(horse_id)
   file_path = File.join(BACKUP_DIR, Settings.backup_dir.horse, "#{horse_id}.html")
-  next unless File.exist?(file_path)
+  return unless File.exist?(file_path)
 
   html = File.read(file_path, encoding: 'UTF-8')
   logger.info(action: 'read', resource: 'horse', file_path: File.basename(file_path))
 
   parsed_html = Nokogiri::HTML.parse(html)
-  horse_attribute = extract_horse(parsed_html) rescue next
+  horse_attribute = extract_horse(parsed_html) rescue return
   log_attribute = Horse.log_attribute.merge(horse_id: horse_id)
   handle_active_record_error(logger, log_attribute) do
     Horse.create_or_update!(horse_attribute.merge(horse_id: horse_id))
@@ -100,7 +99,8 @@ ApplicationRecord.operation = operation
 
     _, *rows = race_html.xpath('//table[contains(@class, "race_table")]').search('tr')
     rows.each do |row|
-      entry = update_entry_info(row, race_id, logger)
+      entry_attribute = extract_entry(row) rescue next
+      entry = update_entry_info(entry_attribute, race_id, logger)
       jockey = update_jockey_info(entry_attribute[:jockey_id], race_id, logger)
 
       if jockey and entry

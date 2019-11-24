@@ -128,7 +128,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.string "grade"
     t.string "place", null: false
     t.string "race_id", null: false
-    t.string "race_name"
+    t.string "race_name", null: false
     t.integer "round", null: false
     t.datetime "start_time", null: false
     t.string "track", null: false
