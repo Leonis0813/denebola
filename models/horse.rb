@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require_relative 'application_record'
+
 class Horse < ApplicationRecord
   RUNNING_STYLE_LIST = %w[逃げ 先行 差し 追込].freeze
 
@@ -36,9 +38,9 @@ class Horse < ApplicationRecord
   end
 
   def rate_within_third(time)
-    within_third = results_before(time).first(3).select do |result|
+    within_third = results_before(time).first(3).count do |result|
       %w[1 2 3].include?(result.order)
-    end.size
+    end
     within_third / 3.0
   end
 
@@ -47,7 +49,7 @@ class Horse < ApplicationRecord
   end
 
   def win_times(time)
-    results_before(time).select(&:won).size
+    results_before(time).count(&:won)
   end
 
   def results_before(time)

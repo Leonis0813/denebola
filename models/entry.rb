@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require_relative 'application_record'
+
 class Entry < ApplicationRecord
   ORDER_LIST = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 除 中 取 失].freeze
   SEX_LIST = %w[牝 牡 セ].freeze

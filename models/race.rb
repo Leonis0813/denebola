@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require_relative 'application_record'
+
 class Race < ApplicationRecord
   DIRECTION_LIST = %w[左 右 直 障].freeze
   GRADE_LIST = %w[G1 G2 G3 G J.G1 J.G2 J.G3 L OP].freeze
@@ -60,21 +62,14 @@ class Race < ApplicationRecord
     start_time.month
   end
 
-  def create_payoff(attribute)
-    create_one_pattern_ticket(attribute.slice(*ONE_PATTERN_TICKET_LIST))
-    create_multi_patterns_ticket(attribute.slice(*MULTI_PATTERNS_TICKET_LIST))
-  end
-
-  private
-
-  def create_one_pattern_ticket(attribute)
-    attribute.each do |betting_ticket, attr|
-      send("create_#{betting_ticket}", attr) unless send(betting_ticket)
+  def create_or_update_payoff(attribute)
+    attribute.slice(*ONE_PATTERN_TICKET_LIST).each do |betting_ticket, attr|
+      ticket = send(betting_ticket)
+      ticket.update!(attr) if ticket.present? and updatable?
+      ticket = send("create_#{betting_ticket}") if ticket.nil? and creatable?
     end
-  end
 
-  def create_multi_patterns_ticket(attribute)
-    attribute.each do |betting_ticket, attrs|
+    attribute.slice(*MULTI_PATTERNS_TICKET_LIST).each do |betting_ticket, attrs|
       attrs.each do |attr|
         send(betting_ticket).find_or_create_by!(attr)
       end

@@ -9,7 +9,7 @@ describe Horse, type: :model do
     before(:all) do
       @horse = create(:horse)
       (1..5).each do |i|
-        start_time = "2000-01-#{format('%02d', i)} 00:00:00"
+        start_time = "2000-01-#{format('%<day>02d', day: i)} 00:00:00"
         race = create(:race, race_id: i.to_s * 8, start_time: start_time)
         race.entries.first.update!(order: i.to_s, prize_money: i, horse_id: @horse.id)
       end
@@ -35,7 +35,7 @@ describe Horse, type: :model do
     end
   end
 
-  describe '#average_prize_money' do
+  describe '#average_prize_money', :wip do
     describe '正常系' do
       include_context 'テストデータ作成'
 

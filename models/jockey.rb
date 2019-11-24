@@ -1,3 +1,5 @@
+require_relative 'application_record'
+
 class Jockey < ApplicationRecord
   has_many :results, class_name: 'Entry'
 
@@ -21,12 +23,12 @@ class Jockey < ApplicationRecord
   end
 
   def win_rate(time)
-    results_before(time).select(&:won).size.to_f / entry_times(time)
+    results_before(time).count(&:won).to_f / entry_times(time)
   end
 
   def win_rate_last_four_races(time)
     last_four_races = results_before(time).first(4)
-    last_four_races.select(&:won).size.to_f / last_four_races.size
+    last_four_races.count(&:won).to_f / last_four_races.size
   end
 
   private

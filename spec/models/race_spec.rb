@@ -41,7 +41,8 @@ describe Race, type: :model do
       (1..12).each do |i|
         context "#{i}月のレースの場合" do
           before(:all) do
-            start_time = Time.parse("2000/#{format('%02d', i)}/01 00:00:00")
+            time_string = "2000/#{format('%<month>02d', month: i)}/01 00:00:00"
+            start_time = Time.parse(time_string)
             @race = build(:race, start_time: start_time)
           end
 

@@ -1,4 +1,6 @@
-class Trifecta < ActiveRecord::Base
+require_relative 'application_record'
+
+class Trifecta < ApplicationRecord
   include PayoffValidator
 
   belongs_to :race

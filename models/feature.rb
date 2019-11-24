@@ -1,6 +1,6 @@
-%w[race entry horse].each {|f| require_relative f }
+%w[application_record entry horse race].each {|f| require_relative f }
 
-class Feature < ActiveRecord::Base
+class Feature < ApplicationRecord
   GRADE_LIST = Race::GRADE_LIST + %w[N]
 
   validates :age, :blank, :burden_weight, :direction, :distance, :distance_diff,

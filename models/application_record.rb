@@ -1,4 +1,6 @@
 class ApplicationRecord < ActiveRecord::Base
+  self.abstract_class = true
+
   cattr_accessor :operation
 
   def self.create_or_update!(record, attribute)
@@ -9,6 +11,14 @@ class ApplicationRecord < ActiveRecord::Base
     end
 
     record
+  end
+
+  def creatable?
+    %w[create upsert].include?(self.class.operation)
+  end
+
+  def updatable?
+    %w[update upsert].include?(self.class.operation)
   end
 
   def self.log_attribute
