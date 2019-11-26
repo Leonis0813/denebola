@@ -56,68 +56,16 @@ describe Race, type: :model do
 
   describe '.create_or_update!' do
     describe '正常系' do
-      context 'データが既に存在する場合' do
-        [
-          ['create', {}],
-          ['update', {'round' => 2}],
-          ['upsert', {'round' => 2}],
-        ].each do |operation, expected_attribute|
-          context "operation: #{operation}の場合" do
-            include_context 'トランザクション作成'
-            before(:all) do
-              ApplicationRecord.operation = operation
-              race = create(:race)
-              @before_count = Race.count
-              @expected_race = race.attributes.merge(expected_attribute)
-              @target_race = Race.create_or_update!(race_id: race.race_id, round: 2)
-            end
-
-            it '新しく作成されていないこと' do
-              is_asserted_by { Race.count == @before_count }
-            end
-
-            it '登録済みデータの値が正しいこと' do
-              is_asserted_by { @target_race.attributes == @expected_race }
-            end
-          end
-        end
-      end
-
-      context 'データが存在しない場合' do
-        [
-          ['create', 1],
-          ['update', 0],
-          ['upsert', 1],
-        ].each do |operation, additional_count|
-          context "operation: #{operation}の場合" do
-            include_context 'トランザクション作成'
-            before(:all) do
-              ApplicationRecord.operation = operation
-              @before_count = Race.count
-              Race.create_or_update!(build(:race).attributes)
-            end
-
-            it '登録されているデータの数が正しいこと' do
-              is_asserted_by { Race.count == @before_count + additional_count }
-            end
-          end
-        end
-      end
+      it_behaves_like '.create_or_update!: データが既に存在する場合のテスト',
+                      {'round' => 2},
+                      %i[race_id]
+      it_behaves_like '.create_or_update!: データが存在しない場合のテスト'
     end
   end
 
   describe '.log_attribute' do
     describe '正常系' do
-      %w[create update upsert].each do |operation|
-        context "operation: #{operation}の場合" do
-          expected = {action: operation, resource: 'race'}
-          before(:all) { ApplicationRecord.operation = operation }
-
-          it "#{expected}を返していること" do
-            is_asserted_by { Race.log_attribute == expected }
-          end
-        end
-      end
+      it_behaves_like '.log_attribute: 返り値が正しいこと'
     end
   end
 end

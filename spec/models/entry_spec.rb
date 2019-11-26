@@ -83,72 +83,16 @@ describe Entry, type: :model do
 
   describe '.create_or_update!' do
     describe '正常系' do
-      context 'データが既に存在する場合' do
-        [
-          ['create', {}],
-          ['update', {'age' => 4}],
-          ['upsert', {'age' => 4}],
-        ].each do |operation, expected_attribute|
-          context "operation: #{operation}の場合" do
-            include_context 'トランザクション作成'
-            before(:all) do
-              ApplicationRecord.operation = operation
-              entry = create(:race).entries.first
-              @before_count = Entry.count
-              @expected_entry = entry.attributes.merge(expected_attribute)
-              @target_entry = Entry.create_or_update!(
-                race_id: entry.race.id,
-                number: entry.number,
-                age: 4,
-              )
-            end
-
-            it '新しく作成されていないこと' do
-              is_asserted_by { Entry.count == @before_count }
-            end
-
-            it '登録済みデータの値が正しいこと' do
-              is_asserted_by { @target_entry.attributes == @expected_entry }
-            end
-          end
-        end
-      end
-
-      context 'データが存在しない場合' do
-        [
-          ['create', 1],
-          ['update', 0],
-          ['upsert', 1],
-        ].each do |operation, additional_count|
-          context "operation: #{operation}の場合" do
-            include_context 'トランザクション作成'
-            before(:all) do
-              ApplicationRecord.operation = operation
-              @before_count = Entry.count
-              Entry.create_or_update!(build(:entry).attributes)
-            end
-
-            it '登録されているデータの数が正しいこと' do
-              is_asserted_by { Entry.count == @before_count + additional_count }
-            end
-          end
-        end
-      end
+      it_behaves_like '.create_or_update!: データが既に存在する場合のテスト',
+                      {'age' => 4},
+                      %i[race_id number]
+      it_behaves_like '.create_or_update!: データが存在しない場合のテスト'
     end
   end
 
   describe '.log_attribute' do
     describe '正常系' do
-      %w[create update upsert].each do |operation|
-        context "operation: #{operation}の場合" do
-          expected = {action: operation, resource: 'entry'}
-          before(:all) { ApplicationRecord.operation = operation }
-
-          it "#{expected}を返していること" do
-            is_asserted_by { Entry.log_attribute == expected }
-          end
-        end
-      end
+      it_behaves_like '.log_attribute: 返り値が正しいこと'
     end
   end
 end
