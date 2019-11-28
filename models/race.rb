@@ -71,7 +71,8 @@ class Race < ApplicationRecord
 
     attribute.slice(*MULTI_PATTERNS_TICKET_LIST).each do |betting_ticket, attrs|
       attrs.each do |attr|
-        send(betting_ticket).find_or_create_by!(attr)
+        tickets = send(betting_ticket)
+        tickets.create!(attr) unless tickets.exists?(attr.except(:odds))
       end
     end
   end
