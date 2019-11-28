@@ -70,7 +70,7 @@ class Feature < ApplicationRecord
             inclusion: {in: [true, false], message: 'invalid'},
             allow_nil: true
 
-  after_initialize :set_default_value
+  before_validation :set_default_value
 
   private
 
