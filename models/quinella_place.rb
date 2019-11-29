@@ -1,4 +1,6 @@
-class QuinellaPlace < ActiveRecord::Base
+require_relative 'application_record'
+
+class QuinellaPlace < ApplicationRecord
   include PayoffValidator
 
   belongs_to :race

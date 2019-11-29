@@ -9,7 +9,7 @@ describe Horse, type: :model do
     before(:all) do
       @horse = create(:horse)
       (1..5).each do |i|
-        start_time = "2000-01-#{format('%02d', i)} 00:00:00"
+        start_time = "2000-01-#{format('%<day>02d', day: i)} 00:00:00"
         race = create(:race, race_id: i.to_s * 8, start_time: start_time)
         race.entries.first.update!(order: i.to_s, prize_money: i, horse_id: @horse.id)
       end
@@ -102,6 +102,21 @@ describe Horse, type: :model do
       it '3エントリー分を返すこと' do
         is_asserted_by { @horse.results_before('2000-01-03 00:00:00').size == 3 }
       end
+    end
+  end
+
+  describe '.create_or_update!' do
+    describe '正常系' do
+      it_behaves_like '.create_or_update!: データが既に存在する場合のテスト',
+                      {'running_style' => '先行'},
+                      %i[horse_id]
+      it_behaves_like '.create_or_update!: データが存在しない場合のテスト'
+    end
+  end
+
+  describe '.log_attribute' do
+    describe '正常系' do
+      it_behaves_like '.log_attribute: 返り値が正しいこと'
     end
   end
 end

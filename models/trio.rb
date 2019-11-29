@@ -1,4 +1,6 @@
-class Trio < ActiveRecord::Base
+require_relative 'application_record'
+
+class Trio < ApplicationRecord
   include PayoffValidator
 
   belongs_to :race

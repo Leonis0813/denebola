@@ -6,7 +6,28 @@ Dir['models/*.rb'].each {|f| require_relative f }
 
 logger = DenebolaLogger.new(Settings.logger.path.aggregate)
 
-def extra_attribute(race, entry, horse)
+begin
+  from = ARGV.find {|arg| arg.start_with?('--from=') }
+  from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 30)
+  to = ARGV.find {|arg| arg.start_with?('--to=') }
+  to = to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
+  operation = ARGV.find {|arg| arg.start_with?('--operation=') }
+  operation = operation ? operation.match(/\A--operation=(.*)\z/)[1] : 'create'
+rescue ArgumentError => e
+  logger.error(e.backtrace.join("\n"))
+  raise
+end
+
+unless VALID_OPERATIONS.include?(operation)
+  logger.error("invalid operation specified: #{operation}")
+  return
+end
+
+def extra_attribute(entry)
+  race = entry.race
+  horse = entry.horse
+  jockey = entry.jockey
+
   entry_time = race.start_time
   results_before = horse.results_before(entry_time)
 
@@ -25,9 +46,9 @@ def extra_attribute(race, entry, horse)
     distance_diff: distance_diff,
     entry_times: horse.entry_times(entry_time),
     horse_average_prize_money: horse.average_prize_money(entry_time),
-    jockey_average_prize_money: entry.jockey.average_prize_money(entry_time),
-    jockey_win_rate: entry.jockey.win_rate(entry_time),
-    jockey_win_rate_last_four_races: entry.jockey.win_rate_last_four_races(entry_time),
+    jockey_average_prize_money: jockey.average_prize_money(entry_time),
+    jockey_win_rate: jockey.win_rate(entry_time),
+    jockey_win_rate_last_four_races: jockey.win_rate_last_four_races(entry_time),
     last_race_order: horse.last_race_order(entry_time),
     month: race.month,
     rate_within_third: horse.rate_within_third(entry_time),
@@ -38,42 +59,43 @@ def extra_attribute(race, entry, horse)
   }
 end
 
+def create_feature(entry)
+  return if entry.race.nil? or entry.horse.nil? or entry.jockey.nil?
+
+  attribute = {race_id: entry.race.race_id, horse_id: entry.horse.horse_id}
+  feature_attribute_names = Feature.attribute_names - %w[horse_id race_id]
+
+  attribute.merge!(entry.race.attributes.slice(*feature_attribute_names))
+  attribute.merge!(entry.horse.attributes.slice(*feature_attribute_names))
+  attribute.merge!(entry.attributes.slice(*feature_attribute_names))
+  attribute.merge(extra_attribute(entry)).symbolize_keys
+end
+
 logger.info('Start Aggregation')
 
 entries = Entry.joins(:race).joins(:horse)
                .where(order: (1..18).to_a.map(&:to_s))
                .where.not(weight: nil)
-               .pluck('races.race_id', 'horses.horse_id').uniq
-entries.map! {|race_id, horse_id| [race_id.to_s, horse_id.to_s] }
-features = Feature.pluck(:race_id, :horse_id).uniq
-new_features = entries - features
+               .where('DATE(entries.updated_at) >= ?', from.strftime('%F'))
+               .where('DATE(entries.updated_at) <= ?', to.strftime('%F'))
+               .uniq
 
-logger.info("# of Updated Features = #{new_features.size}")
+logger.info("# of Target Features = #{entries.size}")
 
-new_features.each do |race_id, horse_id|
-  attribute = {race_id: race_id, horse_id: horse_id}
-  feature_attributes = Feature.attribute_names - %w[horse_id race_id]
+base_log_attribute = {action: operation, resource: 'feature'}
 
-  race = Race.find_by(race_id: race_id)
-  next unless race
+entries.each do |entry|
+  feature = Feature.find_by(race_id: entry.race.race_id, horse_id: entry.horse.horse_id)
 
-  attribute.merge!(race.attributes.slice(*feature_attributes)).symbolize_keys!
-
-  horse = Horse.find_by(horse_id: horse_id)
-  next unless horse
-
-  attribute.merge!(horse.attributes.slice(*feature_attributes)).symbolize_keys!
-
-  entry = Entry.find_by(race_id: race.id, horse_id: horse.id)
-  next unless entry&.jockey
-
-  attribute.merge!(entry.attributes.slice(*feature_attributes)).symbolize_keys!
-
-  attribute.merge!(extra_attribute(race, entry, horse))
-
-  base_log_attribute = {action: 'create', resource: 'feature'}
   begin
-    feature = Feature.create!(attribute.except(:id, :order))
+    if feature.present? and %w[update upsert].include?(operation)
+      attribute = create_feature(entry)
+      feature.update!(attribute) if attribute.present?
+    elsif feature.nil? and %w[create upsert].include?(operation)
+      attribute = create_feature(entry)
+      feature = Feature.create!(attribute) if attribute.present?
+    end
+
     logger.info(base_log_attribute.merge(feature_id: feature.id))
   rescue ActiveRecord::RecordInvalid => e
     logger.error(base_log_attribute.merge(errors: e.record.errors))

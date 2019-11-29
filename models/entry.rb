@@ -1,6 +1,8 @@
 # coding: utf-8
 
-class Entry < ActiveRecord::Base
+require_relative 'application_record'
+
+class Entry < ApplicationRecord
   ORDER_LIST = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 除 中 取 失].freeze
   SEX_LIST = %w[牝 牡 セ].freeze
 
@@ -32,6 +34,15 @@ class Entry < ActiveRecord::Base
   validates :sex,
             inclusion: {in: SEX_LIST, message: 'invalid'},
             allow_nil: true
+
+  def self.create_or_update!(attribute)
+    entry = find_by(attribute.slice(:race_id, :number))
+    super(entry, attribute)
+  end
+
+  def self.log_attribute
+    super.merge(resource: 'entry')
+  end
 
   def weight_per
     return 0.0 unless burden_weight.to_i.positive? and weight.to_i.positive?
