@@ -1,4 +1,6 @@
-class Win < ActiveRecord::Base
+require_relative 'application_record'
+
+class Win < ApplicationRecord
   include PayoffValidator
 
   belongs_to :race

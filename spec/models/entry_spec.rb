@@ -80,4 +80,19 @@ describe Entry, type: :model do
       end
     end
   end
+
+  describe '.create_or_update!' do
+    describe '正常系' do
+      it_behaves_like '.create_or_update!: データが既に存在する場合のテスト',
+                      {'age' => 4},
+                      %i[race_id number]
+      it_behaves_like '.create_or_update!: データが存在しない場合のテスト'
+    end
+  end
+
+  describe '.log_attribute' do
+    describe '正常系' do
+      it_behaves_like '.log_attribute: 返り値が正しいこと'
+    end
+  end
 end

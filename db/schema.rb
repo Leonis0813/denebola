@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 34) do
+ActiveRecord::Schema.define(version: 35) do
 
   create_table "bracket_quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.float "odds", null: false
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.integer "race_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["race_id"], name: "index_bracket_quinellas_on_race_id", unique: true
   end
 
   create_table "entries", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -50,6 +51,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.integer "race_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["race_id"], name: "index_exactas_on_race_id", unique: true
   end
 
   create_table "features", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -110,6 +112,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.integer "race_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["odds", "favorite", "number1", "number2", "race_id"], name: "index_unique_quinella_places", unique: true
   end
 
   create_table "quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -120,6 +123,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.integer "race_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["race_id"], name: "index_quinellas_on_race_id", unique: true
   end
 
   create_table "races", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -128,7 +132,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.string "grade"
     t.string "place", null: false
     t.string "race_id", null: false
-    t.string "race_name"
+    t.string "race_name", null: false
     t.integer "round", null: false
     t.datetime "start_time", null: false
     t.string "track", null: false
@@ -146,6 +150,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.integer "race_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["odds", "favorite", "number", "race_id"], name: "index_shows_on_odds_and_favorite_and_number_and_race_id", unique: true
   end
 
   create_table "trifectas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -157,6 +162,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.integer "race_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["race_id"], name: "index_trifectas_on_race_id", unique: true
   end
 
   create_table "trios", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -168,6 +174,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.integer "race_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["race_id"], name: "index_trios_on_race_id", unique: true
   end
 
   create_table "wins", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -177,6 +184,7 @@ ActiveRecord::Schema.define(version: 34) do
     t.integer "race_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["race_id"], name: "index_wins_on_race_id", unique: true
   end
 
 end

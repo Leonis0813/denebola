@@ -1,4 +1,6 @@
-class BracketQuinella < ActiveRecord::Base
+require_relative 'application_record'
+
+class BracketQuinella < ApplicationRecord
   include PayoffValidator
 
   belongs_to :race

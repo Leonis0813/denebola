@@ -1,4 +1,6 @@
-class Show < ActiveRecord::Base
+require_relative 'application_record'
+
+class Show < ApplicationRecord
   include PayoffValidator
 
   belongs_to :race

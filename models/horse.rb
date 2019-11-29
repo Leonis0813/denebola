@@ -1,6 +1,8 @@
 # coding: utf-8
 
-class Horse < ActiveRecord::Base
+require_relative 'application_record'
+
+class Horse < ApplicationRecord
   RUNNING_STYLE_LIST = %w[逃げ 先行 差し 追込].freeze
 
   has_many :results, class_name: 'Entry'
@@ -13,6 +15,15 @@ class Horse < ActiveRecord::Base
   validates :running_style,
             inclusion: {in: RUNNING_STYLE_LIST, message: 'invalid'},
             allow_nil: true
+
+  def self.create_or_update!(attribute)
+    horse = find_by(attribute.slice(:horse_id))
+    super(horse, attribute)
+  end
+
+  def self.log_attribute
+    super.merge(resource: 'horse')
+  end
 
   def average_prize_money(time)
     results_before(time).map(&:prize_money).inject(:+) / entry_times(time).to_f
@@ -27,9 +38,9 @@ class Horse < ActiveRecord::Base
   end
 
   def rate_within_third(time)
-    within_third = results_before(time).first(3).select do |result|
+    within_third = results_before(time).first(3).count do |result|
       %w[1 2 3].include?(result.order)
-    end.size
+    end
     within_third / 3.0
   end
 
@@ -38,7 +49,7 @@ class Horse < ActiveRecord::Base
   end
 
   def win_times(time)
-    results_before(time).select(&:won).size
+    results_before(time).count(&:won)
   end
 
   def results_before(time)
