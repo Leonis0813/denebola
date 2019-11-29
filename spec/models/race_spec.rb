@@ -16,6 +16,7 @@ describe Race, type: :model do
         track: %w[芝 ダート 障],
         weather: %w[晴 曇 小雨 雨 小雪 雪],
       }
+      include_context 'トランザクション作成'
       it_behaves_like '正常な値を指定した場合のテスト', valid_attribute
     end
 
@@ -31,6 +32,7 @@ describe Race, type: :model do
         weather: ['invalid'],
       }
       absent_keys = invalid_attribute.keys - %i[grade] + %i[race_name]
+      include_context 'トランザクション作成'
       it_behaves_like '必須パラメーターがない場合のテスト', absent_keys
       it_behaves_like '不正な値を指定した場合のテスト', invalid_attribute
     end
@@ -40,6 +42,7 @@ describe Race, type: :model do
     describe '正常系' do
       (1..12).each do |i|
         context "#{i}月のレースの場合" do
+          include_context 'トランザクション作成'
           before(:all) do
             time_string = "2000/#{format('%<month>02d', month: i)}/01 00:00:00"
             start_time = Time.parse(time_string)
