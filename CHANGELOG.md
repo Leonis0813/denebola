@@ -1,5 +1,6 @@
 # 2.8.0 (2019/11/29)
 - [UPDATE] script to add option for operation
+- [UPDATE] gems
 
 # 2.7.0 (2019/11/19)
 - [ADD] new race attribute
