@@ -1,3 +1,6 @@
+# 2.8.1 (2019/12/02)
+- [UPDATE] ruby version to 2.6.3
+
 # 2.8.0 (2019/11/29)
 - [UPDATE] script to add option for operation
 - [UPDATE] gems
