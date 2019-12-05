@@ -3,6 +3,8 @@ module ArgumentUtil
 
   VALID_OPERATIONS = %w[create update upsert].freeze
 
+  module_function
+
   def get_from(default = Date.today - 30)
     from = ARGV.find {|arg| arg.start_with?('--from=') }
     from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : default
