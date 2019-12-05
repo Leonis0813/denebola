@@ -1,21 +1,15 @@
 require 'nokogiri'
 require_relative 'config/initialize'
+require_relative 'lib/argument_util'
 require_relative 'lib/collect_util'
-require_relative 'lib/denebola_logger'
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 logger = DenebolaLogger.new(Settings.logger.path.collect)
+ArgumentUtil.logger = logger
 CollectUtil.logger = logger
 
-begin
-  from = ARGV.find {|arg| arg.start_with?('--from=') }
-  from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 30)
-  to = ARGV.find {|arg| arg.start_with?('--to=') }
-  to = to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
-rescue ArgumentError => e
-  logger.error(e.backtrace.join("\n"))
-  raise e
-end
+from = ArgumentUtil.get_from
+to = ArgumentUtil.get_to
 
 Settings.backup_dir.to_h.values.each do |path|
   FileUtils.mkdir_p(File.join(BACKUP_DIR, path))

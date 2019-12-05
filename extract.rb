@@ -1,13 +1,13 @@
 require 'nokogiri'
 require_relative 'config/initialize'
 require_relative 'db/connect'
-require_relative 'lib/denebola_logger'
 Dir['extract/*'].each {|f| require_relative f }
 Dir['models/concern/*'].each {|f| require_relative f }
 Dir['models/*.rb'].each {|f| require_relative f }
 
 BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 logger = DenebolaLogger.new(Settings.logger.path.extract)
+ArgumentUtil.logger = logger
 
 def handle_active_record_error(logger, log_attribute)
   record = yield
@@ -55,22 +55,10 @@ def update_horse_info(horse_id, logger)
   end
 end
 
-begin
-  from = ARGV.find {|arg| arg.start_with?('--from=') }
-  from = from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : (Date.today - 30)
-  to = ARGV.find {|arg| arg.start_with?('--to=') }
-  to = to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
-  operation = ARGV.find {|arg| arg.start_with?('--operation=') }
-  operation = operation ? operation.match(/\A--operation=(.*)\z/)[1] : 'create'
-rescue ArgumentError => e
-  logger.error(e.backtrace.join("\n"))
-  raise
-end
-
-unless VALID_OPERATIONS.include?(operation)
-  logger.error("invalid operation specified: #{operation}")
-  return
-end
+from = ArgumentUtil.get_from
+to = ArgumentUtil.get_to
+operation = ArgumentUtil.get_operation
+check_operation(operation)
 
 ApplicationRecord.operation = operation
 
