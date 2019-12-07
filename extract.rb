@@ -12,7 +12,7 @@ class Extractor
 
   def self.work!
     logger = DenebolaLogger.new(Settings.logger.path.extract)
-    extractor = self.new(logger)
+    extractor = new(logger)
     ArgumentUtil.logger = logger
 
     check_operation(operation)
@@ -31,9 +31,7 @@ class Extractor
 
         _, *rows =
           race_html.xpath('//table[contains(@class, "race_table")]').search('tr')
-        rows.each do |row|
-          extractor.update_entry_info(row, race_id) rescue next
-        end
+        rows.each {|row| extractor.update_entry_info(row, race_id) rescue next }
 
         payoff_attribute = extract_payoff(race_html)
         race.create_or_update_payoff(payoff_attribute.compact)
@@ -97,10 +95,10 @@ class Extractor
 
     horse = update_horse_info(attribute[:horse_id])
 
-    if horse and entry
-      horse.results << entry
-      entry.horse = horse
-    end
+    return unless horse and entry
+
+    horse.results << entry
+    entry.horse = horse
   end
 
   def update_jockey_info(jockey_id, race_id)

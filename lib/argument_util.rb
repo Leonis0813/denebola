@@ -11,7 +11,7 @@ module ArgumentUtil
 
     def to(default = Date.today)
       to = ARGV.find {|arg| arg.start_with?('--to=') }
-      to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : Date.today
+      to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : default
     end
 
     def operation(default = 'create')
@@ -20,10 +20,10 @@ module ArgumentUtil
     end
 
     def check_operation(operation)
-      unless VALID_OPERATIONS.include?(operation)
-        logger.error("invalid operation specified: #{operation}")
-        raise StandardError
-      end
+      return if VALID_OPERATIONS.include?(operation)
+
+      logger.error("invalid operation specified: #{operation}")
+      raise StandardError
     end
   end
 

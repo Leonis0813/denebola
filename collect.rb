@@ -9,7 +9,7 @@ class Collector
 
   def self.work!
     logger = DenebolaLogger.new(Settings.logger.path.collect)
-    collector = self.new(logger)
+    collector = new(logger)
     collector.remove_empty_files
 
     (from..to).each do |date|
@@ -46,13 +46,13 @@ class Collector
     if File.exist?(file_path)
       race_ids = File.read(file_path).split("\n")
       @logger.info(source: 'file', file_path: "#{date}.txt", race_ids: race_ids)
-      race_ids
     else
       race_ids = @client.http_get_race_ids(date)
       File.open(file_path, 'w') {|file| file.write(race_ids.join("\n")) }
       @logger.info(source: 'web', file_path: "#{date}.txt", race_ids: race_ids)
-      race_ids
     end
+
+    race_ids
   end
 
   def fetch_race(race_id)
@@ -61,7 +61,6 @@ class Collector
     if File.exist?(file_path)
       html = File.read(file_path)
       @logger.info(resource: 'race', source: 'file', file_path: "#{race_id}.html")
-      html
     else
       html = @client.http_get_race(race_id)
       options = {invalid: :replace, undef: :replace, replace: '?'}
@@ -69,8 +68,9 @@ class Collector
       html.gsub!('&nbsp;', ' ')
       File.open(file_path, 'w') {|file| file.write(html) }
       @logger.info(resource: 'race', souroce: 'web', file_path: file_path)
-      html
     end
+
+    html
   end
 
   def fetch_horse(horse_id)

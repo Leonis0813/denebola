@@ -10,8 +10,9 @@ class Aggregator
     logger = DenebolaLogger.new(Settings.logger.path.aggregate)
     ArgumentUtil.logger = logger
     check_operation(operation)
+    ApplicationRecord.operation = operation
 
-    aggregator = self.new(logger, operation)
+    aggregator = new(logger)
 
     logger.info('Start Aggregation')
 
@@ -21,36 +22,23 @@ class Aggregator
                    .where('DATE(entries.updated_at) >= ?', from.strftime('%F'))
                    .where('DATE(entries.updated_at) <= ?', to.strftime('%F'))
                    .uniq
-
     logger.info("# of Target Features = #{entries.size}")
 
-    entries.each do |entry|
-      aggregator.create_feature(entry)
-    end
+    entries.each {|entry| aggregator.create_feature(entry) }
 
     logger.info('Finish Aggregation')
   end
 
-  def initialize(logger, operation)
+  def initialize(logger)
     @logger = logger
-    @operation = operation
   end
 
   def create_feature(entry)
-    feature = Feature.find_by(
-      race_id: entry.race.race_id,
-      horse_id: entry.horse.horse_id,
-    )
+    attribute = create_feature_attribute(entry)
+    return if attribute.nil?
 
     begin
-      if feature.present? and %w[update upsert].include?(@operation)
-        attribute = create_feature_attribute(entry)
-        feature.update!(attribute) if attribute.present?
-      elsif feature.nil? and %w[create upsert].include?(@operation)
-        attribute = create_feature_attribute(entry)
-        feature = Feature.create!(attribute) if attribute.present?
-      end
-
+      feature = Feature.create_or_update!(attribute)
       @logger.info(base_log_attribute.merge(feature_id: feature.id))
     rescue ActiveRecord::RecordInvalid => e
       @logger.error(base_log_attribute.merge(errors: e.record.errors))
@@ -61,7 +49,7 @@ class Aggregator
   private
 
   def base_log_attribute
-    @base_log_attribute ||= {action: @operation, resource: 'feature'}
+    @base_log_attribute ||= {action: Feature.operation, resource: 'feature'}
   end
 
   def create_feature_attribute(entry)

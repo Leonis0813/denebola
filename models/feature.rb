@@ -72,6 +72,11 @@ class Feature < ApplicationRecord
 
   before_validation :set_default_value
 
+  def self.create_or_update!(attribute)
+    feature = find_by(attribute.slice(:race_id, :horse_id))
+    super(feature, attribute)
+  end
+
   private
 
   def set_default_value
