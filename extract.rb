@@ -82,11 +82,12 @@ class Extractor
   end
 
   def update_entry_info(html, race_id)
-    attribute = extract_entry(html)
+    attribute = extract_entry(html).merge(race_id: race_id)
     log_attribute = Entry.log_attribute.merge(attribute.slice(:race_id, :number))
     entry = handle_active_record_error(log_attribute) do
       Entry.create_or_update!(attribute)
     end
+    entry.race = Race.find_by(race_id: race_id)
     jockey = update_jockey_info(attribute[:jockey_id], race_id)
 
     if jockey and entry
@@ -94,7 +95,7 @@ class Extractor
       entry.jockey = jockey
     end
 
-    horse = update_horse_info(entry_attribute[:horse_id])
+    horse = update_horse_info(attribute[:horse_id])
 
     if horse and entry
       horse.results << entry
@@ -113,11 +114,11 @@ class Extractor
     html = fetch_horse(horse_id)
     return if html.nil?
 
-    parsed_html = Nokogiri::HTML.parse(html)
-    horse_attribute = extract_horse(parsed_html) rescue return
+    html = Nokogiri::HTML.parse(html)
+    attribute = extract_horse(html) rescue return
     log_attribute = Horse.log_attribute.merge(horse_id: horse_id)
     handle_active_record_error(log_attribute) do
-      Horse.create_or_update!(horse_attribute.merge(horse_id: horse_id))
+      Horse.create_or_update!(attribute.merge(horse_id: horse_id))
     end
   end
 
