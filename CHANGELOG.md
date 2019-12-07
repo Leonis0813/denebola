@@ -1,3 +1,6 @@
+# 2.8.2 (2019/12/07)
+- [REFACTOR] collector, extractor and aggregator
+
 # 2.8.1 (2019/12/02)
 - [UPDATE] ruby version to 2.6.3
 
