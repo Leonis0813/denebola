@@ -5,6 +5,35 @@ require_relative 'lib/netkeiba_client'
 class Collector
   BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
 
+  include ArgumentUtil
+
+  def self.work!
+    logger = DenebolaLogger.new(Settings.logger.path.collect)
+    collector = self.new(logger)
+    collector.remove_empty_files
+
+    (from..to).each do |date|
+      race_ids = collector.fetch_race_ids(date)
+
+      race_ids.each do |race_id|
+        race_html = collector.fetch_race(race_id)
+        parsed_html = Nokogiri::HTML.parse(race_html)
+
+        _, *entries =
+          parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
+
+        entries.each do |entry|
+          horse_link = entry.search('td')[3].first_element_child.attribute('href').value
+          horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
+          collector.fetch_horse(horse_id)
+        end
+      end
+    end
+  rescue ArgumentError => e
+    logger.error(e.backtrace.join("\n"))
+    raise
+  end
+
   def initialize(logger)
     @logger = logger
     @client = NetkeibaClient.new(logger)
@@ -56,39 +85,17 @@ class Collector
     File.open(file_path, 'w') {|file| file.write(html) }
     @logger.info(resource: 'horse', souroce: 'web', file_path: file_path)
   end
-end
 
-logger = DenebolaLogger.new(Settings.logger.path.collect)
-ArgumentUtil.logger = logger
-
-collector = Collector.new(logger)
-
-Settings.backup_dir.to_h.values.each do |path|
-  target_dir = File.join(Collector::BACKUP_DIR, path)
-  FileUtils.mkdir_p(target_dir)
-  removed_files = Dir[File.join(target_dir, '*')].select do |file_path|
-    File.zero?(file_path)
-  end
-  FileUtils.rm(removed_files) if removed_files
-end
-
-from = ArgumentUtil.get_from
-to = ArgumentUtil.get_to
-
-(from..to).each do |date|
-  race_ids = collector.fetch_race_ids(date)
-
-  race_ids.each do |race_id|
-    race_html = collector.fetch_race(race_id)
-    parsed_html = Nokogiri::HTML.parse(race_html)
-
-    _, *entries =
-      parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
-
-    entries.each do |entry|
-      horse_link = entry.search('td')[3].first_element_child.attribute('href').value
-      horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
-      collector.fetch_horse(horse_id)
+  def remove_empty_files
+    Settings.backup_dir.to_h.values.each do |path|
+      target_dir = File.join(BACKUP_DIR, path)
+      FileUtils.mkdir_p(target_dir)
+      removed_files = Dir[File.join(target_dir, '*')].select do |file_path|
+        File.zero?(file_path)
+      end
+      FileUtils.rm(removed_files) if removed_files
     end
   end
 end
+
+Collector.work!
