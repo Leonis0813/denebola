@@ -9,6 +9,7 @@ class Aggregator
   def self.work!
     logger = DenebolaLogger.new(Settings.logger.path.aggregate)
     ArgumentUtil.logger = logger
+
     check_operation(operation)
     ApplicationRecord.operation = operation
 

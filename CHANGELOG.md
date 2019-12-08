@@ -1,4 +1,4 @@
-# 2.8.2 (2019/12/07)
+# 2.8.2 (2019/12/08)
 - [REFACTOR] collector, extractor and aggregator
 
 # 2.8.1 (2019/12/02)

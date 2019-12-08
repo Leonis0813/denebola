@@ -12,11 +12,13 @@ class Extractor
 
   def self.work!
     logger = DenebolaLogger.new(Settings.logger.path.extract)
-    extractor = new(logger)
     ArgumentUtil.logger = logger
 
     check_operation(operation)
     ApplicationRecord.operation = operation
+
+    extractor = new(logger)
+
 
     (from..to).each do |date|
       race_ids = extractor.fetch_race_ids(date)
