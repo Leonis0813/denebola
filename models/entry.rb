@@ -37,7 +37,7 @@ class Entry < ApplicationRecord
 
   def self.create_or_update!(attribute)
     entry = find_by(attribute.slice(:race_id, :number))
-    super(entry, attribute)
+    super(entry, attribute.except(:race_id, :horse_id))
   end
 
   def self.log_attribute
