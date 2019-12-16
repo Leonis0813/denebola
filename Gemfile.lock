@@ -62,7 +62,7 @@ GEM
     fuubar (2.5.0)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
-    gitlab (4.12.0)
+    gitlab (4.13.0)
       httparty (~> 0.14, >= 0.14.0)
       terminal-table (~> 1.5, >= 1.5.1)
     httparty (0.17.1)
