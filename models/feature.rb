@@ -1,6 +1,6 @@
-%w[race entry horse].each {|f| require_relative f }
+%w[application_record entry horse race].each {|f| require_relative f }
 
-class Feature < ActiveRecord::Base
+class Feature < ApplicationRecord
   GRADE_LIST = Race::GRADE_LIST + %w[N]
 
   validates :age, :blank, :burden_weight, :direction, :distance, :distance_diff,
@@ -70,7 +70,12 @@ class Feature < ActiveRecord::Base
             inclusion: {in: [true, false], message: 'invalid'},
             allow_nil: true
 
-  after_initialize :set_default_value
+  before_validation :set_default_value
+
+  def self.create_or_update!(attribute)
+    feature = find_by(attribute.slice(:race_id, :horse_id))
+    super(feature, attribute)
+  end
 
   private
 

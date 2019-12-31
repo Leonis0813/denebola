@@ -1,4 +1,6 @@
-class Exacta < ActiveRecord::Base
+require_relative 'application_record'
+
+class Exacta < ApplicationRecord
   include PayoffValidator
 
   belongs_to :race

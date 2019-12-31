@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     PATH = '/usr/local/rvm/bin:/usr/bin:/bin'
-    RUBY_VERSION = '2.5.5'
+    RUBY_VERSION = '2.6.3'
   }
 
   options {
@@ -53,7 +53,7 @@ pipeline {
             sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/race_spec.rb"
           },
           "other" : {
-            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/{libs,aggregate_spec.rb}"
+            sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/aggregate_spec.rb"
             sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/[b,h-q,s-w]*"
             sh "rvm ${RUBY_VERSION} do bundle exec rspec spec/models/exacta_spec.rb"
           }
