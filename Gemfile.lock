@@ -96,7 +96,7 @@ GEM
     parallel (1.19.1)
     parser (2.7.0.2)
       ast (~> 2.4.0)
-    power_assert (1.1.5)
+    power_assert (1.1.6)
     pronto (0.10.0)
       gitlab (~> 4.0, >= 4.0.0)
       httparty (>= 0.13.7)
