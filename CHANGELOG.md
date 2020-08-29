@@ -1,3 +1,7 @@
+# 2.8.3 (2020/08/29)
+- [FIX] extra features
+- [UPDATE] gems
+
 # 2.8.2 (2019/12/08)
 - [REFACTOR] collector, extractor and aggregator
 
