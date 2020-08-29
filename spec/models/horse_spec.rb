@@ -40,7 +40,7 @@ describe Horse, type: :model do
       include_context 'テストデータ作成'
 
       it '2.0を返すこと' do
-        is_asserted_by { @horse.average_prize_money('2000-01-03 00:00:00') == 2.0 }
+        is_asserted_by { @horse.average_prize_money('2000-01-03 00:00:00') == 1.5 }
       end
     end
   end
@@ -50,7 +50,7 @@ describe Horse, type: :model do
       include_context 'テストデータ作成'
 
       it '3を返すこと' do
-        is_asserted_by { @horse.entry_times('2000-01-03 00:00:00') == 3 }
+        is_asserted_by { @horse.entry_times('2000-01-03 00:00:00') == 2 }
       end
     end
   end
@@ -100,7 +100,7 @@ describe Horse, type: :model do
       include_context 'テストデータ作成'
 
       it '3エントリー分を返すこと' do
-        is_asserted_by { @horse.results_before('2000-01-03 00:00:00').size == 3 }
+        is_asserted_by { @horse.results_before('2000-01-03 00:00:00').size == 2 }
       end
     end
   end

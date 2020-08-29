@@ -26,7 +26,9 @@ class Horse < ApplicationRecord
   end
 
   def average_prize_money(time)
-    results_before(time).map(&:prize_money).inject(:+) / entry_times(time).to_f
+    sum_prize_money = results_before(time).map(&:prize_money).inject(:+)
+    sum_prize_money ? sum_prize_money / entry_times(time).to_f : 0
+
   end
 
   def entry_times(time)
@@ -34,18 +36,18 @@ class Horse < ApplicationRecord
   end
 
   def last_race_order(time)
-    results_before(time).second&.order&.to_i || 0
+    results_before(time).first&.order&.to_i || 0
   end
 
   def rate_within_third(time)
     within_third = results_before(time).first(3).count do |result|
       %w[1 2 3].include?(result.order)
     end
-    within_third / 3.0
+    within_third / [3.0, results_before(time).size.to_f].min
   end
 
   def second_last_race_order(time)
-    results_before(time).third&.order&.to_i || 0
+    results_before(time).second&.order&.to_i || 0
   end
 
   def win_times(time)

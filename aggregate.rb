@@ -80,8 +80,12 @@ class Aggregator
             end
 
     sum_distance = results_before.map {|result| result.race.distance }.inject(:+)
-    average_distance = sum_distance / horse.entry_times(entry_time).to_f
-    distance_diff = (race.distance - average_distance).abs / average_distance
+    distance_diff = if sum_distance
+                      average_distance = sum_distance / horse.entry_times(entry_time)
+                      (race.distance - average_distance).abs / average_distance.to_f
+                    else
+                      0
+                    end
 
     {
       blank: blank,
