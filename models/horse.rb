@@ -39,6 +39,8 @@ class Horse < ApplicationRecord
   end
 
   def rate_within_third(time)
+    return 0 if results_before(time).empty?
+
     within_third = results_before(time).first(3).count do |result|
       %w[1 2 3].include?(result.order)
     end
