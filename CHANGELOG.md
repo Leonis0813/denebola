@@ -1,3 +1,6 @@
+# 2.8.4 (2020/08/31)
+- [FIX] memory usage for aggregation
+
 # 2.8.3 (2020/08/30)
 - [FIX] extra features
 - [UPDATE] gems
