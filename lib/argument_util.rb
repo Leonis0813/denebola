@@ -1,3 +1,5 @@
+require 'active_support'
+
 module ArgumentUtil
   VALID_OPERATIONS = %w[create update upsert].freeze
 

@@ -74,7 +74,7 @@ class Aggregator
     results_before = horse.results_before(entry_time)
 
     blank = if results_before.second
-              (entry_time.to_date - results_before.second.race.start_time.to_date).to_i
+              (entry_time.to_date - results_before.first.race.start_time.to_date).to_i
             else
               0
             end
