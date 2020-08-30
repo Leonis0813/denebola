@@ -74,7 +74,7 @@ class Feature < ApplicationRecord
 
   def self.create_or_update!(attribute)
     feature = find_by(attribute.slice(:race_id, :horse_id))
-    super(feature, attribute)
+    super(feature, attribute.except(:id))
   end
 
   private

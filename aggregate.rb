@@ -21,10 +21,8 @@ class Aggregator
                    .where.not(weight: nil)
                    .where('DATE(entries.updated_at) >= ?', from.strftime('%F'))
                    .where('DATE(entries.updated_at) <= ?', to.strftime('%F'))
-                   .uniq
-    logger.info("# of Target Features = #{entries.size}")
 
-    entries.each {|entry| aggregator.create_feature(entry) }
+    entries.find_each {|entry| aggregator.create_feature(entry) }
 
     logger.info('Finish Aggregation')
   end
