@@ -22,7 +22,7 @@ class Aggregator
                    .where('DATE(entries.updated_at) >= ?', from.strftime('%F'))
                    .where('DATE(entries.updated_at) <= ?', to.strftime('%F'))
 
-    entries.find_each {|entry| aggregator.create_feature(entry) }
+    entries.find_each(batch_size: 100) {|entry| aggregator.create_feature(entry) }
 
     logger.info('Finish Aggregation')
   end
