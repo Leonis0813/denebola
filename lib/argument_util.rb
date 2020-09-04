@@ -6,17 +6,17 @@ module ArgumentUtil
   module ClassMethods
     def from
       from = ARGV.find {|arg| arg.start_with?('--from=') }
-      from&.match(/\A--from=(.*)\z/)[1]
+      from ? from.match(/\A--from=(.*)\z/)[1] : nil
     end
 
     def to
       to = ARGV.find {|arg| arg.start_with?('--to=') }
-      to&.match(/\A--to=(.*)\z/)[1]
+      to ? to.match(/\A--to=(.*)\z/)[1] : nil
     end
 
     def operation
       operation = ARGV.find {|arg| arg.start_with?('--operation=') }
-      operation&.match(/\A--operation=(.*)\z/)[1]
+      operation ? operation.match(/\A--operation=(.*)\z/)[1] : nil
     end
   end
 

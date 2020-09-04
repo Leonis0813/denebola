@@ -24,7 +24,8 @@ class Collector
             parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
 
           entries.each do |entry|
-            horse_link = entry.search('td')[3].first_element_child.attribute('href').value
+            horse_link =
+              entry.search('td')[3].first_element_child.attribute('href').value
             horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
             collector.fetch_horse(horse_id)
           end
