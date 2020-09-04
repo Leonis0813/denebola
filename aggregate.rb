@@ -24,6 +24,11 @@ class Aggregator
       when OPERATION_CREATE
         aggregator.create_features(from, to)
       when OPERATION_UPDATE
+        if (to - from) > 200000
+          logger.error('too many features updated')
+          raise StandardError
+        end
+
         aggregator.update_features(from, to)
       end
 
