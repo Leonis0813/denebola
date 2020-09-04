@@ -20,15 +20,36 @@ class Aggregator
 
       logger.info('Start Aggregation')
 
-      entries = Entry.joins(:race).joins(:horse)
-        .where(order: (1..18).to_a.map(&:to_s))
-        .where.not(weight: nil)
-        .where('DATE(entries.updated_at) >= ?', from.strftime('%F'))
-        .where('DATE(entries.updated_at) <= ?', to.strftime('%F'))
-        .uniq
-      logger.info("# of Target Features = #{entries.size}")
+      case operation
+      when OPERATION_CREATE
+        horse_race_ids = Entry.where(order: (1..18).to_a.map(&:to_s))
+                              .where.not(weight: nil)
+                              .where('DATE(updated_at) >= ?', from)
+                              .where('DATE(updated_at) <= ?', to)
+                              .pluck(:horse_id, :race_id)
 
-      entries.each {|entry| aggregator.create_feature(entry) }
+        horse_race_ids.select! do |horse_id, race_id|
+          not Feature.exists?(
+            horse_id: Horse.find(horse_id).horse_id,
+            race_id: Race.find(race_id).race_id,
+          )
+        end
+
+        logger.info("# of Target Features = #{horse_race_ids.size}")
+
+        horse_race_ids.find_each(batch_size: 100) do |horse_id, race_id|
+          aggregator.create_feature(horse_id, race_id)
+        end
+      when OPERATION_UPDATE
+        features = Feature.where('id >= ?', from)
+                          .where('id <= ?', to)
+
+        logger.info("# of Target Features = #{features.size}")
+
+        features.find_each(batch_size: 100) do |feature|
+          aggregator.update_feature(feature)
+        end
+      end
 
       logger.info('Finish Aggregation')
     end
@@ -36,7 +57,7 @@ class Aggregator
     def from
       case operation
       when OPERATION_CREATE
-        super.blank? ? Date.today - 30 : Date.parse(super)
+        super.blank? ? Date.today - 30 : super
       when OPERATION_UPDATE
         if super.nil?
           logger.error('from parameter not specified')
@@ -53,7 +74,7 @@ class Aggregator
     def to
       case operation
       when OPERATION_CREATE
-        super.blank? ? Date.today : Date.parse(super)
+        super.blank? ? Date.today : super
       when OPERATION_UPDATE
         if super.nil?
           logger.error('to parameter not specified')
@@ -83,12 +104,30 @@ class Aggregator
     @logger = logger
   end
 
-  def create_feature(entry)
-    attribute = create_feature_attribute(entry)
+  def create_feature(horse_id, race_id)
+    entry = Entry.find_by(horse_id: horse_id, race_id: race_id)
+    attribute = feature_attribute(entry)
     return if attribute.nil?
 
     begin
-      feature = Feature.create_or_update!(attribute)
+      feature = Feature.create!(attribute)
+      @logger.info(base_log_attribute.merge(feature_id: feature.id))
+    rescue ActiveRecord::RecordInvalid => e
+      @logger.error(base_log_attribute.merge(errors: e.record.errors))
+      raise
+    end
+  end
+
+  def update_feature(feature)
+    race = Race.find_by(race_id: feature.race_id)
+    horse = Horse.find_by(horse_id: feature.horse_id)
+    entry = Entry.find_by(horse_id: horse.id, race_id: race.id)
+
+    attribute = feature_attribute(entry)
+    return if attribute.nil?
+
+    begin
+      feature.update!(attribute)
       @logger.info(base_log_attribute.merge(feature_id: feature.id))
     rescue ActiveRecord::RecordInvalid => e
       @logger.error(base_log_attribute.merge(errors: e.record.errors))
@@ -102,7 +141,7 @@ class Aggregator
     @base_log_attribute ||= {action: Feature.operation, resource: 'feature'}
   end
 
-  def create_feature_attribute(entry)
+  def feature_attribute(entry)
     return if entry.race.nil? or entry.horse.nil? or entry.jockey.nil?
 
     attribute = {race_id: entry.race.race_id, horse_id: entry.horse.horse_id}
