@@ -94,6 +94,8 @@ class Aggregator
                    .where('DATE(updated_at) <= ?', to)
 
     entries.find_each(batch_size: 100) do |entry|
+      next if entry.horse.nil? or entry.race.nil?
+
       query = {horse_id: entry.horse.horse_id, race_id: entry.race.race_id}
       next if Feature.exists?(query)
 
