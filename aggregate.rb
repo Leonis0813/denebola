@@ -6,7 +6,7 @@ Dir['models/*.rb'].each {|f| require_relative f }
 class Aggregator
   OPERATION_CREATE = 'create'.freeze
   OPERATION_UPDATE = 'update'.freeze
-  VALID_OPERATIONS = [OPERATION_CRATE, OPERATION_UPDATE].freeze
+  VALID_OPERATIONS = [OPERATION_CREATE, OPERATION_UPDATE].freeze
 
   include ArgumentUtil
 
@@ -67,7 +67,7 @@ class Aggregator
     def operation
       operation = super.blank? ? OPERATION_CREATE : super
 
-      unless VALID_OPERATION.include?(operation)
+      unless VALID_OPERATIONS.include?(operation)
         logger.error("invalid operation specified: #{operation}")
         raise StandardError
       end
@@ -81,22 +81,15 @@ class Aggregator
   end
 
   def create_features(from, to)
-    horse_race_ids = Entry.where(order: (1..18).to_a.map(&:to_s))
-                          .where.not(weight: nil)
-                          .where('DATE(updated_at) >= ?', from)
-                          .where('DATE(updated_at) <= ?', to)
-                          .pluck(:horse_id, :race_id)
+    entries = Entry.where(order: (1..18).to_a.map(&:to_s))
+                   .where.not(weight: nil)
+                   .where('DATE(updated_at) >= ?', from)
+                   .where('DATE(updated_at) <= ?', to)
 
-    horse_race_ids.reject! do |horse_id, race_id|
-      horse = Horse.find(horse_id)
-      race = Race.find(race_id)
-      Feature.exists?(horse_id: horse.horse_id, race_id: race.race_id)
-    end
+    entries.find_each(batch_size: 100) do |entry|
+      query = {horse_id: entry.horse.horse_id, race_id: entry.race.race_id}
+      next if Feature.exists?(query)
 
-    @logger.info("# of Target Features = #{horse_race_ids.size}")
-
-    horse_race_ids.find_each(batch_size: 100) do |horse_id, race_id|
-      entry = Entry.find_by(horse_id: horse_id, race_id: race_id)
       attribute = feature_attribute(entry)
       next if attribute.nil?
 
