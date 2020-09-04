@@ -1,3 +1,4 @@
+require 'active_support'
 require 'nokogiri'
 require_relative 'config/initialize'
 require_relative 'db/connect'
