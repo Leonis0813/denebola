@@ -1,4 +1,5 @@
 require 'active_support'
+require 'active_support/core_ext/object/blank'
 require_relative 'config/initialize'
 require_relative 'db/connect'
 Dir['models/concern/*'].each {|f| require_relative f }
