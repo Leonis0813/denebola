@@ -7,37 +7,57 @@ Dir['models/*.rb'].each {|f| require_relative f }
 class Extractor
   Dir['extract/*'].each {|f| require_relative f }
   BACKUP_DIR = File.join(APPLICATION_ROOT, 'backup')
+  VALID_OPERATIONS = %w[create update upsert].freeze
+  DEFAULT_OPERATION = 'create'.freeze
 
   include ArgumentUtil
 
-  def self.work!
-    logger = DenebolaLogger.new(Settings.logger.path.extract)
-    ArgumentUtil.logger = logger
+  class << self
+    def work!
+      logger = DenebolaLogger.new(Settings.logger.path.extract)
+      ArgumentUtil.logger = logger
+      ApplicationRecord.operation = operation
 
-    check_operation(operation)
-    ApplicationRecord.operation = operation
+      extractor = new(logger)
 
-    extractor = new(logger)
+      (from..to).each do |date|
+        race_ids = extractor.fetch_race_ids(date)
 
+        Array.wrap(race_ids).each do |race_id|
+          race_html = extractor.fetch_race(race_id)
+          race_html = Nokogiri::HTML.parse(race_html)
+          next if race_html.nil?
 
-    (from..to).each do |date|
-      race_ids = extractor.fetch_race_ids(date)
+          race = extractor.update_race_info(race_html, race_id)
+          next if race.nil?
 
-      Array.wrap(race_ids).each do |race_id|
-        race_html = extractor.fetch_race(race_id)
-        race_html = Nokogiri::HTML.parse(race_html)
-        next if race_html.nil?
+          _, *rows =
+            race_html.xpath('//table[contains(@class, "race_table")]').search('tr')
+          rows.each {|row| extractor.update_entry_info(row, race_id) rescue next }
 
-        race = extractor.update_race_info(race_html, race_id)
-        next if race.nil?
-
-        _, *rows =
-          race_html.xpath('//table[contains(@class, "race_table")]').search('tr')
-        rows.each {|row| extractor.update_entry_info(row, race_id) rescue next }
-
-        payoff_attribute = extract_payoff(race_html)
-        race.create_or_update_payoff(payoff_attribute.compact)
+          payoff_attribute = extract_payoff(race_html)
+          race.create_or_update_payoff(payoff_attribute.compact)
+        end
       end
+    end
+
+    def from
+      super.blank? ? Date.today - 30 : Date.parse(super)
+    end
+
+    def to
+      super.blank? ? Date.today : Date.parse(super)
+    end
+
+    def operation
+      operation = super.blank? ? DEFAULT_OPERATION : super
+
+      unless VALID_OPERATIONS.include?(operation)
+        logger.error("invalid operation specified: #{operation}")
+        raise StandardError
+      end
+
+      operation
     end
   end
 

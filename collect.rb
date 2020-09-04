@@ -7,31 +7,41 @@ class Collector
 
   include ArgumentUtil
 
-  def self.work!
-    logger = DenebolaLogger.new(Settings.logger.path.collect)
-    collector = new(logger)
-    collector.remove_empty_files
+  class << self
+    def work!
+      logger = DenebolaLogger.new(Settings.logger.path.collect)
+      collector = new(logger)
+      collector.remove_empty_files
 
-    (from..to).each do |date|
-      race_ids = collector.fetch_race_ids(date)
+      (from..to).each do |date|
+        race_ids = collector.fetch_race_ids(date)
 
-      race_ids.each do |race_id|
-        race_html = collector.fetch_race(race_id)
-        parsed_html = Nokogiri::HTML.parse(race_html)
+        race_ids.each do |race_id|
+          race_html = collector.fetch_race(race_id)
+          parsed_html = Nokogiri::HTML.parse(race_html)
 
-        _, *entries =
-          parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
+          _, *entries =
+            parsed_html.xpath('//table[contains(@class, "race_table")]').search('tr')
 
-        entries.each do |entry|
-          horse_link = entry.search('td')[3].first_element_child.attribute('href').value
-          horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
-          collector.fetch_horse(horse_id)
+          entries.each do |entry|
+            horse_link = entry.search('td')[3].first_element_child.attribute('href').value
+            horse_id = horse_link.match(%r{/horse/(?<horse_id>\d+)/?})[:horse_id]
+            collector.fetch_horse(horse_id)
+          end
         end
       end
+    rescue ArgumentError => e
+      logger.error(e.backtrace.join("\n"))
+      raise
     end
-  rescue ArgumentError => e
-    logger.error(e.backtrace.join("\n"))
-    raise
+
+    def from
+      super.blank? ? Date.today - 30 : Date.parse(super)
+    end
+
+    def to
+      super.blank? ? Date.today : Date.parse(super)
+    end
   end
 
   def initialize(logger)

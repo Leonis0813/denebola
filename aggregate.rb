@@ -4,30 +4,79 @@ Dir['models/concern/*'].each {|f| require_relative f }
 Dir['models/*.rb'].each {|f| require_relative f }
 
 class Aggregator
+  OPERATION_CREATE = 'create'.freeze
+  OPERATION_UPDATE = 'update'.freeze
+  VALID_OPERATIONS = [OPERATION_CRATE, OPERATION_UPDATE].freeze
+
   include ArgumentUtil
 
-  def self.work!
-    logger = DenebolaLogger.new(Settings.logger.path.aggregate)
-    ArgumentUtil.logger = logger
+  class << self
+    def work!
+      logger = DenebolaLogger.new(Settings.logger.path.aggregate)
+      ArgumentUtil.logger = logger
+      ApplicationRecord.operation = operation
 
-    check_operation(operation)
-    ApplicationRecord.operation = operation
+      aggregator = new(logger)
 
-    aggregator = new(logger)
+      logger.info('Start Aggregation')
 
-    logger.info('Start Aggregation')
+      entries = Entry.joins(:race).joins(:horse)
+        .where(order: (1..18).to_a.map(&:to_s))
+        .where.not(weight: nil)
+        .where('DATE(entries.updated_at) >= ?', from.strftime('%F'))
+        .where('DATE(entries.updated_at) <= ?', to.strftime('%F'))
+        .uniq
+      logger.info("# of Target Features = #{entries.size}")
 
-    entries = Entry.joins(:race).joins(:horse)
-                   .where(order: (1..18).to_a.map(&:to_s))
-                   .where.not(weight: nil)
-                   .where('DATE(entries.updated_at) >= ?', from.strftime('%F'))
-                   .where('DATE(entries.updated_at) <= ?', to.strftime('%F'))
-                   .uniq
-    logger.info("# of Target Features = #{entries.size}")
+      entries.each {|entry| aggregator.create_feature(entry) }
 
-    entries.each {|entry| aggregator.create_feature(entry) }
+      logger.info('Finish Aggregation')
+    end
 
-    logger.info('Finish Aggregation')
+    def from
+      case operation
+      when OPERATION_CREATE
+        super.blank? ? Date.today - 30 : Date.parse(super)
+      when OPERATION_UPDATE
+        if super.nil?
+          logger.error('from parameter not specified')
+          raise StandardError
+        elsif not super.match?(/\A[1-9][0-9]*\z/)
+          logger.error("invalid from specified: #{super}")
+          raise StandardError
+        else
+          super.to_i
+        end
+      end
+    end
+
+    def to
+      case operation
+      when OPERATION_CREATE
+        super.blank? ? Date.today : Date.parse(super)
+      when OPERATION_UPDATE
+        if super.nil?
+          logger.error('to parameter not specified')
+          raise StandardError
+        elsif not super.match?(/\A[1-9][0-9]*\z/)
+          logger.error("invalid to specified: #{from}")
+          raise StandardError
+        else
+          super.to_i
+        end
+      end
+    end
+
+    def operation
+      operation = super.blank? ? OPERATION_CREATE : super
+
+      unless VALID_OPERATION.include?(operation)
+        logger.error("invalid operation specified: #{operation}")
+        raise StandardError
+      end
+
+      operation
+    end
   end
 
   def initialize(logger)
