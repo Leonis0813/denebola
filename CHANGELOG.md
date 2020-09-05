@@ -1,3 +1,7 @@
+# 2.9.0 (2020/09/05)
+- [UPDATE] aggregation to specify id for update
+- [FIX] average prize money columns type on features table
+
 # 2.8.3 (2020/08/30)
 - [FIX] extra features
 - [UPDATE] gems
