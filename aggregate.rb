@@ -123,9 +123,9 @@ class Aggregator
       attribute = feature_attribute(entry, race, horse, jockey)
       next if attribute.nil?
 
-      @logger.info(update_attribute: attribute.merge(feature_id: feature.id))
-      feature.update!(attribute)
-      @logger.info(base_log_attribute.merge(feature_id: feature.id))
+      feature.update!(attribute.except(:id, :horse_id, :race_id))
+      feature_info = {feature_id: feature.id, changes: feature.changes}
+      @logger.info(base_log_attribute.merge(feature_info))
     end
   end
 
