@@ -26,15 +26,15 @@ class Aggregator
       when OPERATION_CREATE
         aggregator.create_features(from, to)
       when OPERATION_UPDATE
-        if (to - from) > 200000
-          logger.error('too many features updated')
-          raise StandardError
-        end
+        raise StandardError, 'too many features updated' if (to - from) > 200000
 
         aggregator.update_features(from, to)
       end
 
       logger.info('Finish Aggregation')
+    rescue StandardError => e
+      logger.error(e.backtrace.join("\n"))
+      raise
     end
 
     def from
@@ -43,11 +43,9 @@ class Aggregator
         super.blank? ? Date.today - 30 : super
       when OPERATION_UPDATE
         if super.nil?
-          logger.error('from parameter not specified')
-          raise StandardError
+          raise StandardError, 'from parameter not specified'
         elsif not super.match?(/\A[1-9][0-9]*\z/)
-          logger.error("invalid from specified: #{super}")
-          raise StandardError
+          raise StandardError, "invalid from specified: #{super}"
         else
           super.to_i
         end
@@ -60,11 +58,9 @@ class Aggregator
         super.blank? ? Date.today : super
       when OPERATION_UPDATE
         if super.nil?
-          logger.error('to parameter not specified')
-          raise StandardError
+          raise StandardError, 'to parameter not specified'
         elsif not super.match?(/\A[1-9][0-9]*\z/)
-          logger.error("invalid to specified: #{from}")
-          raise StandardError
+          raise StandardError, "invalid to specified: #{from}"
         else
           super.to_i
         end
@@ -75,8 +71,7 @@ class Aggregator
       operation = super.blank? ? OPERATION_CREATE : super
 
       unless VALID_OPERATIONS.include?(operation)
-        logger.error("invalid operation specified: #{operation}")
-        raise StandardError
+        raise StandardError, "invalid operation specified: #{operation}"
       end
 
       operation
