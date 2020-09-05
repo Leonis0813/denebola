@@ -87,12 +87,12 @@ class Aggregator
                    .where('DATE(updated_at) <= ?', to)
 
     entries.find_each(batch_size: 100) do |entry|
-      next if entry.horse.nil? or entry.race.nil?
+      next if entry.horse.nil? or entry.race.nil? or entry.jockey.nil?
 
       query = {horse_id: entry.horse.horse_id, race_id: entry.race.race_id}
       next if Feature.exists?(query)
 
-      attribute = feature_attribute(entry)
+      attribute = feature_attribute(entry, race, horse, jockey)
       next if attribute.nil?
 
       begin
@@ -113,12 +113,17 @@ class Aggregator
     features.find_each(batch_size: 100) do |feature|
       race = Race.find_by(race_id: feature.race_id)
       horse = Horse.find_by(horse_id: feature.horse_id)
-      entry = Entry.find_by(horse_id: horse.id, race_id: race.id)
+      next if race.nil? or horse.nil?
 
-      attribute = feature_attribute(entry)
+      entry = Entry.find_by(horse_id: horse.id, race_id: race.id)
+      jockey = entry.jockey
+      next if jockey.nil?
+
+      attribute = feature_attribute(entry, race, horse, jockey)
       next if attribute.nil?
 
       begin
+        @logger.info(update_attribute: attribute.merge(feature_id: feature.id))
         feature.update!(attribute)
         @logger.info(base_log_attribute.merge(feature_id: feature.id))
       rescue ActiveRecord::RecordInvalid => e
@@ -134,9 +139,7 @@ class Aggregator
     @base_log_attribute ||= {action: Feature.operation, resource: 'feature'}
   end
 
-  def feature_attribute(entry)
-    return if entry.race.nil? or entry.horse.nil? or entry.jockey.nil?
-
+  def feature_attribute(entry, race, horse, jockey)
     attribute = {race_id: entry.race.race_id, horse_id: entry.horse.horse_id}
     feature_attribute_names = Feature.attribute_names - %w[horse_id race_id]
 
