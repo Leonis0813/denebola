@@ -42,13 +42,12 @@ class Aggregator
       when OPERATION_CREATE
         super.blank? ? Date.today - 30 : super
       when OPERATION_UPDATE
-        if super.nil?
-          raise StandardError, 'from parameter not specified'
-        elsif not super.match?(/\A[1-9][0-9]*\z/)
+        raise StandardError, 'from parameter not specified' if super.nil?
+        unless super.match?(/\A[1-9][0-9]*\z/)
           raise StandardError, "invalid from specified: #{super}"
-        else
-          super.to_i
         end
+
+        super.to_i
       end
     end
 
@@ -57,13 +56,12 @@ class Aggregator
       when OPERATION_CREATE
         super.blank? ? Date.today : super
       when OPERATION_UPDATE
-        if super.nil?
-          raise StandardError, 'to parameter not specified'
-        elsif not super.match?(/\A[1-9][0-9]*\z/)
+        raise StandardError, 'to parameter not specified' if super.nil?
+        unless super.match?(/\A[1-9][0-9]*\z/)
           raise StandardError, "invalid to specified: #{from}"
-        else
-          super.to_i
         end
+
+        super.to_i
       end
     end
 
