@@ -22,13 +22,18 @@ class Aggregator
 
       logger.info('Start Aggregation')
 
-      case operation
-      when OPERATION_CREATE
-        aggregator.create_features(from, to)
-      when OPERATION_UPDATE
-        raise StandardError, 'too many features updated' if (to - from) > 200000
+      begin
+        case operation
+        when OPERATION_CREATE
+          aggregator.create_features(from, to)
+        when OPERATION_UPDATE
+          raise StandardError, 'too many features updated' if (to - from) > 200000
 
-        aggregator.update_features(from, to)
+          aggregator.update_features(from, to)
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        logger.error(aggregator.base_log_attribute.merge(errors: e.record.errors))
+        raise
       end
 
       logger.info('Finish Aggregation')
@@ -87,21 +92,17 @@ class Aggregator
                    .where('DATE(updated_at) <= ?', to)
 
     entries.find_each(batch_size: 100) do |entry|
-      next if entry.horse.nil? or entry.race.nil? or entry.jockey.nil?
-
-      query = {horse_id: entry.horse.horse_id, race_id: entry.race.race_id}
-      next if Feature.exists?(query)
+      race = entry.race
+      horse = entry.horse
+      jockey = entry.jockey
+      next if race.nil? or horse.nil? or jockey.nil?
+      next if Feature.exists?(horse_id: horse.horse_id, race_id: race.race_id)
 
       attribute = feature_attribute(entry, race, horse, jockey)
       next if attribute.nil?
 
-      begin
-        feature = Feature.create!(attribute)
-        @logger.info(base_log_attribute.merge(feature_id: feature.id))
-      rescue ActiveRecord::RecordInvalid => e
-        @logger.error(base_log_attribute.merge(errors: e.record.errors))
-        raise
-      end
+      feature = Feature.create!(attribute)
+      @logger.info(base_log_attribute.merge(feature_id: feature.id))
     end
   end
 
@@ -122,38 +123,29 @@ class Aggregator
       attribute = feature_attribute(entry, race, horse, jockey)
       next if attribute.nil?
 
-      begin
-        @logger.info(update_attribute: attribute.merge(feature_id: feature.id))
-        feature.update!(attribute)
-        @logger.info(base_log_attribute.merge(feature_id: feature.id))
-      rescue ActiveRecord::RecordInvalid => e
-        @logger.error(base_log_attribute.merge(errors: e.record.errors))
-        raise
-      end
+      @logger.info(update_attribute: attribute.merge(feature_id: feature.id))
+      feature.update!(attribute)
+      @logger.info(base_log_attribute.merge(feature_id: feature.id))
     end
   end
-
-  private
 
   def base_log_attribute
     @base_log_attribute ||= {action: Feature.operation, resource: 'feature'}
   end
 
+  private
+
   def feature_attribute(entry, race, horse, jockey)
-    attribute = {race_id: entry.race.race_id, horse_id: entry.horse.horse_id}
+    attribute = {race_id: race.race_id, horse_id: horse.horse_id}
     feature_attribute_names = Feature.attribute_names - %w[horse_id race_id]
 
-    attribute.merge!(entry.race.attributes.slice(*feature_attribute_names))
-    attribute.merge!(entry.horse.attributes.slice(*feature_attribute_names))
+    attribute.merge!(race.attributes.slice(*feature_attribute_names))
+    attribute.merge!(horse.attributes.slice(*feature_attribute_names))
     attribute.merge!(entry.attributes.slice(*feature_attribute_names))
-    attribute.merge(extra_attribute(entry)).symbolize_keys
+    attribute.merge(extra_attribute(entry, race, horse, jockey)).symbolize_keys
   end
 
-  def extra_attribute(entry)
-    race = entry.race
-    horse = entry.horse
-    jockey = entry.jockey
-
+  def extra_attribute(entry, race, horse, jockey)
     entry_time = race.start_time
     results_before = horse.results_before(entry_time)
 
