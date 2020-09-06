@@ -108,6 +108,8 @@ class Aggregator
         feature = Feature.create!(attribute)
         @logger.info(base_log_attribute.merge(feature_id: feature.id))
       end
+
+      GC.start
     end
   end
 
