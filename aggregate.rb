@@ -45,7 +45,7 @@ class Aggregator
     def from
       case operation
       when OPERATION_CREATE
-        super.blank? ? Date.today - 30 : super
+        super.blank? ? Date.today - 30 : Date.parse(super)
       when OPERATION_UPDATE
         raise StandardError, 'from parameter not specified' if super.nil?
         unless super.match?(/\A[1-9][0-9]*\z/)
@@ -59,7 +59,7 @@ class Aggregator
     def to
       case operation
       when OPERATION_CREATE
-        super.blank? ? Date.today : super
+        super.blank? ? Date.today : Date.parse(super)
       when OPERATION_UPDATE
         raise StandardError, 'to parameter not specified' if super.nil?
         unless super.match?(/\A[1-9][0-9]*\z/)
@@ -86,23 +86,28 @@ class Aggregator
   end
 
   def create_features(from, to)
-    entries = Entry.where(order: (1..18).to_a.map(&:to_s))
-                   .where.not(weight: nil)
-                   .where('DATE(updated_at) >= ?', from)
-                   .where('DATE(updated_at) <= ?', to)
+    (from..to).each do |date|
+      entries = Entry.joins(:race)
+                     .where(order: (1..18).to_a.map(&:to_s))
+                     .where.not(weight: nil)
+                     .where('DATE(races.start_time) = ?', date)
 
-    entries.find_each(batch_size: 100) do |entry|
-      race = entry.race
-      horse = entry.horse
-      jockey = entry.jockey
-      next if race.nil? or horse.nil? or jockey.nil?
-      next if Feature.exists?(horse_id: horse.horse_id, race_id: race.race_id)
+      @logger.info(base_log_attribute.merge(date: date, entries: entries.size))
 
-      attribute = feature_attribute(entry, race, horse, jockey)
-      next if attribute.nil?
+      race = horse = jockey = attribute = feature = nil
+      entries.find_each do |entry|
+        race = entry.race
+        horse = entry.horse
+        jockey = entry.jockey
+        next if race.nil? or horse.nil? or jockey.nil?
+        next if Feature.exists?(horse_id: horse.horse_id, race_id: race.race_id)
 
-      feature = Feature.create!(attribute)
-      @logger.info(base_log_attribute.merge(feature_id: feature.id))
+        attribute = feature_attribute(entry, race, horse, jockey)
+        next if attribute.nil?
+
+        feature = Feature.create!(attribute)
+        @logger.info(base_log_attribute.merge(feature_id: feature.id))
+      end
     end
   end
 
