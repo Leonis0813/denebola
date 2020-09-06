@@ -116,6 +116,7 @@ class Aggregator
 
     @logger.info("# of Target Features = #{features.size}")
 
+    race = horse = entry = jockey = attribute = nil
     features.find_each(batch_size: 100) do |feature|
       race = Race.find_by(race_id: feature.race_id)
       horse = Horse.find_by(horse_id: feature.horse_id)
