@@ -1,4 +1,4 @@
-# 2.9.1 (2020/09/06)
+# 2.9.1 (2020/09/07)
 - [UPDATE] aggregation to search by start_time of race
 
 # 2.9.0 (2020/09/05)
