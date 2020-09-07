@@ -104,13 +104,14 @@ class Extractor
   end
 
   def update_entry_info(html, race_id)
-    attribute = extract_entry(html).merge(race_id: race_id)
+    race = Race.find_by(race_id: race_id)
+    attribute = extract_entry(html).merge(race_id: race.id)
     log_attribute = Entry.log_attribute.merge(attribute.slice(:race_id, :number))
     entry = handle_active_record_error(log_attribute) do
       Entry.create_or_update!(attribute)
     end
-    entry.race = Race.find_by(race_id: race_id)
-    jockey = update_jockey_info(attribute[:jockey_id], race_id)
+    entry.race = race
+    jockey = update_jockey_info(attribute[:jockey_id], race.race_id)
 
     if jockey and entry
       jockey.results << entry
