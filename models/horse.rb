@@ -16,6 +16,12 @@ class Horse < ApplicationRecord
             inclusion: {in: RUNNING_STYLE_LIST, message: 'invalid'},
             allow_nil: true
 
+  scope :results_before, lambda {|time|
+    results.joins(:race)
+           .where('races.start_time < ?', time)
+           .order('races.start_time desc')
+  }
+
   def self.create_or_update!(attribute)
     horse = find_by(attribute.slice(:horse_id))
     super(horse, attribute)
@@ -53,10 +59,5 @@ class Horse < ApplicationRecord
 
   def win_times(time)
     results_before(time).count(&:won)
-  end
-
-  def results_before(time)
-    @results_before ||= results.joins(:race).where('races.start_time < ?', time)
-                               .order('races.start_time desc')
   end
 end

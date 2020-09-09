@@ -9,6 +9,12 @@ class Jockey < ApplicationRecord
             format: {with: /\A\d+\z/, message: 'invalid'},
             allow_nil: true
 
+  scope :results_before, lambda {|time|
+    results.joins(:race)
+           .where('races.start_time < ?', time)
+           .order('races.start_time desc')
+  }
+
   def self.create_or_update!(attribute)
     jockey = find_by(attribute.slice(:jockey_id))
     super(jockey, attribute)
@@ -35,10 +41,5 @@ class Jockey < ApplicationRecord
 
   def entry_times(time)
     results_before(time).size
-  end
-
-  def results_before(time)
-    @results_before ||= results.joins(:race).where('races.start_time < ?', time)
-                               .order('races.start_time desc')
   end
 end
