@@ -1,3 +1,7 @@
+# 2.9.2 (2020/09/09)
+- [UPDATE] performance for aggregation
+- [FIX] extra features for jockey
+
 # 2.9.1 (2020/09/07)
 - [UPDATE] aggregation to search by start_time of race
 
