@@ -19,14 +19,19 @@ class Jockey < ApplicationRecord
   end
 
   def average_prize_money(time)
-    results_before(time).map(&:prize_money).inject(:+) / entry_times(time).to_f
+    sum_prize_money = results_before(time).map(&:prize_money).inject(:+)
+    sum_prize_money ? sum_prize_money / entry_times(time).to_f : 0
   end
 
   def win_rate(time)
+    return 0 if results_before(time).empty?
+
     results_before(time).count(&:won).to_f / entry_times(time)
   end
 
   def win_rate_last_four_races(time)
+    return 0 if results_before(time).empty?
+
     last_four_races = results_before(time).first(4)
     last_four_races.count(&:won).to_f / last_four_races.size
   end
@@ -38,7 +43,8 @@ class Jockey < ApplicationRecord
   end
 
   def results_before(time)
-    @results_before ||= results.joins(:race).where('races.start_time <= ?', time)
-                               .order('races.start_time desc')
+    results.joins(:race)
+           .where('races.start_time < ?', time)
+           .order('races.start_time desc')
   end
 end

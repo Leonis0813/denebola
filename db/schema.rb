@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 37) do
+ActiveRecord::Schema.define(version: 38) do
 
   create_table "bracket_quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.float "odds", null: false
@@ -142,6 +142,7 @@ ActiveRecord::Schema.define(version: 37) do
     t.datetime "updated_at", null: false
     t.index ["place", "start_time"], name: "index_races_on_place_and_start_time", unique: true
     t.index ["race_id"], name: "index_races_on_race_id", unique: true
+    t.index ["start_time"], name: "index_races_on_start_time"
   end
 
   create_table "shows", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
