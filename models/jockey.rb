@@ -42,5 +42,4 @@ class Jockey < ApplicationRecord
            .where('races.start_time < ?', time)
            .order('races.start_time desc')
   end
-
 end
