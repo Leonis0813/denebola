@@ -38,7 +38,7 @@ class Jockey < ApplicationRecord
   end
 
   def results_before(time)
-    @results_before ||= results.joins(:race).where('races.start_time <= ?', time)
+    @results_before ||= results.joins(:race).where('races.start_time < ?', time)
                                .order('races.start_time desc')
   end
 end
