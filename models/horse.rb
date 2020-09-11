@@ -41,7 +41,7 @@ class Horse < ApplicationRecord
 
   def average_prize_money(results)
     sum_prize_money = results.map(&:prize_money).inject(:+)
-    sum_prize_money ? sum_prize_money / entry_times(time).to_f : 0
+    sum_prize_money ? sum_prize_money / results.size.to_f : 0
   end
 
   def last_race_order(results)
