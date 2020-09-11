@@ -18,7 +18,7 @@ class Jockey < ApplicationRecord
     super.merge(resource: 'jockey')
   end
 
-  def extra_attribute
+  def extra_attribute(time)
     results_before = results.joins(:race)
                             .where('races.start_time < ?', time)
                             .order('races.start_time desc')

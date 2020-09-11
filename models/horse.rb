@@ -29,8 +29,16 @@ class Horse < ApplicationRecord
     results_before = results.joins(:race)
                             .where('races.start_time < ?', time)
                             .order('races.start_time desc')
+
+    blank = if results_before.second
+              (time.to_date - results_before.first.race.start_time.to_date).to_i
+            else
+              0
+            end
+
     {
-      entry_times: results_before.size
+      blank: blank,
+      entry_times: results_before.size,
       horse_average_prize_money: average_prize_money(results_before),
       last_race_order: last_race_order(results_before),
       rate_within_third: rate_within_third(results_before),
