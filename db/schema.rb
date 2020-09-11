@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 39) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["horse_id", "race_id"], name: "index_entries_on_horse_id_and_race_id", unique: true
-    t.index ["jockey_id", "race_id"], name: "index_entries_on_jockey_id_and_race_id", unique: true
+    t.index ["jockey_id", "race_id"], name: "index_entries_on_jockey_id_and_race_id"
     t.index ["race_id", "jockey_id", "number"], name: "index_entries_on_race_id_and_jockey_id_and_number", unique: true
     t.index ["race_id", "number"], name: "index_entries_on_race_id_and_number", unique: true
   end
