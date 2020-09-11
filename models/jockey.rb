@@ -31,8 +31,7 @@ class Jockey < ApplicationRecord
   end
 
   def average_prize_money(results)
-    sum_prize_money = results.map(&:prize_money).inject(:+)
-    sum_prize_money ? sum_prize_money / results.size.to_f : 0
+    results.average(:prize_money) || 0
   end
 
   def win_rate(results)
