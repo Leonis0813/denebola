@@ -156,38 +156,26 @@ class Aggregator
 
   def extra_attribute(entry, race, horse, jockey)
     entry_time = race.start_time
-    results_before = horse.results_before(entry_time)
+    results_before = horse.results
+                          .joins(:race)
+                          .where('races.start_time < ?', entry_time)
+                          .order('races.start_time desc')
+    race_ids = results_before.pluck(:race_id)
 
-    blank = if results_before.second
-              (entry_time.to_date - results_before.first.race.start_time.to_date).to_i
-            else
-              0
-            end
-
-    sum_distance = results_before.map {|result| result.race.distance }.inject(:+)
-    distance_diff = if sum_distance
-                      average_distance = sum_distance / horse.entry_times(entry_time)
-                      (race.distance - average_distance).abs / average_distance.to_f
-                    else
+    sum_distance = Race.where(id: race_ids).sum(:distance)
+    distance_diff = if sum_distance.zero?
                       0
+                    else
+                      average_distance = sum_distance / results_before.size.to_f
+                      (race.distance - average_distance).abs / average_distance.to_f
                     end
 
     {
-      blank: blank,
       distance_diff: distance_diff,
-      entry_times: horse.entry_times(entry_time),
-      horse_average_prize_money: horse.average_prize_money(entry_time),
-      jockey_average_prize_money: jockey.average_prize_money(entry_time),
-      jockey_win_rate: jockey.win_rate(entry_time),
-      jockey_win_rate_last_four_races: jockey.win_rate_last_four_races(entry_time),
-      last_race_order: horse.last_race_order(entry_time),
-      month: race.month,
-      rate_within_third: horse.rate_within_third(entry_time),
-      second_last_race_order: horse.second_last_race_order(entry_time),
-      weight_per: entry.weight_per,
-      win_times: horse.win_times(entry_time),
-      won: entry.won,
-    }
+    }.merge(race.extra_attribute)
+      .merge(entry.extra_attribute)
+      .merge(horse.extra_attribute(entry_time))
+      .merge(jockey.extra_attribute(entry_time))
   end
 end
 

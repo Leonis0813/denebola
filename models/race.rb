@@ -58,8 +58,10 @@ class Race < ApplicationRecord
     super.merge(resource: 'race')
   end
 
-  def month
-    start_time.month
+  def extra_attribute
+    {
+      month: start_time.month,
+    }
   end
 
   def create_or_update_payoff(attribute)

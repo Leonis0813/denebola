@@ -1,3 +1,6 @@
+# 2.9.3 (2020/09/12)
+- [REFACTOR] aggregation and models for performance
+
 # 2.9.2 (2020/09/09)
 - [UPDATE] performance for aggregation
 - [FIX] extra features for jockey
