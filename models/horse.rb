@@ -25,39 +25,39 @@ class Horse < ApplicationRecord
     super.merge(resource: 'horse')
   end
 
-  def average_prize_money(time)
-    sum_prize_money = results_before(time).map(&:prize_money).inject(:+)
+  def extra_attribute(time)
+    results_before = results.joins(:race)
+                            .where('races.start_time < ?', time)
+                            .order('races.start_time desc')
+    {
+      entry_times: results_before.size
+      horse_average_prize_money: average_prize_money(results_before),
+      last_race_order: last_race_order(results_before),
+      rate_within_third: rate_within_third(results_before),
+      second_last_race_order: second_last_race_order(results_before),
+      win_times: results_before.count(&:won),
+    }
+  end
+
+  def average_prize_money(results)
+    sum_prize_money = results.map(&:prize_money).inject(:+)
     sum_prize_money ? sum_prize_money / entry_times(time).to_f : 0
   end
 
-  def entry_times(time)
-    results_before(time).size
+  def last_race_order(results)
+    results.first&.order&.to_i || 0
   end
 
-  def last_race_order(time)
-    results_before(time).first&.order&.to_i || 0
-  end
+  def rate_within_third(results)
+    return 0 if results.empty?
 
-  def rate_within_third(time)
-    return 0 if results_before(time).empty?
-
-    within_third = results_before(time).first(3).count do |result|
+    within_third = results.first(3).count do |result|
       %w[1 2 3].include?(result.order)
     end
-    within_third / [3.0, results_before(time).size.to_f].min
+    within_third / [3.0, results.size.to_f].min
   end
 
-  def second_last_race_order(time)
-    results_before(time).second&.order&.to_i || 0
-  end
-
-  def win_times(time)
-    results_before(time).count(&:won)
-  end
-
-  def results_before(time)
-    results.joins(:race)
-           .where('races.start_time < ?', time)
-           .order('races.start_time desc')
+  def second_last_race_order(results)
+    results.second&.order&.to_i || 0
   end
 end
