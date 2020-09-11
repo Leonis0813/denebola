@@ -162,12 +162,12 @@ class Aggregator
                           .order('races.start_time desc')
     race_ids = results_before.pluck(:race_id)
 
-    sum_distance = Race.find(race_ids).map {|race| race.distance }.inject(:+)
-    distance_diff = if sum_distance
+    sum_distance = Race.where(id: race_ids).sum(:distance)
+    distance_diff = if sum_distance.zero?
+                      0
+                    else
                       average_distance = sum_distance / results_before.size.to_f
                       (race.distance - average_distance).abs / average_distance.to_f
-                    else
-                      0
                     end
 
     {
