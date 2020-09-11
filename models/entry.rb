@@ -44,6 +44,13 @@ class Entry < ApplicationRecord
     super.merge(resource: 'entry')
   end
 
+  def extra_attribute
+    {
+      weight_per: weight_per,
+      won: won,
+    }
+  end
+
   def weight_per
     return 0.0 unless burden_weight.to_i.positive? and weight.to_i.positive?
 
