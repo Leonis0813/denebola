@@ -146,7 +146,7 @@ class Aggregator
 
   def feature_attribute(entry, race, horse, jockey)
     attribute = {race_id: race.race_id, horse_id: horse.horse_id}
-    feature_attribute_names = Feature.attribute_names - %w[horse_id race_id]
+    feature_attribute_names = Feature.attribute_names - %w[id horse_id race_id]
 
     attribute.merge!(race.attributes.slice(*feature_attribute_names))
     attribute.merge!(horse.attributes.slice(*feature_attribute_names))
