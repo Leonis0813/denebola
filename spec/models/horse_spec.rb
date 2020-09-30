@@ -35,72 +35,22 @@ describe Horse, type: :model do
     end
   end
 
-  describe '#average_prize_money' do
+  describe '#extra_attribute' do
     describe '正常系' do
       include_context 'テストデータ作成'
 
-      it '2.0を返すこと' do
-        is_asserted_by { @horse.average_prize_money('2000-01-03 00:00:00') == 2.0 }
-      end
-    end
-  end
-
-  describe '#entry_times' do
-    describe '正常系' do
-      include_context 'テストデータ作成'
-
-      it '3を返すこと' do
-        is_asserted_by { @horse.entry_times('2000-01-03 00:00:00') == 3 }
-      end
-    end
-  end
-
-  describe '#last_race_order' do
-    describe '正常系' do
-      include_context 'テストデータ作成'
-
-      it '2を返すこと' do
-        is_asserted_by { @horse.last_race_order('2000-01-03 00:00:00') == 2 }
-      end
-    end
-  end
-
-  describe '#rate_within_third' do
-    describe '正常系' do
-      include_context 'テストデータ作成'
-
-      it '1.0を返すこと' do
-        is_asserted_by { @horse.rate_within_third('2000-01-03 00:00:00') == 1.0 }
-      end
-    end
-  end
-
-  describe '#second_last_race_order' do
-    describe '正常系' do
-      include_context 'テストデータ作成'
-
-      it '1を返すこと' do
-        is_asserted_by { @horse.second_last_race_order('2000-01-03 00:00:00') == 1 }
-      end
-    end
-  end
-
-  describe '#win_times' do
-    describe '正常系' do
-      include_context 'テストデータ作成'
-
-      it '1を返すこと' do
-        is_asserted_by { @horse.win_times('2000-01-03 00:00:00') == 1 }
-      end
-    end
-  end
-
-  describe '#results_before' do
-    describe '正常系' do
-      include_context 'テストデータ作成'
-
-      it '3エントリー分を返すこと' do
-        is_asserted_by { @horse.results_before('2000-01-03 00:00:00').size == 3 }
+      it '正しい素性を返すこと' do
+        is_asserted_by do
+          @horse.extra_attribute('2000-01-03 00:00:00') == {
+            blank: 1,
+            entry_times: 2,
+            horse_average_prize_money: 1.5,
+            last_race_order: 2,
+            rate_within_third: 1.0,
+            second_last_race_order: 1,
+            win_times: 1,
+          }
+        end
       end
     end
   end

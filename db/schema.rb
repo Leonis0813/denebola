@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 35) do
+ActiveRecord::Schema.define(version: 39) do
 
   create_table "bracket_quinellas", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.float "odds", null: false
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 35) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["horse_id", "race_id"], name: "index_entries_on_horse_id_and_race_id", unique: true
+    t.index ["jockey_id", "race_id"], name: "index_entries_on_jockey_id_and_race_id"
     t.index ["race_id", "jockey_id", "number"], name: "index_entries_on_race_id_and_jockey_id_and_number", unique: true
     t.index ["race_id", "number"], name: "index_entries_on_race_id_and_number", unique: true
   end
@@ -63,8 +64,8 @@ ActiveRecord::Schema.define(version: 35) do
     t.float "distance_diff", null: false
     t.integer "entry_times", null: false
     t.string "grade", default: "N", null: false
-    t.float "horse_average_prize_money", null: false
-    t.float "jockey_average_prize_money", null: false
+    t.decimal "horse_average_prize_money", precision: 12, scale: 3, null: false
+    t.decimal "jockey_average_prize_money", precision: 12, scale: 3, null: false
     t.float "jockey_win_rate", null: false
     t.float "jockey_win_rate_last_four_races", null: false
     t.string "horse_id", null: false
@@ -87,6 +88,7 @@ ActiveRecord::Schema.define(version: 35) do
     t.boolean "won", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["horse_id", "race_id"], name: "index_features_on_horse_id_and_race_id", unique: true
   end
 
   create_table "horses", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -141,6 +143,7 @@ ActiveRecord::Schema.define(version: 35) do
     t.datetime "updated_at", null: false
     t.index ["place", "start_time"], name: "index_races_on_place_and_start_time", unique: true
     t.index ["race_id"], name: "index_races_on_race_id", unique: true
+    t.index ["start_time"], name: "index_races_on_start_time"
   end
 
   create_table "shows", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

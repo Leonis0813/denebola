@@ -1,3 +1,22 @@
+# 2.9.3 (2020/09/12)
+- [REFACTOR] aggregation and models for performance
+- [FIX] feature id
+
+# 2.9.2 (2020/09/09)
+- [UPDATE] performance for aggregation
+- [FIX] extra features for jockey
+
+# 2.9.1 (2020/09/07)
+- [UPDATE] aggregation to search by start_time of race
+
+# 2.9.0 (2020/09/05)
+- [UPDATE] aggregation to specify id for update
+- [FIX] average prize money columns type on features table
+
+# 2.8.3 (2020/08/30)
+- [FIX] extra features
+- [UPDATE] gems
+
 # 2.8.2 (2019/12/08)
 - [REFACTOR] collector, extractor and aggregator
 

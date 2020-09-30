@@ -1,29 +1,22 @@
-module ArgumentUtil
-  VALID_OPERATIONS = %w[create update upsert].freeze
+require 'active_support'
 
+module ArgumentUtil
   cattr_accessor :logger
 
   module ClassMethods
-    def from(default = Date.today - 30)
+    def from
       from = ARGV.find {|arg| arg.start_with?('--from=') }
-      from ? Date.parse(from.match(/\A--from=(.*)$\z/)[1]) : default
+      from ? from.match(/\A--from=(.*)\z/)[1] : nil
     end
 
-    def to(default = Date.today)
+    def to
       to = ARGV.find {|arg| arg.start_with?('--to=') }
-      to ? Date.parse(to.match(/\A--to=(.*)\z/)[1]) : default
+      to ? to.match(/\A--to=(.*)\z/)[1] : nil
     end
 
-    def operation(default = 'create')
+    def operation
       operation = ARGV.find {|arg| arg.start_with?('--operation=') }
-      operation ? operation.match(/\A--operation=(.*)\z/)[1] : default
-    end
-
-    def check_operation(operation)
-      return if VALID_OPERATIONS.include?(operation)
-
-      logger.error("invalid operation specified: #{operation}")
-      raise StandardError
+      operation ? operation.match(/\A--operation=(.*)\z/)[1] : nil
     end
   end
 

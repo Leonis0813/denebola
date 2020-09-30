@@ -18,27 +18,32 @@ class Jockey < ApplicationRecord
     super.merge(resource: 'jockey')
   end
 
-  def average_prize_money(time)
-    results_before(time).map(&:prize_money).inject(:+) / entry_times(time).to_f
+  def extra_attribute(time)
+    results_before = results.joins(:race)
+                            .where('races.start_time < ?', time)
+                            .order('races.start_time desc')
+
+    {
+      jockey_average_prize_money: average_prize_money(results_before),
+      jockey_win_rate: win_rate(results_before),
+      jockey_win_rate_last_four_races: win_rate_last_four_races(results_before),
+    }
   end
 
-  def win_rate(time)
-    results_before(time).count(&:won).to_f / entry_times(time)
+  def average_prize_money(results)
+    results.average(:prize_money) || 0
   end
 
-  def win_rate_last_four_races(time)
-    last_four_races = results_before(time).first(4)
+  def win_rate(results)
+    return 0 if results.empty?
+
+    results.count(&:won).to_f / results.size
+  end
+
+  def win_rate_last_four_races(results)
+    return 0 if results.empty?
+
+    last_four_races = results.first(4)
     last_four_races.count(&:won).to_f / last_four_races.size
-  end
-
-  private
-
-  def entry_times(time)
-    results_before(time).size
-  end
-
-  def results_before(time)
-    @results_before ||= results.joins(:race).where('races.start_time <= ?', time)
-                               .order('races.start_time desc')
   end
 end

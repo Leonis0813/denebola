@@ -38,7 +38,7 @@ describe Race, type: :model do
     end
   end
 
-  describe '#month' do
+  describe '#extra_attribute' do
     describe '正常系' do
       (1..12).each do |i|
         context "#{i}月のレースの場合" do
@@ -50,7 +50,7 @@ describe Race, type: :model do
           end
 
           it "#{i}を返すこと" do
-            is_asserted_by { @race.month == i }
+            is_asserted_by { @race.extra_attribute == {month: i} }
           end
         end
       end
