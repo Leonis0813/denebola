@@ -77,7 +77,7 @@ class Collector
     else
       html = @client.http_get_race(race_id)
       options = {invalid: :replace, undef: :replace, replace: '?'}
-      html = html.encode('utf-8', 'euc-jp', options)
+      html = html.encode('utf-8', 'euc-jp', **options)
       html.gsub!('&nbsp;', ' ')
       File.open(file_path, 'w') {|file| file.write(html) }
       @logger.info(resource: 'race', souroce: 'web', file_path: file_path)
@@ -93,7 +93,7 @@ class Collector
 
     html = @client.http_get_horse(horse_id)
     options = {invalid: :replace, undef: :replace, replace: '?'}
-    html = html.encode('utf-8', 'euc-jp', options)
+    html = html.encode('utf-8', 'euc-jp', **options)
     html.gsub!('&nbsp;', ' ')
     File.open(file_path, 'w') {|file| file.write(html) }
     @logger.info(resource: 'horse', souroce: 'web', file_path: file_path)
