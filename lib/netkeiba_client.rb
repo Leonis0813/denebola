@@ -10,7 +10,10 @@ class NetkeibaClient < HTTPClient
   def http_get_race_ids(date)
     path = "#{Settings.path.race_list}/#{date}"
     response = get("#{@base_url}#{path}")
-    race_ids = response.body.scan(%r{.*/race/(\d+)}).flatten
+    options = {invalid: :replace, undef: :replace, replace: '?'}
+    html = response.body.encode('utf-8', 'euc-jp', **options)
+    html.gsub!('&nbsp;', ' ')
+    race_ids = html.scan(%r{.*/race/(\d+)}).flatten
     @logger.info(path: path, status: response.code)
     race_ids
   end
