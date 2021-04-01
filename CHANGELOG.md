@@ -1,3 +1,11 @@
+# 2.9.5 (2021/03/03)
+- [FIX] encoding error of race list
+- [FIX] warning of String#encode
+
+# 2.9.4 (2021/03/02)
+- [UPDATE] ruby version to 2.7.2
+- [UPDATE] gems
+
 # 2.9.3 (2020/09/12)
 - [REFACTOR] aggregation and models for performance
 - [FIX] feature id
