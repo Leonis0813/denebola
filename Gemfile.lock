@@ -65,7 +65,7 @@ GEM
       dry-schema (~> 1.5, >= 1.5.2)
     factory_bot (6.2.0)
       activesupport (>= 5.0.0)
-    faraday (1.4.2)
+    faraday (1.4.3)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
       faraday-excon (~> 1.1)
