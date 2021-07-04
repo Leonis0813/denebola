@@ -1,4 +1,5 @@
-# 2.9.6 (2021/07/03)
+# 2.9.6 (2021/07/04)
+- [ADD] unique index to features table
 - [UPDATE] gems
 
 # 2.9.5 (2021/03/03)
