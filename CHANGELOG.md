@@ -1,3 +1,6 @@
+# 2.9.6 (2021/07/04)
+- [ADD] unique index to features table
+
 # 2.9.5 (2021/03/03)
 - [FIX] encoding error of race list
 - [FIX] warning of String#encode
